@@ -5,51 +5,58 @@
    ============================================================================ */
 
 const APPS = [
-  { name:"Tunnel", cat:"Developer Tools", accent:"#22d3ee", icon:"Tunnel",
+  { name:"Deck", cat:"Developer Tools", accent:"#22ff8c", icon:"Deck", key:"deck", status:"soon",
+    desc:"A graphical SSH client: browse a host like a file manager with a live terminal docked below.",
+    long:"Deck is a full SSH client, SFTP file manager, and live server monitor in one beautifully designed app. Run a real terminal — vim, htop, and nano all work — browse and edit files with save-back, and watch CPU, memory, and disk in real time with trend graphs. Local port forwarding, jump hosts, and auto-reconnect are built in. Credentials live in the iOS Keychain behind Face ID, with on-device key generation and host-key verification. No accounts, no tracking.",
+    store:"", github:"" },
+  { name:"Spinnit", cat:"Entertainment", accent:"#a78bff", icon:"Spinnit", key:"spinnit", status:"soon",
+    desc:"Can't decide? Give the wheel a flick and let it choose — with confetti, haptics, and sound.",
+    long:"Spinnit is a delightful decision wheel. Spin for Yes/No or add any custom options, with your own colors, emoji, and 6, 9, or 12 slices. Winners get confetti, fireworks, hearts, or stars. Save unlimited wheels or start from templates — what to eat, truth or dare, dice, names — weight the odds, run best-of series, and use draw mode for raffles. Live tallies, history and stats, share a result or a whole wheel by QR code, and even “Hey Siri, spin the wheel.”",
+    store:"", github:"" },
+  { name:"Tunnel", cat:"Developer Tools", accent:"#22d3ee", icon:"Tunnel", key:"tunnel",
     desc:"A full SSH terminal, SFTP, and port forwarding in your pocket. Secured with Face ID.",
+    long:"Tunnel puts a complete SSH workstation in your pocket: a real terminal, an SFTP file browser, and port forwarding — all secured behind Face ID with keys stored in the iOS Keychain. Connect to servers on your local network or across the internet, manage multiple hosts, and keep sessions alive, entirely on-device.",
     store:"", github:"" },
-  { name:"NetScan Pro", cat:"Utilities", accent:"#34d399", icon:"NetScanPro",
+  { name:"NetScan Pro", cat:"Utilities", accent:"#34d399", icon:"NetScanPro", key:"netscan",
     desc:"See every device on your network in seconds. Ports, vendors, and latency at a glance.",
+    long:"NetScan Pro maps your entire local network in seconds. Discover every connected device with its vendor, IP, and latency, scan open ports, browse Bonjour services, and wake machines with Wake-on-LAN. A fast, native scanner for anyone who wants to know exactly what's on their Wi-Fi.",
     store:"", github:"" },
-  { name:"DepthTag", cat:"Utilities", accent:"#38bdf8", icon:"DepthTag",
+  { name:"DepthTag", cat:"Utilities", accent:"#38bdf8", icon:"DepthTag", key:"depthtag",
     desc:"Point, tap, measure. LiDAR-precise distances tagged onto the real world in AR.",
+    long:"DepthTag turns your iPhone's LiDAR sensor into a precise measuring tool. Point at anything and tap to drop a distance tag, pinned onto the real world in augmented reality. Measure heights, gaps, and depths to the centimeter, save a list of readings, and see the live depth map — all on a LiDAR-equipped iPhone.",
     store:"", github:"" },
-  { name:"SnapSweep", cat:"Photo & Video", accent:"#0ea5e9", icon:"SnapSweep",
+  { name:"SnapSweep", cat:"Photo & Video", accent:"#0ea5e9", icon:"SnapSweep", key:"snapsweep",
     desc:"Reclaim your storage. Find duplicates, screenshots, and blurry shots, all on-device.",
+    long:"SnapSweep cleans up your photo library without ever uploading a thing. An on-device scan finds duplicates, screenshots, blurry shots, and junk using PhotoKit and Vision, then lets you review and sweep them in a fast swipe-to-decide flow. Watch your free storage climb — privately.",
     store:"", github:"" },
-  { name:"DoughRatio", cat:"Food & Drink", accent:"#f59e0b", icon:"DoughRatioApp",
+  { name:"DoughRatio", cat:"Food & Drink", accent:"#f59e0b", icon:"DoughRatioApp", key:"doughratio",
     desc:"Baker's percentages, hydration, and batch scaling, worked out the instant you type.",
+    long:"DoughRatio is a baker's percentage calculator that does the math the instant you type. Dial in hydration, salt, and starter, scale any recipe up or down by weight or number of loaves, and follow a timeline from mix to bake. Built for bread bakers who think in ratios.",
     store:"https://apps.apple.com/us/app/doughratio/id6761349279", github:"" },
-  { name:"Score Split", cat:"Sports", accent:"#ef4444", icon:"ScoreSplit",
+  { name:"Score Split", cat:"Sports", accent:"#ef4444", icon:"ScoreSplit", key:"scoresplit",
     desc:"Tap your side to score. Two players, one screen, zero arguments.",
+    long:"Score Split is the simplest scorekeeper there is. Split the screen, tap your side to score, and settle any game — cards, ping-pong, backyard basketball — without arguments. Custom themes, quick reset, and a big, readable scoreboard.",
     store:"https://apps.apple.com/us/app/scoresplit-app/id6761349352", github:"" },
   { name:"WaveVision", cat:"Music", accent:"#a855f7", icon:"WaveVision",
     desc:"Turn images into sound and sound back into images, using an on-device FFT.",
+    long:"WaveVision is an audio-visual experiment: convert any image into sound by mapping pixels to frequencies, then turn sound back into an image with an on-device FFT. Fully offline, powered by the Accelerate framework, and endlessly fun to explore.",
     store:"https://apps.apple.com/us/app/wavevision/id6761349326" },
   { name:"ToneScape", cat:"Health & Fitness", accent:"#2dd4bf", icon:"ToneScape",
     desc:"Ambient soundscapes for focus and sleep, with a home-screen widget.",
+    long:"ToneScape generates calming ambient soundscapes for focus, relaxation, and sleep. Mix layers, set a timer, and keep it playing in the background — with a home-screen widget for one-tap ambience. Simple, beautiful, and easy on the battery.",
     store:"https://apps.apple.com/us/app/tonescape/id6761738557" },
-  { name:"TuneForge", cat:"Music", accent:"#fbbf24", icon:null, glyph:"🎸",
-    desc:"A mic-based guitar tuner with fast, accurate real-time pitch detection.",
-    store:"", github:"" },
-  { name:"MentalPerformanceOS", cat:"Health & Fitness", accent:"#ec4899", icon:"MentalPerformanceOS",
-    desc:"EEG-guided focus and recovery training over the Versus headset.",
-    store:"", github:"" },
   { name:"BinaryHexCalc", cat:"Developer Tools", accent:"#22d3ee", icon:"BinaryHexCalc",
     desc:"Binary, hexadecimal, and decimal side by side, with live bit toggling.",
+    long:"BinaryHexCalc shows binary, hexadecimal, and decimal side by side and keeps them in sync as you type. Toggle individual bits, run bitwise operations, and switch word sizes — a fast, focused tool for programmers and students working close to the metal.",
     store:"https://apps.apple.com/us/app/binaryhexcalc/id6755499704" },
-  { name:"RFScope", cat:"Utilities", accent:"#34d399", icon:null, glyph:"📡",
-    desc:"Visualize the RF spectrum in real time.",
+  { name:"MentalPerformanceOS", cat:"Health & Fitness", accent:"#ec4899", icon:"MentalPerformanceOS", status:"soon",
+    desc:"EEG-guided focus and recovery training over the Versus headset.",
+    long:"MentalPerformanceOS turns EEG data from the Versus headset into guided focus and recovery training. Connect over Bluetooth, watch your brain state in real time, and play games that reward calm, sustained attention — on-device performance training for your mind.",
     store:"", github:"" },
-  { name:"captureLiDAR", cat:"Photo & Video", accent:"#38bdf8", icon:null, glyph:"🌐",
-    desc:"Capture and visualize LiDAR depth data as a live point cloud.",
-    store:"", github:"" },
-  { name:"Perimeter", cat:"Privacy · in development", accent:"#8b5cf6", icon:null, glyph:"🛡️",
+  { name:"Perimeter", cat:"Privacy · in development", accent:"#8b5cf6", icon:null, glyph:"🛡️", status:"soon",
     desc:"An on-device privacy firewall that shows what your apps send and blocks the trackers.",
-    status:"soon", store:"", github:"" },
-  { name:"Deck", cat:"Developer Tools · in development", accent:"#22ff8c", icon:null, glyph:"⌨️",
-    desc:"A graphical SSH client: browse a host like a file manager with a live terminal docked below.",
-    status:"soon", store:"", github:"" },
+    long:"Perimeter is an on-device privacy firewall in development. It reveals exactly what your apps are sending, and where, then lets you block the trackers — all processed locally, with nothing logged to a server.",
+    store:"", github:"" },
 ];
 
 const svgApple = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 1c.1 1.2-.4 2.4-1.1 3.2-.8.9-2 1.6-3.2 1.5-.1-1.2.5-2.4 1.2-3.1C13.7 1.6 15 1 16 1zm3.6 16.4c-.6 1.4-.9 2-1.7 3.2-1.1 1.7-2.6 3.8-4.5 3.8-1.7 0-2.1-1.1-4.4-1.1s-2.8 1.1-4.4 1.1c-1.9 0-3.3-1.9-4.4-3.6C-1 16.4-.4 9.9 3 8c1.3-.7 2.6-.6 3.7-.6 1.2 0 2 .7 3.4.7 1.3 0 2.1-.7 3.6-.7 1.1 0 2.3.1 3.4.9-3 1.6-2.5 5.9.5 7.1z"/></svg>';
@@ -69,13 +76,62 @@ grid.innerHTML = APPS.map((a, i) => {
   } else {
     links = `<span class="chip soon">In review</span>`;
   }
-  return `<div class="card reveal ${['','d1','d2'][i%3]}" style="--a:${a.accent}">
+  return `<div class="card reveal ${['','d1','d2'][i%3]}" data-app="${i}" style="--a:${a.accent};cursor:pointer">
     <div class="glow" style="background:${a.accent}"></div>
     <div class="top">${iconHTML}<div><h3>${a.name}</h3><div class="cat">${a.cat}</div></div></div>
     <div class="desc">${a.desc}</div>
-    <div class="links">${links}</div>
+    <div class="links">${links}<span class="chip more">Details →</span></div>
   </div>`;
 }).join('');
+
+// ---- app detail modal + screenshot lightbox ----
+const SHOTS = 5; // screenshots copied per app that has a `key`
+const modal = document.createElement('div'); modal.id = 'appmodal'; modal.className = 'modal';
+modal.innerHTML = `<div class="mback"></div><div class="mpanel" role="dialog" aria-modal="true"></div>`;
+document.body.appendChild(modal);
+const mpanel = modal.querySelector('.mpanel');
+
+function openApp(i){
+  const a = APPS[i];
+  const icon = a.icon ? `<img class="micon" src="assets/icons/${a.icon}.png" alt="">` : `<div class="micon ph">${a.glyph||'📱'}</div>`;
+  const store = a.store
+    ? `<a class="chip app" href="${a.store}" target="_blank" rel="noopener">${svgApple} View on the App Store</a>`
+    : `<span class="chip soon">${a.status==='soon' ? 'In development' : 'In review'}</span>`;
+  const gallery = a.key
+    ? `<div class="mshots">` + Array.from({length:SHOTS}, (_,k)=>
+        `<img class="shot" style="--d:${(k*0.07).toFixed(2)}s" data-full="assets/shots/${a.key}/${String(k+1).padStart(2,'0')}.png"
+          src="assets/shots/${a.key}/${String(k+1).padStart(2,'0')}.png" alt="${a.name} screenshot ${k+1}" loading="lazy">`).join('') + `</div>`
+    : `<div class="mhero" style="--a:${a.accent}">${icon.replace('class="micon"','class="micon big"')}<span>Screenshots coming soon</span></div>`;
+  mpanel.innerHTML = `
+    <button class="mclose" aria-label="Close">✕</button>
+    <div class="mhead"><span class="micwrap" style="--a:${a.accent}">${icon}</span>
+      <div><h3>${a.name}</h3><div class="cat" style="color:${a.accent}">${a.cat}</div></div></div>
+    <p class="mlong">${a.long||a.desc}</p>
+    <div class="mlinks">${store}</div>
+    ${gallery}`;
+  modal.style.setProperty('--a', a.accent);
+  modal.classList.add('open'); document.body.style.overflow = 'hidden';
+  mpanel.scrollTop = 0;
+}
+function closeApp(){ modal.classList.remove('open'); document.body.style.overflow = ''; }
+
+grid.addEventListener('click', e => {
+  if (e.target.closest('a')) return;                 // let the App Store link work
+  const card = e.target.closest('.card[data-app]'); if (!card) return;
+  openApp(+card.dataset.app);
+});
+modal.addEventListener('click', e => {
+  if (e.target.closest('.mclose') || e.target.classList.contains('mback')) return closeApp();
+  const shot = e.target.closest('.shot'); if (shot) openLightbox(shot.dataset.full);
+});
+addEventListener('keydown', e => { if (e.key === 'Escape') { closeLightbox(); closeApp(); } });
+
+// full-screen single-screenshot lightbox
+const lb = document.createElement('div'); lb.id = 'lightbox'; lb.innerHTML = `<img alt="">`;
+document.body.appendChild(lb);
+function openLightbox(src){ lb.querySelector('img').src = src; lb.classList.add('open'); }
+function closeLightbox(){ lb.classList.remove('open'); }
+lb.addEventListener('click', closeLightbox);
 
 // hero floating icons (real ones)
 const floaters = ["Tunnel","NetScanPro","DepthTag","DoughRatioApp","SnapSweep","ScoreSplit","ToneScape","WaveVision"];

@@ -182,3 +182,48 @@ body:hover #spotlight{opacity:1}
   *{animation-duration:.001ms!important;transition-duration:.05s!important}
   #spotlight,#dots{display:none}
 }
+
+/* ---- Details chip ---- */
+.chip.more{background:transparent;border:1px solid var(--stroke2);color:var(--dim);cursor:pointer}
+.card:hover .chip.more{color:var(--txt);border-color:var(--a,#8b5cf6)}
+
+/* ---- app detail modal ---- */
+.modal{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px;
+  opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.modal.open{opacity:1;visibility:visible}
+.mback{position:absolute;inset:0;background:rgba(4,5,10,.72);backdrop-filter:blur(16px)}
+.mpanel{position:relative;width:min(940px,95vw);max-height:88vh;overflow-y:auto;border-radius:26px;
+  background:linear-gradient(180deg,var(--bg2),var(--bg));border:1px solid var(--stroke2);
+  padding:clamp(22px,4vw,38px);box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 80px -20px var(--a);
+  transform:translateY(34px) scale(.95);opacity:.4;transition:transform .4s cubic-bezier(.2,.8,.2,1),opacity .4s}
+.modal.open .mpanel{transform:none;opacity:1}
+.mpanel::-webkit-scrollbar{width:8px}
+.mclose{position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:12px;border:1px solid var(--stroke2);
+  background:var(--panel);color:var(--txt);font-size:16px;cursor:pointer;transition:.2s;z-index:2}
+.mclose:hover{background:rgba(255,255,255,.1);transform:rotate(90deg)}
+.mhead{display:flex;align-items:center;gap:18px;margin-bottom:20px}
+.micwrap{display:grid;place-items:center;border-radius:20px;padding:0}
+.micon{width:78px;height:78px;border-radius:20px;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+.micon.ph{width:78px;height:78px;display:grid;place-items:center;font-size:38px;background:var(--panel);border:1px solid var(--stroke)}
+.mhead h3{font-family:var(--head);font-weight:700;font-size:clamp(26px,4vw,38px);letter-spacing:-.02em}
+.mhead .cat{font-size:14px;font-weight:600;margin-top:3px}
+.mlong{color:#cdd3e6;font-size:clamp(15px,2vw,18px);line-height:1.7;max-width:70ch}
+.mlinks{margin:22px 0 6px;display:flex;gap:10px;flex-wrap:wrap}
+.mshots{display:flex;gap:16px;overflow-x:auto;padding:16px 2px 10px;scroll-snap-type:x mandatory}
+.mshots .shot{width:240px;flex:none;border-radius:22px;border:1px solid var(--stroke2);cursor:zoom-in;
+  scroll-snap-align:center;box-shadow:0 18px 40px rgba(0,0,0,.5);transition:transform .3s,box-shadow .3s;
+  opacity:0;animation:shotin .55s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:var(--d)}
+.mshots .shot:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 26px 60px -8px var(--a)}
+@keyframes shotin{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+.mhero{margin-top:22px;padding:44px;border-radius:22px;display:flex;flex-direction:column;align-items:center;gap:16px;
+  background:radial-gradient(400px 200px at 50% 0,color-mix(in srgb,var(--a) 22%,transparent),transparent),var(--panel);
+  border:1px solid var(--stroke);color:var(--dim);font-weight:600}
+.micon.big{width:112px;height:112px;border-radius:26px}
+
+/* ---- full-screen screenshot lightbox ---- */
+#lightbox{position:fixed;inset:0;z-index:300;display:grid;place-items:center;padding:28px;cursor:zoom-out;
+  background:rgba(2,3,7,.9);backdrop-filter:blur(10px);opacity:0;visibility:hidden;transition:.28s}
+#lightbox.open{opacity:1;visibility:visible}
+#lightbox img{max-width:min(460px,90vw);max-height:92vh;border-radius:26px;border:1px solid var(--stroke2);
+  box-shadow:0 40px 120px rgba(0,0,0,.7);transform:scale(.92);transition:.3s cubic-bezier(.2,.8,.2,1)}
+#lightbox.open img{transform:none}

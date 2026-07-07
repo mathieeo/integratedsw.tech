@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Integrated Software Technologies — iOS apps, crafted on-device</title>
+<meta name="description" content="Integrated Software Technologies builds fast, private, on-device iOS apps: developer tools, network utilities, LiDAR measuring, audio, and more.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%238b5cf6'/><text x='50' y='68' font-size='54' font-family='sans-serif' font-weight='700' fill='%230b0b12' text-anchor='middle'>i</text></svg>">
+<link rel="stylesheet" href="assets/fonts.css">
+<link rel="stylesheet" href="assets/style.css">
+<noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
+</head>
+<body>
+<div id="bg"><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div></div>
+<canvas id="dots"></canvas>
+
+<nav id="nav">
+  <a class="brand" href="#top"><span class="mark">i</span>
+    <span>Integrated Software<br><small>integratedsw.tech</small></span></a>
+  <div class="navlinks">
+    <a href="#apps">Apps</a>
+    <a href="#opensource">Open Source</a>
+    <a href="#services">Services</a>
+    <a href="#about">About</a>
+    <a class="cta" href="#contact">Get in touch</a>
+  </div>
+</nav>
+
+<header id="top">
+  <span class="pill reveal"><span class="dot"></span> Independent iOS studio</span>
+  <h1 class="reveal d1">Apps that are <span class="g">fast, private,</span> and built to feel alive.</h1>
+  <p class="sub reveal d2">Integrated Software Technologies designs and ships native iOS apps that run entirely on your device. Developer tools, network utilities, LiDAR measuring, audio, and more.</p>
+  <div class="herobtns reveal d3">
+    <a class="btn primary" href="#apps">Explore the apps →</a>
+    <a class="btn ghost" href="#contact">Contact</a>
+  </div>
+  <div class="floaticons reveal d3" id="floaticons"></div>
+  <div class="scrollcue">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-6-6 6 6 6-6"/></svg>
+  </div>
+</header>
+
+<section id="stats">
+  <div class="stats" id="statgrid"></div>
+</section>
+
+<section id="apps">
+  <div class="reveal">
+    <div class="eyebrow">The lineup</div>
+    <div class="h2">Every app we make</div>
+    <p class="lead">Native, on-device, and privacy-first. Several are on the App Store now, with more in review.</p>
+  </div>
+  <div class="grid" id="appgrid"></div>
+</section>
+
+<section id="opensource">
+  <div class="reveal">
+    <div class="eyebrow">Free &amp; open</div>
+    <div class="h2">Open-source developer tools</div>
+    <p class="lead">Cross-platform utilities for Windows, macOS, and Linux, free on GitHub.</p>
+  </div>
+  <div class="grid" id="osgrid"></div>
+</section>
+
+<section id="services">
+  <div class="reveal">
+    <div class="eyebrow">Work with me</div>
+    <div class="h2">Need something built or fixed? I can help.</div>
+    <p class="lead">Beyond my own apps, I take on client work across IT, networking, web, and software. If you can describe it, I can probably build it or fix it.</p>
+  </div>
+  <div class="grid" id="svcgrid"></div>
+</section>
+
+<section id="about">
+  <div class="reveal">
+    <div class="eyebrow">Who we are</div>
+    <div class="h2">A one-person studio with a systems obsession</div>
+  </div>
+  <div class="about">
+    <p class="lead reveal">Integrated Software Technologies Inc. builds the kind of apps we wanted to exist: technical, beautifully animated, and respectful of your data. From SSH terminals and network scanners to LiDAR measuring and on-device audio DSP, every app is engineered to run locally, with no accounts and no tracking.</p>
+    <div class="card2 reveal d1">
+      <ul>
+        <li><span class="ic">✓</span><span><b>100% on-device.</b> Your data never leaves your phone.</span></li>
+        <li><span class="ic">✓</span><span><b>Native SwiftUI.</b> Fast, fluid, and built for the latest iOS.</span></li>
+        <li><span class="ic">✓</span><span><b>No subscriptions where they don't belong.</b> Tools you own.</span></li>
+        <li><span class="ic">✓</span><span><b>Made by Matthew Mesropian.</b> Designed, coded, and shipped solo.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="contact">
+  <div class="reveal">
+    <div class="eyebrow">Contact</div>
+    <div class="h2">Have a project? Let's build it.</div>
+    <p class="lead" style="margin:0 auto">Whatever you need, an app, a website, a network set up, or IT help, reach out and let's talk. No project is too small.</p>
+    <a class="mail" href="mailto:matt@integratedsw.tech">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+      matt@integratedsw.tech</a>
+  </div>
+</section>
+
+<footer>
+  <a class="brand" href="#top"><span class="mark">i</span> Integrated Software Technologies Inc.</a>
+  <span>© 2026 · Built on-device, in Glendale, CA · integratedsw.tech</span>
+</footer>
+
+<script src="assets/app.js"></script>
+<script>/* failsafe: reveal anything not yet shown, even if the main script hiccups */
+window.addEventListener('load',function(){setTimeout(function(){
+  document.querySelectorAll('.reveal:not(.in)').forEach(function(e){e.classList.add('in')});},2200)});</script>
+</body>
+</html>

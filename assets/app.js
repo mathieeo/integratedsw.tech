@@ -145,7 +145,7 @@ document.getElementById('svcgrid').innerHTML = SERVICES.map((s, i) =>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${s.svg}</svg></div>
     <h3>${s.t}</h3>
     <div class="desc">${s.d}</div>
-    <a class="chip app" href="#contact">Get a quote →</a>
+    <a class="chip app" href="mailto:matt@integratedsw.tech?subject=${encodeURIComponent('Quote request: ' + s.t)}&body=${encodeURIComponent('Hi Matt,\n\nI’d like a quote for ' + s.t + '. Here’s what I need:\n\n')}">Get a quote →</a>
   </div>`
 ).join('');
 
@@ -173,29 +173,74 @@ function countUp(el){
 const nav = document.getElementById('nav');
 addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 30));
 
-// card 3D tilt
-grid.querySelectorAll('.card').forEach(card => {
+// card 3D tilt — every card (apps, open-source, services)
+document.querySelectorAll('.card').forEach(card => {
   card.addEventListener('pointermove', e => {
     const r = card.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
     card.style.transform = `translateY(-6px) perspective(800px) rotateX(${-y*6}deg) rotateY(${x*8}deg)`;
+    const g = card.querySelector('.glow');
+    if (g) { g.style.left = (e.clientX - r.left - 110) + 'px'; g.style.top = (e.clientY - r.top - 110) + 'px'; g.style.right = 'auto'; }
   });
   card.addEventListener('pointerleave', () => card.style.transform = '');
 });
 
-// gentle floating dots on canvas
+// scroll progress bar
+const progress = Object.assign(document.createElement('div'), { id: 'progress' });
+document.body.appendChild(progress);
+addEventListener('scroll', () => {
+  const h = document.documentElement;
+  progress.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+}, { passive: true });
+
+// cursor spotlight
+const spot = Object.assign(document.createElement('div'), { id: 'spotlight' });
+document.body.appendChild(spot);
+addEventListener('pointermove', e => {
+  spot.style.transform = `translate(${e.clientX}px,${e.clientY}px) translate(-50%,-50%)`;
+}, { passive: true });
+
+// magnetic buttons
+document.querySelectorAll('.btn, .mail, .navlinks a.cta').forEach(el => {
+  el.classList.add('magnetic');
+  el.addEventListener('pointermove', e => {
+    const r = el.getBoundingClientRect();
+    el.style.transform = `translate(${(e.clientX - r.left - r.width/2) * .3}px,${(e.clientY - r.top - r.height/2) * .4}px)`;
+  });
+  el.addEventListener('pointerleave', () => el.style.transform = '');
+});
+
+// interactive constellation on canvas
 const cv = document.getElementById('dots'), cx = cv.getContext('2d');
-let dots = [];
+let dots = [], mouse = { x: -999, y: -999 };
 function resize(){ cv.width = innerWidth; cv.height = innerHeight;
-  dots = Array.from({length: Math.min(70, innerWidth/22|0)}, () => ({
+  dots = Array.from({length: Math.min(90, innerWidth/18|0)}, () => ({
     x: Math.random()*cv.width, y: Math.random()*cv.height,
-    r: Math.random()*1.6+.4, vx:(Math.random()-.5)*.15, vy:(Math.random()-.5)*.15,
-    a: Math.random()*.4+.1 })); }
+    r: Math.random()*1.6+.5, vx:(Math.random()-.5)*.18, vy:(Math.random()-.5)*.18,
+    a: Math.random()*.4+.15 })); }
 resize(); addEventListener('resize', resize);
+addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
 (function loop(){
   cx.clearRect(0,0,cv.width,cv.height);
-  for(const d of dots){ d.x+=d.vx; d.y+=d.vy;
+  const LINK = 130;
+  for(let i=0;i<dots.length;i++){
+    const d = dots[i]; d.x+=d.vx; d.y+=d.vy;
     if(d.x<0||d.x>cv.width)d.vx*=-1; if(d.y<0||d.y>cv.height)d.vy*=-1;
-    cx.beginPath(); cx.arc(d.x,d.y,d.r,0,7); cx.fillStyle=`rgba(160,180,255,${d.a})`; cx.fill(); }
+    // line + gentle repel to the cursor
+    const mdx=d.x-mouse.x, mdy=d.y-mouse.y, md=Math.hypot(mdx,mdy)||1;
+    if(md<180){ const o=(1-md/180)*.5;
+      cx.strokeStyle=`rgba(139,92,246,${o})`; cx.lineWidth=1;
+      cx.beginPath(); cx.moveTo(d.x,d.y); cx.lineTo(mouse.x,mouse.y); cx.stroke();
+      d.vx+=mdx/md*.02; d.vy+=mdy/md*.02;
+    }
+    // lines to nearby dots
+    for(let j=i+1;j<dots.length;j++){
+      const n=dots[j], dx=d.x-n.x, dy=d.y-n.y, dist=Math.hypot(dx,dy);
+      if(dist<LINK){ cx.strokeStyle=`rgba(150,170,255,${(1-dist/LINK)*.16})`; cx.lineWidth=1;
+        cx.beginPath(); cx.moveTo(d.x,d.y); cx.lineTo(n.x,n.y); cx.stroke(); }
+    }
+    d.vx=Math.max(-.4,Math.min(.4,d.vx)); d.vy=Math.max(-.4,Math.min(.4,d.vy));
+    cx.beginPath(); cx.arc(d.x,d.y,d.r,0,7); cx.fillStyle=`rgba(160,180,255,${d.a})`; cx.fill();
+  }
   requestAnimationFrame(loop);
 })();

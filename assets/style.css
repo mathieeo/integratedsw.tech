@@ -99,11 +99,12 @@ section{padding:clamp(70px,10vw,130px) clamp(18px,5vw,64px);max-width:1200px;mar
   border:1px solid var(--stroke);overflow:hidden;transition:transform .3s cubic-bezier(.2,.8,.2,1),border-color .3s;
   transform-style:preserve-3d}
 .card::before{content:'';position:absolute;inset:0;border-radius:var(--radius);padding:1px;opacity:0;transition:.3s;
+  pointer-events:none;
   background:var(--grad);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude}
 .card:hover{transform:translateY(-6px);border-color:transparent}
 .card:hover::before{opacity:1}
-.card .glow{position:absolute;width:220px;height:220px;border-radius:50%;filter:blur(70px);opacity:0;transition:.4s;top:-60px;right:-60px}
+.card .glow{position:absolute;width:220px;height:220px;border-radius:50%;filter:blur(70px);opacity:0;transition:.4s;top:-60px;right:-60px;pointer-events:none}
 .card:hover .glow{opacity:.35}
 .svc-ic{width:54px;height:54px;border-radius:15px;display:grid;place-items:center;margin-bottom:16px}
 .svc-ic svg{width:27px;height:27px}
@@ -155,3 +156,29 @@ footer .brand{font-size:16px}
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.2,.8,.2,1),transform .7s cubic-bezier(.2,.8,.2,1)}
 .reveal.in{opacity:1;transform:none}
 .reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}
+
+/* ---- scroll progress bar ---- */
+#progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:100;background:var(--grad);
+  box-shadow:0 0 12px rgba(139,92,246,.6);transition:width .08s linear}
+
+/* ---- cursor spotlight ---- */
+#spotlight{position:fixed;top:0;left:0;width:540px;height:540px;border-radius:50%;z-index:-1;pointer-events:none;
+  transform:translate(-50%,-50%);opacity:0;transition:opacity .6s;will-change:transform;
+  background:radial-gradient(circle,rgba(139,92,246,.12),rgba(34,211,238,.05) 45%,transparent 62%)}
+body:hover #spotlight{opacity:1}
+
+/* ---- sheen sweep on solid chips/buttons ---- */
+.chip.app,.btn.primary,.mail{position:relative;overflow:hidden}
+.chip.app::after,.btn.primary::after,.mail::after{content:'';position:absolute;top:0;left:-130%;width:55%;height:100%;
+  pointer-events:none;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);
+  transform:skewX(-18deg);transition:left .6s ease}
+.chip.app:hover::after,.btn.primary:hover::after,.mail:hover::after{left:140%}
+
+/* magnetic elements get a spring back */
+.btn,.mail,.navlinks a.cta{will-change:transform}
+.magnetic{transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms!important;transition-duration:.05s!important}
+  #spotlight,#dots{display:none}
+}

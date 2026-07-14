@@ -49,14 +49,6 @@ const APPS = [
     desc:"Binary, hexadecimal, and decimal side by side, with live bit toggling.",
     long:"BinaryHexCalc shows binary, hexadecimal, and decimal side by side and keeps them in sync as you type. Toggle individual bits, run bitwise operations, and switch word sizes — a fast, focused tool for programmers and students working close to the metal.",
     store:"https://apps.apple.com/us/app/binaryhexcalc/id6755499704" },
-  { name:"MentalPerformanceOS", cat:"Health & Fitness", accent:"#ec4899", icon:"MentalPerformanceOS", status:"soon",
-    desc:"EEG-guided focus and recovery training over the Versus headset.",
-    long:"MentalPerformanceOS turns EEG data from the Versus headset into guided focus and recovery training. Connect over Bluetooth, watch your brain state in real time, and play games that reward calm, sustained attention — on-device performance training for your mind.",
-    store:"", github:"" },
-  { name:"Perimeter", cat:"Privacy · in development", accent:"#8b5cf6", icon:null, glyph:"🛡️", status:"soon",
-    desc:"An on-device privacy firewall that shows what your apps send and blocks the trackers.",
-    long:"Perimeter is an on-device privacy firewall in development. It reveals exactly what your apps are sending, and where, then lets you block the trackers — all processed locally, with nothing logged to a server.",
-    store:"", github:"" },
 ];
 
 const svgApple = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 1c.1 1.2-.4 2.4-1.1 3.2-.8.9-2 1.6-3.2 1.5-.1-1.2.5-2.4 1.2-3.1C13.7 1.6 15 1 16 1zm3.6 16.4c-.6 1.4-.9 2-1.7 3.2-1.1 1.7-2.6 3.8-4.5 3.8-1.7 0-2.1-1.1-4.4-1.1s-2.8 1.1-4.4 1.1c-1.9 0-3.3-1.9-4.4-3.6C-1 16.4-.4 9.9 3 8c1.3-.7 2.6-.6 3.7-.6 1.2 0 2 .7 3.4.7 1.3 0 2.1-.7 3.6-.7 1.1 0 2.3.1 3.4.9-3 1.6-2.5 5.9.5 7.1z"/></svg>';

@@ -69,7 +69,7 @@ grid.innerHTML = APPS.map((a, i) => {
     links = `<span class="chip soon">In review</span>`;
   }
   return `<div class="card reveal ${['','d1','d2'][i%3]}" data-app="${i}" style="--a:${a.accent};cursor:pointer">
-    <div class="glow" style="background:${a.accent}"></div>
+    <div class="glow" style="--gc:${a.accent}"></div>
     <div class="top">${iconHTML}<div><h3>${a.name}</h3><div class="cat">${a.cat}</div></div></div>
     <div class="desc">${a.desc}</div>
     <div class="links">${links}<span class="chip more">Details →</span></div>
@@ -154,7 +154,7 @@ document.getElementById('osgrid').innerHTML = OSS.map((o, i) => {
   const cmd = o.pip
     ? `<div class="cmd"><code><span class="pfx">$</span> ${o.pip}</code><button class="copy" data-cmd="${o.pip}">Copy</button></div>` : '';
   return `<div class="card reveal ${['','d1','d2'][i%3]}" style="--a:${o.accent}">
-    <div class="glow" style="background:${o.accent}"></div>
+    <div class="glow" style="--gc:${o.accent}"></div>
     <div class="top">
       <div class="icon ph" style="color:${o.accent}">${o.glyph}</div>
       <div><h3>${o.name} <span class="lang" style="color:${o.accent};background:${o.accent}22">${o.lang}</span></h3>
@@ -188,7 +188,7 @@ const SERVICES = [
 ];
 document.getElementById('svcgrid').innerHTML = SERVICES.map((s, i) =>
   `<div class="card reveal ${['','d1','d2'][i%3]}" style="--a:${s.accent}">
-    <div class="glow" style="background:${s.accent}"></div>
+    <div class="glow" style="--gc:${s.accent}"></div>
     <div class="svc-ic" style="color:${s.accent};background:${s.accent}22">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${s.svg}</svg></div>
     <h3>${s.t}</h3>

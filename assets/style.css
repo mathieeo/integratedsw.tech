@@ -278,21 +278,6 @@ body:hover #spotlight{opacity:1}
 .accsw:hover{transform:scale(1.14)}
 .accreset{background:var(--panel);color:var(--dim);font-size:14px;display:grid;place-items:center}
 
-/* ---- app filter + search ----------------------------------------------- */
-.appfilter{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:34px}
-.afsearch{display:flex;align-items:center;gap:9px;padding:10px 15px;border-radius:13px;background:var(--panel);
-  border:1px solid var(--stroke);color:var(--dim);min-width:230px;transition:.2s}
-.afsearch:focus-within{border-color:var(--c2);color:var(--txt);box-shadow:0 0 0 4px color-mix(in srgb,var(--c2) 16%,transparent)}
-.afsearch input{background:none;border:none;outline:none;color:var(--txt);font:inherit;font-size:15px;font-weight:500;width:100%}
-.afsearch input::placeholder{color:var(--dim2)}
-.afchips{display:flex;gap:8px;flex-wrap:wrap}
-.afchip{padding:8px 14px;border-radius:11px;background:var(--panel);border:1px solid var(--stroke);
-  color:var(--dim);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;transition:.2s}
-.afchip:hover{color:var(--txt);border-color:var(--stroke2)}
-.afchip.on{color:var(--bg);background:var(--grad);border-color:transparent;box-shadow:0 6px 18px -4px color-mix(in srgb,var(--c2) 60%,transparent)}
-.card.filtered-out{display:none}
-.afempty{margin-top:30px;color:var(--dim);font-weight:600;text-align:center}
-
 /* ---- live App Store ratings -------------------------------------------- */
 .rating{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:12.5px;font-weight:600;color:var(--dim)}
 .rating b{color:var(--txt);font-weight:700}

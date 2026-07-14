@@ -48,35 +48,7 @@
     document.addEventListener('click', e => { if (!e.target.closest('.ntaccent')) accPop.classList.remove('open'); });
   }
 
-  /* ------------------------------------------------- App filter + search -- */
-  const grid = $('#appgrid'), search = $('#appSearch'), chipWrap = $('#catChips'), empty = $('#afEmpty');
-  if (grid && search && chipWrap) {
-    const cats = ['All', ...Array.from(new Set(apps.map(a => a.cat)))];
-    let activeCat = 'All';
-    chipWrap.innerHTML = cats.map((c, i) =>
-      `<button class="afchip${i === 0 ? ' on' : ''}" data-cat="${c}">${c}</button>`).join('');
-    const cards = $$('.card[data-app]', grid);
-    function apply() {
-      const q = search.value.trim().toLowerCase();
-      let shown = 0;
-      cards.forEach(card => {
-        const a = apps[+card.dataset.app];
-        const hitCat = activeCat === 'All' || a.cat === activeCat;
-        const hitQ = !q || (a.name + ' ' + a.cat + ' ' + a.desc).toLowerCase().includes(q);
-        const on = hitCat && hitQ;
-        card.classList.toggle('filtered-out', !on);
-        if (on) shown++;
-      });
-      if (empty) empty.hidden = shown !== 0;
-    }
-    chipWrap.addEventListener('click', e => {
-      const b = e.target.closest('.afchip'); if (!b) return;
-      activeCat = b.dataset.cat;
-      $$('.afchip', chipWrap).forEach(c => c.classList.toggle('on', c === b));
-      apply();
-    });
-    search.addEventListener('input', apply);
-  }
+  const grid = $('#appgrid');
 
   /* ------------------------------------------------ Live App Store ratings */
   // one JSONP call to the public iTunes Lookup API for every app with an id.

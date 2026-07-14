@@ -1,12 +1,14 @@
 /* Integrated Software Technologies — service worker
    Cache-first for the app shell so the site opens instantly and works offline.
    Bump CACHE when you change shell assets to force an update. */
-const CACHE = 'ist-v1';
+const CACHE = 'ist-v2';
 const SHELL = [
   '/',
   '/index.html',
   '/assets/style.css',
   '/assets/fonts.css',
+  '/assets/apps.js',
+  '/assets/notes.js',
   '/assets/app.js',
   '/assets/enhance.js',
   '/manifest.webmanifest'

@@ -48,6 +48,7 @@
     <a href="#apps">Apps</a>
     <a href="#opensource">Open Source</a>
     <a href="#services">Services</a>
+    <a href="#journal">Journal</a>
     <a href="#about">About</a>
     <a class="cta" href="#contact">Get in touch</a>
   </div>
@@ -98,6 +99,24 @@
   <div class="grid" id="svcgrid"></div>
 </section>
 
+<section id="reviews" hidden>
+  <div class="reveal">
+    <div class="eyebrow">Word of mouth</div>
+    <div class="h2">What people are saying</div>
+    <p class="lead">Fresh from the App Store.</p>
+  </div>
+  <div class="grid" id="reviewgrid"></div>
+</section>
+
+<section id="journal">
+  <div class="reveal">
+    <div class="eyebrow">Build notes</div>
+    <div class="h2">Journal</div>
+    <p class="lead">Short write-ups on how these apps actually work — the decisions, the constraints, the on-device engineering.</p>
+  </div>
+  <div class="grid" id="journalgrid"></div>
+</section>
+
 <section id="about">
   <div class="reveal">
     <div class="eyebrow">Who we are</div>
@@ -130,6 +149,42 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
         (818) 671-9866</a>
     </div>
+    <form class="inquiry reveal d3" id="inquiry" novalidate>
+      <div class="frow">
+        <label>Your name<input name="name" type="text" autocomplete="name" placeholder="Jane Doe"></label>
+        <label>Email<input name="email" type="email" autocomplete="email" placeholder="jane@example.com"></label>
+      </div>
+      <div class="frow">
+        <label>What do you need?
+          <select name="service">
+            <option>iOS &amp; Android app</option>
+            <option>Website</option>
+            <option>PC / Mac desktop app</option>
+            <option>A game</option>
+            <option>Networking / Wi-Fi</option>
+            <option>IT support</option>
+            <option>Something else</option>
+          </select></label>
+        <label>Budget
+          <select name="budget">
+            <option>Not sure yet</option>
+            <option>Under $1k</option>
+            <option>$1k–$5k</option>
+            <option>$5k–$15k</option>
+            <option>$15k+</option>
+          </select></label>
+        <label>Timeline
+          <select name="timeline">
+            <option>Flexible</option>
+            <option>ASAP</option>
+            <option>2–4 weeks</option>
+            <option>1–3 months</option>
+          </select></label>
+      </div>
+      <label>Project details<textarea name="message" rows="4" placeholder="Tell me what you're trying to build or fix…"></textarea></label>
+      <button class="btn primary" type="submit">Send inquiry →</button>
+      <p class="fnote">Opens your email app with everything filled in — no accounts, no tracking, nothing stored.</p>
+    </form>
   </div>
 </section>
 
@@ -138,6 +193,8 @@
   <span>© 2026 · Built on-device, in Glendale, CA · integratedsw.tech</span>
 </footer>
 
+<script src="assets/apps.js"></script>
+<script src="assets/notes.js"></script>
 <script src="assets/app.js"></script>
 <script src="assets/enhance.js"></script>
 <script>/* failsafe: reveal anything not yet shown, even if the main script hiccups */

@@ -7,6 +7,7 @@
 (function () {
   'use strict';
   const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const apps = (typeof APPS !== 'undefined') ? APPS : [];
   const grid = $('#appgrid');
 
@@ -25,11 +26,20 @@
     if (r.count > 0) return `<span class="rating">${starHTML(r.avg)}<b>${r.avg.toFixed(1)}</b><span class="rc">${r.count.toLocaleString()} ratings</span></span>`;
     return `<span class="rating new">${r.price || 'On the App Store'}</span>`;
   }
+  window.__appmeta = {}; // id -> {version,updated,size,minOs,genre,price}
   window.__istRatings = function (data) {
     (data && data.results || []).forEach(r => {
       window.__ratings[r.trackId] = {
         avg: +r.averageUserRating || 0,
         count: +r.userRatingCount || 0,
+        price: r.formattedPrice || (r.price === 0 ? 'Free' : '')
+      };
+      window.__appmeta[r.trackId] = {
+        version: r.version || '',
+        updated: r.currentVersionReleaseDate ? new Date(r.currentVersionReleaseDate) : null,
+        size: +r.fileSizeBytes ? Math.round(+r.fileSizeBytes / 1048576) + ' MB' : '',
+        minOs: r.minimumOsVersion ? 'iOS ' + r.minimumOsVersion + '+' : '',
+        genre: r.primaryGenreName || '',
         price: r.formattedPrice || (r.price === 0 ? 'Free' : '')
       };
     });
@@ -56,6 +66,17 @@
         if (r) {
           const cat = document.querySelector('#appmodal .mhead .cat');
           if (cat && !cat.parentNode.querySelector('.rating')) cat.insertAdjacentHTML('afterend', badge(r));
+        }
+        const m = id && window.__appmeta[id], links = document.querySelector('#appmodal .mlinks');
+        if (m && links && !document.querySelector('#appmodal .mmeta')) {
+          const bits = [
+            m.price && `<span>${m.price}</span>`,
+            m.version && `<span>Version ${m.version}</span>`,
+            m.updated && `<span>Updated ${m.updated.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>`,
+            m.size && `<span>${m.size}</span>`,
+            m.minOs && `<span>${m.minOs}</span>`
+          ].filter(Boolean).join('<i>·</i>');
+          if (bits) links.insertAdjacentHTML('afterend', `<div class="mmeta">${bits}</div>`);
         }
       } catch (e) {}
     };
@@ -120,6 +141,98 @@
     const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     kk = (k === KONAMI[kk]) ? kk + 1 : (k === KONAMI[0] ? 1 : 0);
     if (kk === KONAMI.length) { kk = 0; openTerm(); }
+  });
+
+  /* ---------------------------------------------------- reveal + card FX -- */
+  // app.js only observed .reveal elements present at load; animate any we add
+  // dynamically, and give new .card elements the same tilt/glow behaviour.
+  const revIO = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); revIO.unobserve(e.target); } });
+  }, { threshold: .12 });
+  const revealIn = scope => $$('.reveal:not(.in)', scope || document).forEach(el => revIO.observe(el));
+  function bindCard(card) {
+    card.addEventListener('pointermove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      card.style.transform = `translateY(-6px) perspective(800px) rotateX(${-y * 6}deg) rotateY(${x * 8}deg)`;
+      const g = card.querySelector('.glow');
+      if (g) { g.style.left = (e.clientX - r.left - 110) + 'px'; g.style.top = (e.clientY - r.top - 110) + 'px'; g.style.right = 'auto'; }
+    });
+    card.addEventListener('pointerleave', () => { card.style.transform = ''; });
+  }
+
+  /* -------------------------------------------------------------- Journal -- */
+  const jgrid = $('#journalgrid'), notes = (typeof NOTES !== 'undefined') ? NOTES : [];
+  if (jgrid && notes.length) {
+    const fmt = d => new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    jgrid.innerHTML = notes.map((n, i) => `
+      <a class="card note reveal ${['', 'd1', 'd2'][i % 3]}" href="notes/${n.slug}/" style="--a:var(--c2)">
+        <div class="glow" style="--gc:var(--c2)"></div>
+        <div class="ntop"><span class="ndate">${fmt(n.date)}</span>
+          <span class="ntags">${(n.tags || []).slice(0, 2).map(t => `<span>${t}</span>`).join('')}</span></div>
+        <h3>${n.title}</h3>
+        <div class="desc">${n.dek}</div>
+        <span class="chip more">Read →</span>
+      </a>`).join('');
+    $$('.card.note', jgrid).forEach(bindCard);
+    revealIn(jgrid);
+  }
+
+  /* ------------------------------------------------ Testimonials (live) --- */
+  const rgrid = $('#reviewgrid'), rsec = $('#reviews');
+  const reviewIds = apps.filter(a => a.store).map(a => ({ name: a.name, id: idOf(a.store) })).filter(x => x.id);
+  const collected = [];
+  let pending = reviewIds.length, reviewsRendered = false;
+  function reviewsDone() {
+    if (reviewsRendered || !rgrid || !rsec) return;
+    reviewsRendered = true;
+    if (!collected.length) return; // no reviews yet → section stays hidden
+    rgrid.innerHTML = collected.slice(0, 6).map((rv, i) => `
+      <div class="card review reveal ${['', 'd1', 'd2'][i % 3]}" style="--a:var(--c2)">
+        <div class="glow" style="--gc:var(--c2)"></div>
+        <div class="stars big" aria-hidden="true">${'★'.repeat(rv.rating)}${'☆'.repeat(5 - rv.rating)}</div>
+        <div class="rvtitle">${rv.title}</div>
+        <div class="desc">“${rv.text}”</div>
+        <div class="rvby">${rv.author} · <span>${rv.app}</span></div>
+      </div>`).join('');
+    rsec.hidden = false;
+    $$('.card.review', rgrid).forEach(bindCard);
+    revealIn(rgrid);
+  }
+  reviewIds.forEach(({ name, id }) => {
+    const cb = '__rev_' + id;
+    window[cb] = function (feed) {
+      try {
+        ((feed && feed.feed && feed.feed.entry) || []).forEach(e => {
+          if (!e['im:rating']) return; // skip the app-info entry
+          collected.push({
+            app: name, rating: Math.max(1, Math.min(5, +e['im:rating'].label || 5)),
+            title: (e.title && e.title.label || '').slice(0, 80),
+            text: (e.content && e.content.label || '').replace(/\s+/g, ' ').slice(0, 200),
+            author: (e.author && e.author.name && e.author.name.label) || 'App Store user'
+          });
+        });
+      } catch (e) {}
+      if (--pending <= 0) reviewsDone();
+    };
+    const s = document.createElement('script');
+    s.src = `https://itunes.apple.com/us/rss/customerreviews/id=${id}/sortBy=mostRecent/json?callback=${cb}`;
+    s.onerror = () => { if (--pending <= 0) reviewsDone(); };
+    document.head.appendChild(s);
+  });
+  if (reviewIds.length) setTimeout(reviewsDone, 5000); // fallback if feeds hang
+
+  /* --------------------------------------------------------- Inquiry form */
+  const form = $('#inquiry');
+  if (form) form.addEventListener('submit', e => {
+    e.preventDefault();
+    const f = new FormData(form), g = k => (f.get(k) || '').toString().trim();
+    const subject = `Project inquiry: ${g('service')}`;
+    const body =
+      `Name: ${g('name')}\nEmail: ${g('email')}\n\n` +
+      `Service: ${g('service')}\nBudget: ${g('budget')}\nTimeline: ${g('timeline')}\n\n` +
+      `Details:\n${g('message') || '(none provided)'}\n`;
+    location.href = `mailto:matt@integratedsw.tech?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   });
 
   /* --------------------------------------------------- Rich results: apps -- */

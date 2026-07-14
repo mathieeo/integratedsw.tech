@@ -1,0 +1,31 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Why WaveVision exports stay dry — Integrated Software Technologies</title>
+<meta name="description" content="Reverb makes the app sound gorgeous — and quietly destroys the thing that lets a picture survive a round trip.">
+<link rel="canonical" href="https://integratedsw.tech/notes/wavevision-dry-exports/">
+<meta name="theme-color" content="#06070d">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Integrated Software Technologies">
+<meta property="og:title" content="Why WaveVision exports stay dry — Integrated Software Technologies"><meta property="og:description" content="Reverb makes the app sound gorgeous — and quietly destroys the thing that lets a picture survive a round trip.">
+<meta property="og:url" content="https://integratedsw.tech/notes/wavevision-dry-exports/"><meta property="og:image" content="https://integratedsw.tech/assets/og.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Why WaveVision exports stay dry — Integrated Software Technologies"><meta name="twitter:image" content="https://integratedsw.tech/assets/og.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%238b5cf6'/><text x='50' y='68' font-size='54' font-family='sans-serif' font-weight='700' fill='%230b0b12' text-anchor='middle'>i</text></svg>">
+<link rel="stylesheet" href="/assets/fonts.css"><link rel="stylesheet" href="/assets/style.css">
+</head><body>
+<div id="bg"><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div></div>
+<nav id="nav">
+  <a class="brand" href="/"><span class="mark">i</span><span>Integrated Software<br><small>integratedsw.tech</small></span></a>
+  <div class="navlinks"><a href="/#apps">Apps</a><a href="/#journal">Journal</a><a href="/press/">Press</a><a class="cta" href="/#contact">Get in touch</a></div>
+</nav><main class="subpage">
+<a class="backlink" href="/#journal">← Journal</a>
+<article class="prose"><h1>Why WaveVision exports stay dry</h1>
+<div class="meta">July 6, 2026 · WaveVision · DSP · Audio</div>
+<p>WaveVision turns an image into sound and back again. The decode path runs an on-device FFT and finds spectral peaks: each peak is a pixel's frequency, and its height is the pixel's brightness. That only works if the fundamental stays the tallest thing in every bin.</p>
+    <p>Reverb smears energy across time and frequency. It sounds wonderful on playback, but a reverb tail bleeds one column's tone into the next and buries the peaks the decoder is hunting for. So the rule in the codebase is blunt: <b>reverb is a playback-only effect</b>. Exports — the <code>.wvision</code> files and rendered video — are always dry. Add a wet path to an export and images stop decoding.</p>
+    <p>The same discipline shows up elsewhere: waveforms are band-limited additive synthesis with harmonics capped below 18 kHz, so the fundamental always dominates. Pretty is a playback concern; correct is an export concern. Keeping those two apart is most of what makes the round trip reliable.</p></article>
+</main>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Why WaveVision exports stay dry","datePublished":"2026-07-07","description":"Reverb makes the app sound gorgeous — and quietly destroys the thing that lets a picture survive a round trip.","url":"https://integratedsw.tech/notes/wavevision-dry-exports/","keywords":"WaveVision, DSP, Audio","author":{"@type":"Person","name":"Matthew Mesropian"},"publisher":{"@type":"Organization","name":"Integrated Software Technologies Inc."}}</script><footer><a class="brand" href="/"><span class="mark">i</span> Integrated Software Technologies Inc.</a>
+<span>© 2026 · Built on-device, in Glendale, CA · integratedsw.tech</span></footer>
+<script>addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('scrolled',scrollY>30)})</script>
+</body></html>

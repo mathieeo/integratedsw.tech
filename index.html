@@ -30,6 +30,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%238b5cf6'/><text x='50' y='68' font-size='54' font-family='sans-serif' font-weight='700' fill='%230b0b12' text-anchor='middle'>i</text></svg>">
 <link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="assets/cinema.css">
 <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
 
 <!-- Google rich results: who we are -->
@@ -62,6 +63,7 @@
     <a class="btn primary" href="#apps">Explore the apps →</a>
     <a class="btn ghost" href="#contact">Contact</a>
   </div>
+  <div class="herostage reveal d3" id="herostage"></div>
   <div class="floaticons reveal d3" id="floaticons"></div>
   <div class="scrollcue">
     <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14m-6-6 6 6 6-6"/></svg>
@@ -71,6 +73,24 @@
 <section id="stats">
   <div class="stats" id="statgrid"></div>
 </section>
+
+<!-- THE SHOWCASE. A tall track supplies the scroll distance; the stage inside it
+     is sticky, so the phone holds still while you scroll THROUGH the section and
+     the scroll wheel becomes a scrub bar. This is the one genuinely Apple-shaped
+     idea on the page, and it is the reason the site now has a middle. -->
+<section id="showcase" aria-label="App showcase">
+  <div class="sc-track">
+    <div class="sc-stage">
+      <div class="sc-copy">
+        <div class="sc-eyebrow">Scroll to explore</div>
+      </div>
+      <div class="sc-phonewrap"></div>
+      <div class="sc-dots" role="tablist" aria-label="Choose an app"></div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" id="marquee" aria-hidden="true"></div>
 
 <section id="apps">
   <div class="reveal">
@@ -197,6 +217,7 @@
 <script src="assets/notes.js"></script>
 <script src="assets/app.js"></script>
 <script src="assets/enhance.js"></script>
+<script src="assets/cinema.js"></script>
 <script>/* failsafe: reveal anything not yet shown, even if the main script hiccups */
 window.addEventListener('load',function(){setTimeout(function(){
   document.querySelectorAll('.reveal:not(.in)').forEach(function(e){e.classList.add('in')});},2200)});</script>

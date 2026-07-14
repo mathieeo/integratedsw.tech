@@ -1,0 +1,274 @@
+/* ============================================================================
+   Integrated Software Technologies — the cinematic layer
+   ----------------------------------------------------------------------------
+   The site already had plenty of DECORATION (tilt, spotlight, a constellation).
+   What it did not have is the thing that actually makes Apple's pages feel like
+   Apple's pages: SCROLL-DRIVEN NARRATIVE. On apple.com the scroll wheel is not a
+   way to move down the page — it is the transport control for a film. You scrub
+   it, and the product turns, the screen changes, the words arrive.
+
+   That is what this file adds, and it is deliberately built on three ideas:
+
+   1. NOTHING ANIMATES ON A TIMER. Everything is tied either to entering the
+      viewport or to a scroll position, so the page can never be "still playing"
+      an animation you have already scrolled past.
+   2. IT MUST FEEL AS GOOD ON A PHONE. Hover is a desktop luxury; scroll is
+      universal. Every effect here is driven by scroll, so the phone gets the
+      same film — not a stripped-down version of it.
+   3. IT MUST BE SWITCHOFF-ABLE. `prefers-reduced-motion` kills all of it and
+      leaves a clean, complete, perfectly usable page. Motion sickness is not an
+      edge case.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- easing --
+   Apple's motion signature is not "smooth", it is WEIGHTED: things start fast
+   and settle slowly, like a physical object with mass being placed down. A
+   linear or symmetric ease reads as cheap no matter how long you spend on it. */
+:root{
+  --ease-out-expo:cubic-bezier(.16,1,.3,1);
+  --ease-out-quint:cubic-bezier(.22,1,.36,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+}
+
+/* ========================================================== SPLIT HEADLINE ==
+   The h1 is broken into words and each one lifts, unblurs and settles. The
+   BLUR is the important part: text that merely slides in reads as a slide; text
+   that comes INTO FOCUS reads as an object arriving from somewhere. */
+.split{display:inline-block}
+.split .w{display:inline-block;white-space:pre;
+  opacity:0;filter:blur(10px);transform:translateY(.34em);
+  transition:opacity .62s var(--ease-out-expo),filter .62s var(--ease-out-expo),
+             transform .72s var(--ease-out-expo);
+  transition-delay:var(--wd,0s)}
+/* No 3-D rotation on the words. It looks impressive in isolation and reads as a
+   gimmick in a headline — and the headline is the LCP element, so every extra
+   millisecond of choreography is a millisecond the visitor stares at nothing. */
+.split.in .w{opacity:1;filter:blur(0);transform:none}
+
+/* ===================================================== HERO DEVICE (float) ==
+   A real phone, floating, catching the light. It drifts with the scroll and
+   tilts a little toward the pointer — parallax, which is the cheapest possible
+   way to say "this page has depth". */
+.herostage{position:relative;display:grid;place-items:center;margin-top:34px;
+  perspective:1400px}
+
+/* THE SIZING TRAP. A phone is 2.17x taller than it is wide, so a "modest" 300px
+   width is a 650px column — which on a 844px phone screen swallows the viewport
+   whole and shoves the copy off the bottom. So the device is sized against the
+   VIEWPORT HEIGHT, not a fixed width, and it can never outgrow its stage. */
+.phone{position:relative;width:var(--pw,260px);aspect-ratio:9/19.5;
+  border-radius:calc(var(--pw,260px) * .15);
+  background:linear-gradient(150deg,#2a2d3d,#0d0f18 40%,#1a1d29);
+  padding:calc(var(--pw,260px) * .034);
+  box-shadow:
+    0 2px 4px rgba(255,255,255,.10) inset,
+    0 -1px 3px rgba(255,255,255,.06) inset,
+    0 40px 80px -20px rgba(0,0,0,.85),
+    0 0 120px -30px rgba(139,92,246,.55);
+  transform-style:preserve-3d;
+  will-change:transform}
+.phone::after{content:'';position:absolute;left:50%;top:calc(var(--pw,260px) * .034 + 2px);
+  transform:translateX(-50%);
+  width:32%;height:calc(var(--pw,260px) * .075);
+  background:#05060a;border-radius:0 0 14px 14px;z-index:3}
+.herostage .phone{--pw:min(240px,26svh)}
+.sc-phonewrap .phone{--pw:min(290px,32svh)}
+@media(max-width:900px){
+  .herostage .phone{--pw:min(196px,22svh)}
+  /* Measured, not guessed: at 23svh the phone is 423px, the copy is 334px, and
+     the two of them plus the padding come to 884px inside an 844px stage — so
+     the last line of every description was clipped and the dots sat on top of
+     it. 20svh brings the device to 366px and the whole slide fits with room. */
+  .sc-phonewrap .phone{--pw:min(176px,19svh)}
+}
+.phone .screen{position:relative;width:100%;height:100%;overflow:hidden;
+  border-radius:calc(var(--pw,260px) * .118);background:#05060a}
+.phone .screen img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:0;transform:scale(1.06);
+  transition:opacity .7s var(--ease-out-quint),transform 1.1s var(--ease-out-quint)}
+.phone .screen img.on{opacity:1;transform:none}
+/* The glass. A screen with no reflection on it is a picture of a screen. */
+.phone .glare{position:absolute;inset:0;z-index:2;pointer-events:none;
+  border-radius:calc(var(--pw,260px) * .118);
+  background:linear-gradient(115deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,.05) 22%,
+             transparent 42%,transparent 100%);
+  mix-blend-mode:screen}
+
+/* ======================================================= THE SHOWCASE FILM ==
+   The centrepiece, and the one genuinely Apple-shaped idea here: a tall track
+   that gives us scroll DISTANCE, and inside it a sticky stage that stays put
+   while you scroll THROUGH it. The phone never moves; its screen changes, the
+   copy changes, and the scroll wheel is the scrub bar. */
+#showcase{position:relative;padding:0}
+.sc-track{position:relative}
+.sc-stage{position:sticky;top:0;height:100svh;display:grid;align-items:center;
+  grid-template-columns:1fr 1fr;gap:clamp(20px,5vw,80px);
+  padding:0 clamp(18px,6vw,90px);overflow:hidden}
+
+.sc-copy{position:relative;max-width:520px;justify-self:end}
+.sc-eyebrow{font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim2);margin-bottom:14px}
+.sc-slide{position:absolute;inset:auto 0 auto 0;opacity:0;pointer-events:none;
+  transform:translateY(26px);filter:blur(8px);
+  transition:opacity .55s var(--ease-out-quint),transform .7s var(--ease-out-quint),
+             filter .55s var(--ease-out-quint)}
+.sc-slide.on{opacity:1;transform:none;filter:none;pointer-events:auto;position:relative}
+.sc-slide h3{font-family:var(--head);font-size:clamp(2rem,4.4vw,3.4rem);line-height:1.02;
+  letter-spacing:-.03em;margin-bottom:14px}
+.sc-slide .sc-cat{display:inline-block;font-size:12.5px;font-weight:700;padding:5px 11px;
+  border-radius:999px;margin-bottom:16px}
+.sc-slide p{color:var(--dim);font-size:1.05rem;line-height:1.65;margin-bottom:20px}
+
+.sc-phonewrap{position:relative;display:grid;place-items:center;perspective:1600px}
+/* A pool of light under the phone, tinted with the current app's accent. It is
+   the single cheapest thing on this page and it does more work than anything
+   else: it makes the device feel LIT rather than pasted on. */
+.sc-phonewrap::before{content:'';position:absolute;width:min(72vw,560px);aspect-ratio:1;
+  border-radius:50%;filter:blur(80px);opacity:.62;
+  background:radial-gradient(circle,var(--a,#8b5cf6),transparent 62%);
+  transition:background .8s var(--ease-out-quint);z-index:-1}
+
+.sc-dots{position:absolute;right:clamp(10px,2.4vw,26px);top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:9px;z-index:4}
+.sc-dots button{width:8px;height:8px;padding:0;border:0;border-radius:999px;cursor:pointer;
+  background:rgba(255,255,255,.2);transition:.35s var(--ease-out-quint)}
+.sc-dots button.on{background:var(--a,#8b5cf6);height:26px;box-shadow:0 0 14px var(--a,#8b5cf6)}
+
+/* Mobile: the film still plays — the phone just sits above the words, and the
+   whole thing is scaled to fit a hand. Do NOT drop the pinned section on
+   mobile: it is the best thing on the page, and phones are where it gets seen. */
+@media(max-width:900px){
+  .sc-stage{grid-template-columns:1fr;grid-template-rows:auto auto;gap:16px;
+    align-content:center;padding:88px clamp(18px,6vw,40px) 52px}
+  .sc-copy{justify-self:center;text-align:center;max-width:560px;order:2}
+  .sc-phonewrap{order:1}
+  .sc-slide h3{font-size:clamp(1.7rem,7vw,2.4rem)}
+  .sc-slide p{font-size:.98rem}
+  .sc-dots{right:auto;left:50%;bottom:14px;top:auto;
+    transform:translateX(-50%);flex-direction:row}
+  .sc-dots button.on{height:8px;width:26px}
+}
+
+/* ============================================================== MARQUEE ====
+   An endless belt of the real app icons. Duplicated once and translated by
+   exactly -50%, so the seam is mathematically invisible — the usual mistake is
+   to translate by a guessed pixel amount and get a visible hitch every lap. */
+.marquee{position:relative;overflow:hidden;padding:26px 0;
+  mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.mq-belt{display:flex;gap:26px;width:max-content;animation:mq 34s linear infinite}
+.marquee:hover .mq-belt{animation-play-state:paused}
+.mq-belt img{width:56px;height:56px;border-radius:14px;
+  box-shadow:0 8px 24px -8px rgba(0,0,0,.7);opacity:.72;
+  transition:.35s var(--ease-spring)}
+.mq-belt img:hover{opacity:1;transform:translateY(-6px) scale(1.12)}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+/* ======================================================== SECTION HEADINGS ==
+   A wipe, not a fade. The line sweeps out from the left as the heading lands,
+   which gives a section a sense of being DEALT rather than just appearing. */
+.h2{position:relative}
+.reveal.in .h2::after,.reveal .h2.in::after{transform:scaleX(1)}
+.h2::after{content:'';position:absolute;left:0;bottom:-10px;height:2px;width:64px;
+  background:var(--grad);transform:scaleX(0);transform-origin:0 50%;
+  transition:transform .9s .25s var(--ease-out-expo)}
+
+/* =========================================================== SCROLL DEPTH ==
+   Sections lift and unblur as they arrive, and the whole page has a very slight
+   parallax between the background and the content. Subtle enough that nobody
+   notices it; remove it and everything feels flat. */
+.reveal{opacity:0;transform:translateY(30px);filter:blur(6px);
+  transition:opacity .8s var(--ease-out-expo),transform .9s var(--ease-out-expo),
+             filter .8s var(--ease-out-expo)}
+.reveal.in{opacity:1;transform:none;filter:none}
+.reveal.d1{transition-delay:.09s}
+.reveal.d2{transition-delay:.18s}
+.reveal.d3{transition-delay:.27s}
+
+/* =============================================== TOP-OF-PAGE FIRST IMPRESSION
+   A short, quiet entrance. Not a loading screen — the content is already there,
+   it simply arrives with composure. */
+@keyframes navdrop{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+nav{animation:navdrop .9s var(--ease-out-expo) both}
+
+/* The scroll cue should fade out the moment you actually scroll — a hint that
+   is still nagging you after you have taken it is just clutter. */
+.scrollcue{transition:opacity .5s ease}
+body.scrolled .scrollcue{opacity:0;pointer-events:none}
+
+/* ================================================================ RESPECT ===
+   Everything above, off. The page stays complete and readable — this is not a
+   degraded experience, it is the same page without the film. */
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .split .w,.reveal{opacity:1!important;filter:none!important;transform:none!important;
+    transition:none!important}
+  .mq-belt{animation:none}
+  .sc-stage{position:static;height:auto;padding-top:60px;padding-bottom:60px}
+  .sc-track{height:auto!important}
+  .sc-slide{position:relative;opacity:1;transform:none;filter:none;margin-bottom:40px}
+  .phone .screen img{transition:none}
+  nav{animation:none}
+}
+
+/* ================================================== CARD SPOTLIGHT + TILT ==
+   A card is a physical surface with a light above it, and the two cues that say
+   so are a specular sheen that MOVES when you move, and a tilt.
+
+   The tilt is 3deg across the whole card — about a degree and a half either side
+   of centre. That is deliberately tiny: a big tilt is a party trick, it makes the
+   text unreadable while it moves, and it is the tell of a template. A degree and a
+   half is the amount you feel and do not consciously see. */
+/* The lift is a CUSTOM PROPERTY, not a second `transform`.
+   `style.css` already lifts a hovered card by -6px, and a `transform` in here would
+   simply overwrite that and throw the lift away — the classic way two stylesheets
+   quietly cancel each other. One transform, composed from parts. */
+.card,.card2{
+  --mx:50%; --my:50%; --tx:0deg; --ty:0deg; --lift:0px;
+  transform:perspective(900px) translateY(var(--lift))
+            rotateY(var(--tx)) rotateX(var(--ty));
+  transition:transform .5s var(--ease-out-expo),border-color .3s,box-shadow .5s}
+.card:hover,.card2:hover{--lift:-6px}
+.card::after,.card2::after{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  /* The sheen is the CARD'S OWN accent colour, not white. Every card on the page
+     is a different app with a different identity, and a white sheen would erase
+     all of it into the same glassy nothing. */
+  background:radial-gradient(320px circle at var(--mx) var(--my),
+    color-mix(in srgb,var(--a,#8b5cf6) 22%,transparent),transparent 60%);
+  opacity:0;transition:opacity .35s ease}
+.card:hover::after,.card2:hover::after{opacity:1}
+.card:hover,.card2:hover{box-shadow:0 30px 70px -30px rgba(0,0,0,.75)}
+
+/* ======================================================= MAGNETIC BUTTONS ==
+   The transform is written by JS on pointermove; all the stylesheet does is make
+   the RETURN spring, so letting go feels like letting go of something. */
+.btn.primary,.chip.app,.mail{
+  transition:transform .45s var(--ease-spring),box-shadow .3s,filter .3s}
+
+/* ============================================================ TAP THE PHONE ==
+   It presses. A thing that moves when you touch it is a thing that is alive, and
+   the whole page is an advertisement for people who make things that feel alive. */
+.phone{transition:transform .25s var(--ease-spring)}
+.phone.tapped{animation:tapPress .34s var(--ease-spring)}
+@keyframes tapPress{
+  0%{transform:scale(1)}
+  38%{transform:scale(.965)}
+  100%{transform:scale(1)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .card,.card2{transform:none!important;transition:none}
+  .card::after,.card2::after{display:none}
+  .btn.primary,.chip.app,.mail{transform:none!important}
+  .phone.tapped{animation:none}
+}
+
+/* The brand block wrapped onto two lines behind the CTA on a small phone. Give
+   it a smaller mark and let the tagline go when there is genuinely no room. */
+@media(max-width:520px){
+  .brand{font-size:16px;gap:8px}
+  .brand br{display:none}
+  .brand small{display:none}
+  .mark{width:30px;height:30px}
+}

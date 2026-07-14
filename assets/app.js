@@ -171,9 +171,10 @@ function countUp(el){
   const t = setInterval(()=>{ n += step; if(n>=to){n=to;clearInterval(t)} el.textContent = n+suf; }, 24);
 }
 
-// nav blur on scroll
-const nav = document.getElementById('nav');
-addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 30));
+// nav blur + scroll progress are driven from cinema.js's single rAF loop, so the
+// page has exactly ONE scroll listener that reads geometry. Independent scroll
+// handlers that each call getBoundingClientRect() are how a site that looks
+// expensive ends up feeling cheap on a mid-range phone.
 
 // card 3D tilt — every card (apps, open-source, services)
 document.querySelectorAll('.card').forEach(card => {
@@ -187,13 +188,8 @@ document.querySelectorAll('.card').forEach(card => {
   card.addEventListener('pointerleave', () => card.style.transform = '');
 });
 
-// scroll progress bar
-const progress = Object.assign(document.createElement('div'), { id: 'progress' });
-document.body.appendChild(progress);
-addEventListener('scroll', () => {
-  const h = document.documentElement;
-  progress.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
-}, { passive: true });
+// the progress bar element (driven from cinema.js's loop)
+document.body.appendChild(Object.assign(document.createElement('div'), { id: 'progress' }));
 
 // cursor spotlight
 const spot = Object.assign(document.createElement('div'), { id: 'spotlight' });

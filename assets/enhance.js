@@ -1,53 +1,13 @@
 /* ============================================================================
    Integrated Software Technologies — enhancements layer
-   Adds: theme toggle · accent picker · app filter/search · ⌘K command palette ·
-   terminal easter egg · live App Store ratings · PWA · rich results (JSON-LD).
-   Loads after app.js, so the app grid is already rendered. Reads the global
-   APPS array declared in app.js.
+   Adds: live App Store ratings · rich results (JSON-LD) · PWA · a hidden
+   terminal easter egg (Konami code). No visible UI chrome — the site stays
+   dark-first and uncluttered. Loads after app.js; reads its global APPS array.
    ============================================================================ */
 (function () {
   'use strict';
   const $ = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const apps = (typeof APPS !== 'undefined') ? APPS : [];
-  const root = document.documentElement;
-
-  /* ---------------------------------------------------------------- Theme -- */
-  const themeBtn = $('#themeToggle');
-  function setTheme(t, persist) {
-    root.setAttribute('data-theme', t);
-    const meta = $('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', t === 'light' ? '#f4f5fb' : '#06070d');
-    if (persist) { try { localStorage.setItem('ist-theme', t); } catch (e) {} }
-  }
-  themeBtn && themeBtn.addEventListener('click', () => {
-    const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    setTheme(next, true);
-  });
-
-  /* --------------------------------------------------------------- Accent -- */
-  const ACCENTS = [
-    ['#8b5cf6', 'Violet'], ['#22d3ee', 'Cyan'], ['#34d399', 'Emerald'],
-    ['#ec4899', 'Pink'], ['#f59e0b', 'Amber'], ['#3b82f6', 'Blue'], ['#f43f5e', 'Rose']
-  ];
-  const accPop = $('#accpop'), accBtn = $('#openAccent');
-  if (accPop) {
-    accPop.innerHTML = ACCENTS.map(([c, n]) =>
-      `<button class="accsw" role="menuitem" data-c="${c}" title="${n}" style="background:${c}"></button>`).join('') +
-      `<button class="accsw accreset" data-c="#8b5cf6" title="Reset">↺</button>`;
-    const applyAccent = (c, persist) => {
-      root.style.setProperty('--c2', c);
-      const dot = $('.accdot'); if (dot) dot.style.background = c;
-      if (persist) { try { localStorage.setItem('ist-accent', c); } catch (e) {} }
-    };
-    accPop.addEventListener('click', e => {
-      const b = e.target.closest('.accsw'); if (!b) return;
-      applyAccent(b.dataset.c, true); accPop.classList.remove('open');
-    });
-    accBtn.addEventListener('click', e => { e.stopPropagation(); accPop.classList.toggle('open'); });
-    document.addEventListener('click', e => { if (!e.target.closest('.ntaccent')) accPop.classList.remove('open'); });
-  }
-
   const grid = $('#appgrid');
 
   /* ------------------------------------------------ Live App Store ratings */
@@ -101,68 +61,8 @@
     };
   }
 
-  /* --------------------------------------------------- ⌘K command palette -- */
-  const pal = document.createElement('div');
-  pal.id = 'palette';
-  pal.innerHTML =
-    `<div class="palback"></div>
-     <div class="palbox" role="dialog" aria-modal="true" aria-label="Command palette">
-       <div class="palin"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-         <input id="palq" placeholder="Search apps and actions…" autocomplete="off"><span class="palesc">esc</span></div>
-       <div class="pallist" id="pallist"></div>
-     </div>`;
-  document.body.appendChild(pal);
-  const palList = $('#pallist'), palQ = $('#palq');
-
-  function commands() {
-    const items = [];
-    apps.forEach((a, i) => items.push({
-      kind: 'App', label: a.name, sub: a.cat, icon: a.icon,
-      run: () => { closePal(); (window.openApp || openApp)(i); }
-    }));
-    [['Apps', '#apps'], ['Open Source', '#opensource'], ['Services', '#services'], ['About', '#about'], ['Contact', '#contact']]
-      .forEach(([l, h]) => items.push({ kind: 'Go', label: l, sub: 'Jump to section', glyph: '↘', run: () => { closePal(); location.hash = h; } }));
-    items.push({ kind: 'Action', label: 'Toggle light / dark', sub: 'Theme', glyph: '◐', run: () => { themeBtn && themeBtn.click(); } });
-    items.push({ kind: 'Action', label: 'Email Matthew', sub: 'matt@integratedsw.tech', glyph: '✉', run: () => { closePal(); location.href = 'mailto:matt@integratedsw.tech'; } });
-    items.push({ kind: 'Action', label: 'Open source on GitHub', sub: 'github.com/mathieeo', glyph: '⌥', run: () => { closePal(); open('https://github.com/mathieeo', '_blank'); } });
-    items.push({ kind: 'Fun', label: 'Open terminal', sub: 'A little easter egg', glyph: '▸', run: () => { closePal(); openTerm(); } });
-    return items;
-  }
-  let palItems = [], palIdx = 0;
-  function renderPal(q) {
-    q = (q || '').trim().toLowerCase();
-    const all = commands();
-    palItems = !q ? all : all.filter(c => (c.label + ' ' + c.sub + ' ' + c.kind).toLowerCase().includes(q));
-    palIdx = 0;
-    palList.innerHTML = palItems.length ? palItems.map((c, i) => {
-      const ic = c.icon ? `<img src="assets/icons/${c.icon}.png" alt="">` : `<span class="palglyph">${c.glyph || '›'}</span>`;
-      return `<div class="palrow${i === 0 ? ' on' : ''}" data-i="${i}">${ic}
-        <span class="pallabel">${c.label}<small>${c.sub}</small></span><span class="palkind">${c.kind}</span></div>`;
-    }).join('') : `<div class="palnone">No matches for “${q}”</div>`;
-  }
-  function movePal(d) {
-    if (!palItems.length) return;
-    palIdx = (palIdx + d + palItems.length) % palItems.length;
-    $$('.palrow', palList).forEach((r, i) => r.classList.toggle('on', i === palIdx));
-    const el = $$('.palrow', palList)[palIdx]; el && el.scrollIntoView({ block: 'nearest' });
-  }
-  function openPal() { renderPal(''); pal.classList.add('open'); document.body.style.overflow = 'hidden'; setTimeout(() => palQ.focus(), 30); }
-  function closePal() { pal.classList.remove('open'); palQ.value = ''; document.body.style.overflow = ''; }
-  palQ.addEventListener('input', () => renderPal(palQ.value));
-  palList.addEventListener('mousemove', e => { const r = e.target.closest('.palrow'); if (r) { palIdx = +r.dataset.i; $$('.palrow', palList).forEach(x => x.classList.toggle('on', x === r)); } });
-  palList.addEventListener('click', e => { const r = e.target.closest('.palrow'); if (r) palItems[+r.dataset.i].run(); });
-  pal.addEventListener('click', e => { if (e.target.classList.contains('palback')) closePal(); });
-  $('#openPalette') && $('#openPalette').addEventListener('click', openPal);
-  addEventListener('keydown', e => {
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); pal.classList.contains('open') ? closePal() : openPal(); return; }
-    if (!pal.classList.contains('open')) return;
-    if (e.key === 'Escape') { e.preventDefault(); closePal(); }
-    else if (e.key === 'ArrowDown') { e.preventDefault(); movePal(1); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); movePal(-1); }
-    else if (e.key === 'Enter') { e.preventDefault(); palItems[palIdx] && palItems[palIdx].run(); }
-  });
-
   /* --------------------------------------------------- Terminal easter egg */
+  // hidden: only appears if you enter the Konami code. No visible trigger.
   let term, termBody, termInput;
   function buildTerm() {
     term = document.createElement('div');
@@ -187,12 +87,11 @@
   }
   function print(html, cls) { const l = document.createElement('div'); l.className = 'terml ' + (cls || ''); l.innerHTML = html; termBody.appendChild(l); termBody.scrollTop = termBody.scrollHeight; }
   const TCMD = {
-    help: () => print('Commands: <b>ls</b>, <b>open</b> &lt;app&gt;, <b>about</b>, <b>contact</b>, <b>theme</b>, <b>whoami</b>, <b>sudo</b>, <b>clear</b>, <b>exit</b>'),
+    help: () => print('Commands: <b>ls</b>, <b>open</b> &lt;app&gt;, <b>about</b>, <b>contact</b>, <b>whoami</b>, <b>sudo</b>, <b>clear</b>, <b>exit</b>'),
     ls: () => print(apps.map(a => `<span class="tapp">${a.name.replace(/\s/g, '')}</span>`).join('  ')),
     about: () => print('Integrated Software Technologies Inc. — a one-person iOS studio. Native, on-device, no tracking. Built by Matthew Mesropian in Glendale, CA.'),
     contact: () => print('matt@integratedsw.tech · (818) 671-9866'),
     whoami: () => print('guest — but you clearly know your way around a keyboard.'),
-    theme: () => { themeBtn && themeBtn.click(); print('theme toggled → ' + root.getAttribute('data-theme')); },
     sudo: () => print('Nice try. You already have root — this is your browser. 😎', 'ok'),
     clear: () => { termBody.innerHTML = ''; },
     exit: () => closeTerm(),
@@ -215,11 +114,9 @@
   function openTerm() { if (!term) buildTerm(); term.classList.add('open'); setTimeout(() => termInput.focus(), 60); }
   function closeTerm() { term && term.classList.remove('open'); }
 
-  // Konami code → terminal
   const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
   let kk = 0;
   addEventListener('keydown', e => {
-    if (pal.classList.contains('open')) return;
     const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     kk = (k === KONAMI[kk]) ? kk + 1 : (k === KONAMI[0] ? 1 : 0);
     if (kk === KONAMI.length) { kk = 0; openTerm(); }

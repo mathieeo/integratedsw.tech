@@ -117,7 +117,7 @@ section{padding:clamp(70px,10vw,130px) clamp(18px,5vw,64px);max-width:1200px;mar
 .card .desc{margin:16px 0 18px;color:var(--dim);font-size:14.5px;min-height:44px}
 .card .links{display:flex;gap:9px;flex-wrap:wrap}
 .chip{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:11px;font-size:13.5px;font-weight:600;transition:.2s}
-.chip.app{background:var(--txt);color:#0b0b12}
+.chip.app{background:var(--txt);color:var(--bg)}
 .chip.app:hover{filter:brightness(.92);transform:translateY(-1px)}
 .chip.gh{background:var(--panel);border:1px solid var(--stroke2);color:var(--txt)}
 .chip.gh:hover{background:rgba(255,255,255,.08)}
@@ -228,3 +228,138 @@ body:hover #spotlight{opacity:1}
 #lightbox img{max-width:min(460px,90vw);max-height:92vh;border-radius:26px;border:1px solid var(--stroke2);
   box-shadow:0 40px 120px rgba(0,0,0,.7);transform:scale(.92);transition:.3s cubic-bezier(.2,.8,.2,1)}
 #lightbox.open img{transform:none}
+
+/* ==========================================================================
+   ENHANCEMENTS — theme · accent · filter · palette · terminal · ratings
+   ========================================================================== */
+
+/* ---- light theme -------------------------------------------------------- */
+:root[data-theme=light]{
+  --bg:#f5f6fc; --bg2:#ffffff;
+  --panel:rgba(12,16,40,.04);
+  --stroke:rgba(12,18,45,.10); --stroke2:rgba(12,18,45,.17);
+  --txt:#0d1020; --dim:#525a76; --dim2:#9aa2ba;
+}
+:root[data-theme=light] #bg{background:
+  radial-gradient(1200px 700px at 80% -5%,rgba(139,92,246,.14),transparent 60%),
+  radial-gradient(1000px 620px at -5% 105%,rgba(34,211,238,.12),transparent 60%),var(--bg)}
+:root[data-theme=light] .blob{opacity:.28}
+:root[data-theme=light] .blob.c{opacity:.18}
+:root[data-theme=light] #bg::after{opacity:.05;background-image:radial-gradient(rgba(20,25,60,.5) .5px,transparent .5px)}
+:root[data-theme=light] nav.scrolled{background:rgba(255,255,255,.72)}
+:root[data-theme=light] .card .icon,:root[data-theme=light] .floaticons img,
+:root[data-theme=light] .micon{box-shadow:0 8px 22px rgba(20,25,60,.18)}
+:root[data-theme=light] ::selection{background:rgba(139,92,246,.22)}
+:root[data-theme=light] .btn.ghost:hover{background:rgba(12,18,45,.06)}
+:root[data-theme=light] .chip.gh:hover{background:rgba(12,18,45,.06)}
+:root[data-theme=light] .mback{background:rgba(230,232,245,.7)}
+:root[data-theme=light] ::-webkit-scrollbar-thumb{background:rgba(12,18,45,.18)}
+
+/* ---- nav tools (search / accent / theme) ------------------------------- */
+.navtools{display:flex;align-items:center;gap:8px;margin-left:12px}
+.ntbtn{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 11px;border-radius:11px;
+  background:var(--panel);border:1px solid var(--stroke);color:var(--dim);cursor:pointer;transition:.2s;font:inherit}
+.ntbtn:hover{color:var(--txt);border-color:var(--stroke2);background:rgba(150,150,180,.10)}
+.ntsearch .kbd{font-size:11px;font-weight:700;letter-spacing:.02em;padding:2px 6px;border-radius:6px;
+  border:1px solid var(--stroke2);color:var(--dim)}
+@media(max-width:560px){.ntsearch .kbd{display:none}}
+.themeToggle,.ntbtn svg{display:block}
+.ic-moon{display:none}
+:root[data-theme=light] #themeToggle .ic-sun{display:none}
+:root[data-theme=light] #themeToggle .ic-moon{display:block}
+.accdot{width:16px;height:16px;border-radius:50%;box-shadow:0 0 0 2px var(--bg),0 0 10px -1px var(--c2)}
+.ntaccent{position:relative}
+.accpop{position:absolute;top:46px;right:0;display:none;gap:8px;padding:10px;border-radius:14px;
+  background:var(--bg2);border:1px solid var(--stroke2);box-shadow:0 22px 50px rgba(0,0,0,.35);z-index:60;
+  grid-template-columns:repeat(4,1fr)}
+.accpop.open{display:grid}
+.accsw{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:.15s;
+  outline:1px solid var(--stroke2)}
+.accsw:hover{transform:scale(1.14)}
+.accreset{background:var(--panel);color:var(--dim);font-size:14px;display:grid;place-items:center}
+
+/* ---- app filter + search ----------------------------------------------- */
+.appfilter{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:34px}
+.afsearch{display:flex;align-items:center;gap:9px;padding:10px 15px;border-radius:13px;background:var(--panel);
+  border:1px solid var(--stroke);color:var(--dim);min-width:230px;transition:.2s}
+.afsearch:focus-within{border-color:var(--c2);color:var(--txt);box-shadow:0 0 0 4px color-mix(in srgb,var(--c2) 16%,transparent)}
+.afsearch input{background:none;border:none;outline:none;color:var(--txt);font:inherit;font-size:15px;font-weight:500;width:100%}
+.afsearch input::placeholder{color:var(--dim2)}
+.afchips{display:flex;gap:8px;flex-wrap:wrap}
+.afchip{padding:8px 14px;border-radius:11px;background:var(--panel);border:1px solid var(--stroke);
+  color:var(--dim);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;transition:.2s}
+.afchip:hover{color:var(--txt);border-color:var(--stroke2)}
+.afchip.on{color:var(--bg);background:var(--grad);border-color:transparent;box-shadow:0 6px 18px -4px color-mix(in srgb,var(--c2) 60%,transparent)}
+.card.filtered-out{display:none}
+.afempty{margin-top:30px;color:var(--dim);font-weight:600;text-align:center}
+
+/* ---- live App Store ratings -------------------------------------------- */
+.rating{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:12.5px;font-weight:600;color:var(--dim)}
+.rating b{color:var(--txt);font-weight:700}
+.rating .rc{color:var(--dim2)}
+.rating.new{color:var(--c4);font-weight:700}
+.stars{display:inline-flex;letter-spacing:-1px;color:var(--stroke2);font-size:12px}
+.stars .on{color:#fbbf24}
+.mhead .rating{margin-top:8px}
+
+/* ---- animated app icons ------------------------------------------------- */
+.card .icon{transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s;will-change:transform}
+.card:hover .icon{transform:translateY(-3px) rotate(-4deg) scale(1.06)}
+.card .icon:hover{transform:translateY(-4px) rotate(5deg) scale(1.12);box-shadow:0 16px 34px -6px color-mix(in srgb,var(--a) 55%,rgba(0,0,0,.5))}
+.floaticons img{transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.floaticons img:hover{transform:translateY(-12px) scale(1.14) rotate(-6deg);z-index:2}
+
+/* ---- ⌘K command palette ------------------------------------------------- */
+#palette{position:fixed;inset:0;z-index:400;display:grid;place-items:start center;padding:12vh 20px 20px;
+  opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+#palette.open{opacity:1;visibility:visible}
+.palback{position:absolute;inset:0;background:rgba(4,5,10,.55);backdrop-filter:blur(10px)}
+:root[data-theme=light] .palback{background:rgba(220,224,240,.55)}
+.palbox{position:relative;width:min(600px,94vw);border-radius:18px;overflow:hidden;
+  background:var(--bg2);border:1px solid var(--stroke2);box-shadow:0 40px 110px rgba(0,0,0,.5);
+  transform:translateY(-14px) scale(.98);opacity:.6;transition:transform .22s cubic-bezier(.2,.8,.2,1),opacity .22s}
+#palette.open .palbox{transform:none;opacity:1}
+.palin{display:flex;align-items:center;gap:11px;padding:15px 18px;border-bottom:1px solid var(--stroke);color:var(--dim)}
+.palin input{flex:1;background:none;border:none;outline:none;color:var(--txt);font:inherit;font-size:17px;font-weight:500}
+.palin input::placeholder{color:var(--dim2)}
+.palesc{font-size:11px;font-weight:700;padding:3px 7px;border-radius:6px;border:1px solid var(--stroke2);color:var(--dim2)}
+.pallist{max-height:min(52vh,440px);overflow-y:auto;padding:8px}
+.palrow{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;cursor:pointer}
+.palrow img{width:30px;height:30px;border-radius:8px;flex:none}
+.palglyph{width:30px;height:30px;border-radius:8px;flex:none;display:grid;place-items:center;
+  background:var(--panel);border:1px solid var(--stroke);color:var(--c2);font-size:15px}
+.pallabel{flex:1;font-weight:600;font-size:15px;display:flex;flex-direction:column}
+.pallabel small{color:var(--dim2);font-size:12px;font-weight:500;margin-top:1px}
+.palkind{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--dim2);
+  padding:3px 8px;border-radius:7px;background:var(--panel)}
+.palrow.on{background:color-mix(in srgb,var(--c2) 16%,transparent)}
+.palrow.on .palkind{color:var(--c2)}
+.palnone{padding:26px;text-align:center;color:var(--dim);font-weight:600}
+
+/* ---- terminal easter egg ------------------------------------------------ */
+#term{position:fixed;inset:0;z-index:420;display:grid;place-items:center;padding:24px;
+  background:rgba(3,4,9,.55);backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:.2s}
+#term.open{opacity:1;visibility:visible}
+.termwin{width:min(680px,95vw);height:min(440px,80vh);display:flex;flex-direction:column;border-radius:14px;
+  overflow:hidden;background:#0a0c15;border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 40px 120px rgba(0,0,0,.7);transform:scale(.97);transition:transform .2s}
+#term.open .termwin{transform:none}
+.termbar{display:flex;align-items:center;gap:8px;padding:11px 14px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.08)}
+.td{width:12px;height:12px;border-radius:50%}
+.td.r{background:#ff5f57}.td.y{background:#febc2e}.td.g{background:#28c840}
+.termtitle{margin-left:8px;font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:12.5px;color:#8b93ab}
+.termx{margin-left:auto;background:none;border:none;color:#8b93ab;cursor:pointer;font-size:14px}
+.termx:hover{color:#fff}
+.termbody{flex:1;overflow-y:auto;padding:16px;font-family:'SF Mono',ui-monospace,Menlo,monospace;font-size:13.5px;line-height:1.65;color:#d7dcf0}
+.terml{white-space:pre-wrap;word-break:break-word}
+.terml.muted{color:#6b7390}.terml.ok{color:#34d399}.terml.err{color:#fb7185}.terml.echo{color:#a9b1cf}
+.terml b{color:#a78bff;font-weight:700}
+.terml .tapp{color:#22d3ee}
+.terml .termps,.termps{color:#34d399;font-weight:700}
+.termline{display:flex;align-items:center;gap:9px;padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);
+  font-family:'SF Mono',ui-monospace,Menlo,monospace}
+.termline input{flex:1;background:none;border:none;outline:none;color:#d7dcf0;font:inherit;font-size:13.5px}
+
+@media(prefers-reduced-motion:reduce){
+  .card:hover .icon,.card .icon:hover,.floaticons img:hover{transform:none}
+}

@@ -5,10 +5,40 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Integrated Software Technologies — iOS apps, crafted on-device</title>
 <meta name="description" content="Integrated Software Technologies builds fast, private, on-device iOS apps: developer tools, network utilities, LiDAR measuring, audio, and more.">
+<link rel="canonical" href="https://integratedsw.tech/">
+<meta name="author" content="Matthew Mesropian">
+<meta name="theme-color" content="#06070d">
+
+<!-- Rich share cards (Open Graph + Twitter) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Integrated Software Technologies">
+<meta property="og:title" content="Integrated Software Technologies — iOS apps, crafted on-device">
+<meta property="og:description" content="Fast, private, on-device iOS apps: developer tools, network utilities, LiDAR measuring, audio, and more. Built solo by Matthew Mesropian.">
+<meta property="og:url" content="https://integratedsw.tech/">
+<meta property="og:image" content="https://integratedsw.tech/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Integrated Software Technologies — iOS apps, crafted on-device">
+<meta name="twitter:description" content="Fast, private, on-device iOS apps, built solo by Matthew Mesropian.">
+<meta name="twitter:image" content="https://integratedsw.tech/assets/og.png">
+
+<!-- Installable PWA -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%238b5cf6'/><text x='50' y='68' font-size='54' font-family='sans-serif' font-weight='700' fill='%230b0b12' text-anchor='middle'>i</text></svg>">
 <link rel="stylesheet" href="assets/fonts.css">
 <link rel="stylesheet" href="assets/style.css">
 <noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
+
+<!-- Google rich results: who we are -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Integrated Software Technologies Inc.","url":"https://integratedsw.tech/","logo":"https://integratedsw.tech/assets/icon-512.png","founder":{"@type":"Person","name":"Matthew Mesropian"},"email":"matt@integratedsw.tech","telephone":"+1-818-671-9866","address":{"@type":"PostalAddress","addressLocality":"Glendale","addressRegion":"CA","addressCountry":"US"}}
+</script>
+
+<!-- set theme + accent before paint to avoid a flash -->
+<script>(function(){try{var t=localStorage.getItem('ist-theme');if(!t)t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.setAttribute('data-theme',t);var a=localStorage.getItem('ist-accent');if(a)document.documentElement.style.setProperty('--c2',a);}catch(e){}})();</script>
 </head>
 <body>
 <div id="bg"><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div></div>
@@ -23,6 +53,20 @@
     <a href="#services">Services</a>
     <a href="#about">About</a>
     <a class="cta" href="#contact">Get in touch</a>
+  </div>
+  <div class="navtools">
+    <button class="ntbtn ntsearch" id="openPalette" aria-label="Search (Command K)" title="Search — ⌘K">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <span class="kbd">⌘K</span>
+    </button>
+    <div class="ntaccent">
+      <button class="ntbtn" id="openAccent" aria-label="Accent color" title="Accent color"><span class="accdot" style="background:var(--c2)"></span></button>
+      <div class="accpop" id="accpop" role="menu"></div>
+    </div>
+    <button class="ntbtn" id="themeToggle" aria-label="Toggle light/dark" title="Toggle theme">
+      <svg class="ic-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+      <svg class="ic-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
   </div>
 </nav>
 
@@ -50,7 +94,15 @@
     <div class="h2">Every app we make</div>
     <p class="lead">Native, on-device, and privacy-first. Several are on the App Store now, with more in review.</p>
   </div>
+  <div class="appfilter reveal" id="appfilter">
+    <div class="afsearch">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="appSearch" type="search" placeholder="Search apps…" autocomplete="off" aria-label="Search apps">
+    </div>
+    <div class="afchips" id="catChips"></div>
+  </div>
   <div class="grid" id="appgrid"></div>
+  <div class="afempty" id="afEmpty" hidden>No apps match that — try another search.</div>
 </section>
 
 <section id="opensource">
@@ -112,6 +164,7 @@
 </footer>
 
 <script src="assets/app.js"></script>
+<script src="assets/enhance.js"></script>
 <script>/* failsafe: reveal anything not yet shown, even if the main script hiccups */
 window.addEventListener('load',function(){setTimeout(function(){
   document.querySelectorAll('.reveal:not(.in)').forEach(function(e){e.classList.add('in')});},2200)});</script>

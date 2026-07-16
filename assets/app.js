@@ -30,7 +30,7 @@ grid.innerHTML = APPS.map((a, i) => {
 }).join('');
 
 // ---- app detail modal + screenshot lightbox ----
-const SHOTS = 5; // screenshots copied per app that has a `key`
+const SHOTS = 5; // default screenshots per app with a `key`; override per app with `shots:` in apps.js
 const modal = document.createElement('div'); modal.id = 'appmodal'; modal.className = 'modal';
 modal.innerHTML = `<div class="mback"></div><div class="mpanel" role="dialog" aria-modal="true"></div>`;
 document.body.appendChild(modal);
@@ -43,7 +43,7 @@ function openApp(i){
     ? `<a class="chip app" href="${a.store}" target="_blank" rel="noopener">${svgApple} View on the App Store</a>`
     : `<span class="chip soon">${a.status==='soon' ? 'In development' : 'In review'}</span>`;
   const gallery = a.key
-    ? `<div class="mshots">` + Array.from({length:SHOTS}, (_,k)=>
+    ? `<div class="mshots">` + Array.from({length:a.shots||SHOTS}, (_,k)=>
         `<div class="device"><img class="shot" style="--d:${(k*0.07).toFixed(2)}s" data-full="assets/shots/${a.key}/${String(k+1).padStart(2,'0')}.png"
           src="assets/shots/${a.key}/${String(k+1).padStart(2,'0')}.png" alt="${a.name} screenshot ${k+1}" loading="lazy"></div>`).join('') + `</div>`
     : `<div class="mhero" style="--a:${a.accent}">${icon.replace('class="micon"','class="micon big"')}<span>Screenshots coming soon</span></div>`;

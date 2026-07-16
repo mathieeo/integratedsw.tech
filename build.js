@@ -68,7 +68,7 @@ function appPage(a) {
     ? `<a class="chip app" href="${a.store}" target="_blank" rel="noopener">${svgApple} View on the App Store</a>`
     : `<span class="chip soon">${a.status === 'soon' ? 'In development' : 'In review'}</span>`;
   const shots = a.key
-    ? `<div class="mshots">` + [1, 2, 3, 4, 5].map(k =>
+    ? `<div class="mshots">` + Array.from({ length: a.shots || 5 }, (_, i) => i + 1).map(k =>
         `<div class="device"><img class="shot" src="/assets/shots/${a.key}/${String(k).padStart(2, '0')}.png" alt="${esc(a.name)} screenshot ${k}" loading="lazy"></div>`).join('') + `</div>`
     : '';
   const meta = id

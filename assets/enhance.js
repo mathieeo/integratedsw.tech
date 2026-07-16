@@ -138,6 +138,15 @@
   const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
   let kk = 0;
   addEventListener('keydown', e => {
+    // ` opens the terminal directly (Quake-style) — but never while typing in a
+    // field, or the shortcut would eat backticks from the inquiry form and the
+    // terminal's own input.
+    if (e.key === '`' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      const t = e.target;
+      const typing = t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' ||
+                           t.tagName === 'SELECT' || t.isContentEditable);
+      if (!typing) { e.preventDefault(); openTerm(); return; }
+    }
     const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     kk = (k === KONAMI[kk]) ? kk + 1 : (k === KONAMI[0] ? 1 : 0);
     if (kk === KONAMI.length) { kk = 0; openTerm(); }

@@ -1,0 +1,26 @@
+/* ============================================================================
+   Dazzle — an extra delight layer on top of the base site.
+   ----------------------------------------------------------------------------
+   Everything here is gated behind the `dazzle` class, which dazzle.js adds ONLY
+   when motion is allowed. A reduced-motion visitor, or one with JS disabled,
+   keeps the calm base experience untouched — the same contract the rest of the
+   site holds to.
+   ============================================================================ */
+
+/* dazzle.js now drives the hero icons frame-by-frame (idle float + magnetic
+   repel + click boing), so hand it the wheel by silencing the CSS keyframe
+   float — otherwise the two fight over the same transform and it jitters. */
+/* The base sheet puts a .3s transition on the icons' transform (nice for the
+   CSS hover), but dazzle.js now writes transform every frame — a per-frame
+   change through a .3s transition smears and lags badly. Hand it a raw
+   transform so each spring step lands crisply. */
+.dazzle .floaticons img{animation:none;transition:none;will-change:transform;cursor:pointer}
+
+/* The background palette drifts as you travel down the page — the whole site
+   slowly changes light, like a room from noon to dusk. It is tied to scroll
+   POSITION, not a timer, so scrolling back undoes it: honest, not a loop. */
+.dazzle #bg{transition:filter .25s linear;filter:hue-rotate(var(--aura,0deg))}
+
+/* The click sparkle-ring an icon throws when you poke it. */
+.dazzle .icon-ping{position:fixed;z-index:6;pointer-events:none;border-radius:50%;
+  border:2px solid #fff;mix-blend-mode:screen;opacity:.7}

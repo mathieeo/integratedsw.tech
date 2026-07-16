@@ -165,10 +165,18 @@ const io = new IntersectionObserver((es) => {
 }, { threshold: .15 });
 document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
+// Ease-out cubic on a rAF, not a fixed-step interval. A linear counter ticks at a
+// constant rate and reads as a spreadsheet recalculating; a decelerating one lands
+// like a needle settling, which is the whole point of animating a number at all.
 function countUp(el){
-  const to = +el.dataset.to, suf = el.dataset.suf||''; let n = 0;
-  const step = Math.max(1, Math.round(to/40));
-  const t = setInterval(()=>{ n += step; if(n>=to){n=to;clearInterval(t)} el.textContent = n+suf; }, 24);
+  const to = +el.dataset.to, suf = el.dataset.suf || '';
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { el.textContent = to + suf; return; }
+  const dur = 1100, t0 = performance.now(), ease = t => 1 - Math.pow(1 - t, 3);
+  (function tick(now){
+    const p = Math.min(1, (now - t0) / dur);
+    el.textContent = Math.round(ease(p) * to) + suf;
+    if (p < 1) requestAnimationFrame(tick);
+  })(t0);
 }
 
 // nav blur + scroll progress are driven from cinema.js's single rAF loop, so the
@@ -209,13 +217,19 @@ document.querySelectorAll('.btn, .mail, .navlinks a.cta').forEach(el => {
 });
 
 // interactive constellation on canvas
+// Skipped entirely under prefers-reduced-motion: the stylesheet already hides
+// #dots (display:none), but drawing to it every frame anyway is real work the
+// browser does for a visitor who explicitly asked for less — exactly the
+// battery/accessibility-sensitive device that should NOT pay for it. The rest of
+// the site sleeps its rAF loops; this one now declines to start at all.
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
 const cv = document.getElementById('dots'), cx = cv.getContext('2d');
 let dots = [], mouse = { x: -999, y: -999 };
 function resize(){ cv.width = innerWidth; cv.height = innerHeight;
-  dots = Array.from({length: Math.min(90, innerWidth/18|0)}, () => ({
+  dots = Array.from({length: Math.min(130, innerWidth/13|0)}, () => ({
     x: Math.random()*cv.width, y: Math.random()*cv.height,
-    r: Math.random()*1.6+.5, vx:(Math.random()-.5)*.18, vy:(Math.random()-.5)*.18,
-    a: Math.random()*.4+.15 })); }
+    r: Math.random()*2.1+.7, vx:(Math.random()-.5)*.18, vy:(Math.random()-.5)*.18,
+    a: Math.random()*.45+.22 })); }
 resize(); addEventListener('resize', resize);
 addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
 (function loop(){
@@ -242,3 +256,4 @@ addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY;
   }
   requestAnimationFrame(loop);
 })();
+}   // end prefers-reduced-motion guard for the constellation

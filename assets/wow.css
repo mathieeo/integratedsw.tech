@@ -1,0 +1,107 @@
+/* ==========================================================================
+   Integrated Software Technologies — the "wow" layer
+   ---------------------------------------------------------------------------
+   Styling for the extra delight added in wow.js. Every effect here is either
+   desktop-pointer-only (a phone gets the gravity-tilt film instead) or degrades
+   to nothing, and the whole file is short-circuited by prefers-reduced-motion
+   at the bottom. Nothing here is load-bearing: strip wow.js and the page is
+   exactly the site it was.
+   ========================================================================== */
+
+/* ---- the trailing cursor -------------------------------------------------
+   A small dot that sits exactly under the pointer, and a ring that LAGS behind
+   it and catches up — the two-speed cursor every awwwards site reaches for,
+   because a cursor that has weight is a cursor that feels physical. It swells
+   and fills when it is over anything you can click, so the whole page quietly
+   tells you what is alive. Desktop only; a finger is its own cursor. */
+#cursor-dot,#cursor-ring{position:fixed;top:0;left:0;z-index:400;pointer-events:none;
+  border-radius:50%;opacity:0;transition:opacity .3s,width .22s cubic-bezier(.2,.8,.2,1),
+  height .22s cubic-bezier(.2,.8,.2,1),background .22s,border-color .22s;will-change:transform}
+#cursor-dot{width:7px;height:7px;background:var(--txt);transform:translate(-50%,-50%);
+  mix-blend-mode:difference}
+#cursor-ring{width:34px;height:34px;border:1.5px solid rgba(139,92,246,.6);
+  transform:translate(-50%,-50%);box-shadow:0 0 18px rgba(139,92,246,.25)}
+body.cursor-on #cursor-dot,body.cursor-on #cursor-ring{opacity:1}
+/* over something clickable: the ring grows and glows, the dot shrinks away */
+body.cursor-hot #cursor-ring{width:58px;height:58px;border-color:rgba(34,211,238,.7);
+  background:rgba(139,92,246,.12);box-shadow:0 0 30px rgba(34,211,238,.3)}
+body.cursor-hot #cursor-dot{width:4px;height:4px}
+body.cursor-press #cursor-ring{width:26px;height:26px}
+/* the real cursor stays visible; ours only ADDS to it, never replaces it, so a
+   dropped rAF can never leave the visitor without a pointer. */
+
+/* ---- scroll-reactive marquee ---------------------------------------------
+   The icon belt already scrolls on its own. Now it also LEANS with how hard you
+   are scrolling the page — flick down and the strip skews and surges, ease off
+   and it settles. It costs one transform on a decorative, aria-hidden strip. */
+#marquee{will-change:transform;transition:none}
+
+/* ---- hero floating-icon parallax -----------------------------------------
+   The cluster of real app icons drifts a few pixels against the pointer, as a
+   single plane floating in front of the blobs. Depth for the price of a
+   translate; the per-icon float keyframe still runs underneath it. */
+#floaticons{will-change:transform}
+
+/* ---- back-to-top ---------------------------------------------------------
+   Appears once you are a screen or two down, carries the studio mark, and rides
+   the same magnetic spring the buttons do. A small, expected courtesy that most
+   long single-pages simply never add. */
+#totop{position:fixed;right:clamp(16px,4vw,32px);bottom:clamp(16px,4vw,32px);z-index:120;
+  width:52px;height:52px;border-radius:16px;display:grid;place-items:center;cursor:pointer;
+  border:1px solid var(--stroke2);background:rgba(10,12,22,.6);backdrop-filter:blur(14px);
+  color:var(--txt);opacity:0;transform:translateY(18px) scale(.85);pointer-events:none;
+  box-shadow:0 12px 34px rgba(0,0,0,.45);transition:opacity .35s cubic-bezier(.2,.8,.2,1),
+  transform .35s cubic-bezier(.2,.8,.2,1),border-color .25s,background .25s}
+#totop.show{opacity:1;transform:none;pointer-events:auto}
+#totop:hover{border-color:var(--c2);background:rgba(18,20,34,.72)}
+#totop svg{width:22px;height:22px;transition:transform .25s}
+#totop:hover svg{transform:translateY(-2px)}
+/* a thin conic ring that fills as you near the bottom — the page's progress,
+   mirrored onto the button you would use to undo it. Driven by --p in wow.js. */
+#totop::before{content:'';position:absolute;inset:-3px;border-radius:19px;padding:2px;
+  background:conic-gradient(from -90deg,var(--c1),var(--c2) calc(var(--p,0)*1turn),transparent 0);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;opacity:.9}
+
+/* ---- animated nav underline ----------------------------------------------
+   Each nav link grows a gradient underline from the centre out on hover — the
+   quietest, most Apple-store-footer touch there is. The CTA keeps its pill. */
+.navlinks a:not(.cta){position:relative}
+.navlinks a:not(.cta)::after{content:'';position:absolute;left:12px;right:12px;bottom:4px;
+  height:2px;border-radius:2px;background:var(--grad);
+  transform:scaleX(0);transform-origin:center;transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.navlinks a:not(.cta):hover::after{transform:scaleX(1)}
+
+/* ---- press feedback ------------------------------------------------------
+   Big touch targets should give a little when pressed. Applied via a class the
+   script toggles, because these elements already carry inline magnetic
+   transforms that a bare :active could not override. */
+.wow-press{transform:scale(.94)!important;transition:transform .09s ease!important}
+
+/* ---- confetti ------------------------------------------------------------
+   The celebration for a sent inquiry or a copied command. Pure DOM scraps,
+   thrown up and tumbling down, removed when they land. */
+.confetti-bit{position:fixed;z-index:410;pointer-events:none;border-radius:2px;will-change:transform,opacity}
+
+/* ---- reveal, enriched ----------------------------------------------------
+   A gentle scale + de-blur added to the existing rise. It focuses IN, the same
+   idea as the headline and the manifesto, so the whole page shares one language
+   of coming-into-being. Kept tiny so text never renders blurry for long. */
+.reveal{filter:blur(6px);transition:opacity .7s cubic-bezier(.2,.8,.2,1),
+  transform .7s cubic-bezier(.2,.8,.2,1),filter .7s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{filter:none}
+/* the hero keeps its own focus-in (the split headline is the LCP — no second
+   blur on top of it), so the de-blur is for the sections you scroll down into. */
+header .reveal{filter:none!important}
+
+/* focus-visible polish — the keyboard visitor gets the same accent language */
+a:focus-visible,button:focus-visible,.card:focus-visible,input:focus-visible,
+select:focus-visible,textarea:focus-visible{outline:2px solid var(--c1);outline-offset:3px;border-radius:8px}
+
+@media(prefers-reduced-motion:reduce){
+  #cursor-dot,#cursor-ring,#totop::before{display:none}
+  .reveal{filter:none}
+  #marquee,#floaticons{transform:none!important}
+  .navlinks a:not(.cta)::after{transition:none}
+}
+@media(hover:none){ #cursor-dot,#cursor-ring{display:none} }

@@ -150,7 +150,9 @@ section{padding:clamp(70px,10vw,130px) clamp(18px,5vw,64px);max-width:1200px;mar
   background:var(--grad);color:#0b0b12;font-weight:700;font-size:18px;box-shadow:0 12px 34px rgba(139,92,246,.4);transition:.2s}
 .mail:hover{transform:translateY(-2px);filter:brightness(1.08)}
 footer{border-top:1px solid var(--stroke);padding:34px clamp(18px,5vw,64px);display:flex;flex-wrap:wrap;gap:14px;
-  align-items:center;justify-content:space-between;color:var(--dim);font-size:14px}
+  align-items:center;justify-content:space-between;color:var(--dim);font-size:14px;
+  /* keep the copyright line clear of the fixed back-to-top button */
+  padding-right:clamp(90px,10vw,130px)}
 footer .brand{font-size:16px}
 
 /* ---- reveal ---- */

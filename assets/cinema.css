@@ -164,6 +164,25 @@
 .mq-belt img:hover{opacity:1;transform:translateY(-6px) scale(1.12)}
 @keyframes mq{to{transform:translateX(-50%)}}
 
+/* ============================================================== MANIFESTO ===
+   A single large line, lit word by word as it is scrolled through (the JS toggles
+   `.lit` per word against the scroll position). Un-lit words are dim and softly out
+   of focus; lit ones snap sharp and bright. The reader's eye becomes the read-head
+   and the sentence assembles under it. */
+#manifesto{max-width:1180px}
+.manifesto-line{font-family:var(--head);font-weight:700;
+  font-size:clamp(26px,5.6vw,64px);line-height:1.16;letter-spacing:-.02em;
+  text-wrap:balance;color:var(--txt)}
+.manifesto-line .mw{display:inline-block;white-space:pre;
+  color:var(--dim2);opacity:.34;filter:blur(5px);transform:translateY(.05em);
+  transition:color .5s var(--ease-out-quint),opacity .5s var(--ease-out-quint),
+             filter .5s var(--ease-out-quint),transform .5s var(--ease-out-quint)}
+.manifesto-line .mw.lit{color:var(--txt);opacity:1;filter:none;transform:none}
+/* The final phrase, once lit, is painted in the brand gradient — the sentence
+   resolves not just into focus but into the studio's own colour. */
+.manifesto-line .mw:nth-last-child(-n+3).lit{
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
 /* ======================================================== SECTION HEADINGS ==
    A wipe, not a fade. The line sweeps out from the left as the heading lands,
    which gives a section a sense of being DEALT rather than just appearing. */
@@ -172,6 +191,9 @@
 .h2::after{content:'';position:absolute;left:0;bottom:-10px;height:2px;width:64px;
   background:var(--grad);transform:scaleX(0);transform-origin:0 50%;
   transition:transform .9s .25s var(--ease-out-expo)}
+/* The contact heading is centred, so a left-anchored underline floats off in
+   space at the container's edge. Centre the wipe under the words instead. */
+.contact .h2::after{left:50%;margin-left:-32px;transform-origin:50% 50%}
 
 /* =========================================================== SCROLL DEPTH ==
    Sections lift and unblur as they arrive, and the whole page has a very slight
@@ -201,8 +223,8 @@ body.scrolled .scrollcue{opacity:0;pointer-events:none}
    degraded experience, it is the same page without the film. */
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
-  .split .w,.reveal{opacity:1!important;filter:none!important;transform:none!important;
-    transition:none!important}
+  .split .w,.reveal,.manifesto-line .mw{opacity:1!important;filter:none!important;transform:none!important;
+    transition:none!important;color:var(--txt)}
   .mq-belt{animation:none}
   .sc-stage{position:static;height:auto;padding-top:60px;padding-bottom:60px}
   .sc-track{height:auto!important}

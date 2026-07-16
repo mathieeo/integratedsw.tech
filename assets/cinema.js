@@ -190,10 +190,16 @@
     const btns = Array.from(dots.querySelectorAll('button'));
     let current = -1;
 
+    // Document-space top of the track. `offsetTop` was the bug here: #showcase is
+    // position:relative, so it is the track's offsetParent and offsetTop was ~0 —
+    // the scrub ran a third of the page ahead of the pin, skipped the first apps
+    // entirely, and parked on the last one for the whole back half of the section.
+    const trackTop = () => track.getBoundingClientRect().top + scrollY;
+
     dots.addEventListener('click', e => {
       const b = e.target.closest('button'); if (!b) return;
       const i = +b.dataset.i;
-      const top = track.offsetTop + (i + 0.5) * (track.offsetHeight - stage.offsetHeight) / list.length;
+      const top = trackTop() + (i + 0.5) * (track.offsetHeight - stage.offsetHeight) / list.length;
       scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' });
     });
 
@@ -220,9 +226,11 @@
     return {
       track, stage, phone, select,
       count: list.length,
-      // Called from the single rAF loop below with the page's scroll position.
-      update(scrollY, vh) {
-        const start = track.offsetTop;
+      // Called from the single rAF loop below with the page's scroll position and
+      // the current lean (cursor on desktop, device tilt on a phone — both feed the
+      // same −1…1 pair, so the showcase device answers to whichever the visitor has).
+      update(scrollY, vh, lx, ly) {
+        const start = trackTop();
         const span = track.offsetHeight - stage.offsetHeight;
         // A collapsed track (reduced motion, or a browser without sticky) has no
         // scrub range at all. Show the first app and leave it alone.
@@ -231,12 +239,14 @@
         select(Math.floor(p * list.length));
 
         // The phone turns very slightly as the film runs — a few degrees across
-        // the whole section. Enough that the device feels like an object in a
-        // space; little enough that nobody could tell you it happened.
+        // the whole section — and leans an extra few toward the cursor or gravity.
+        // Enough that the device feels like an object in a space; little enough
+        // that nobody could tell you it happened.
         if (!reduced) {
           const turn = (p - 0.5) * 10;
           phone.style.transform =
-            `rotateY(${turn}deg) rotateX(${-turn * 0.25}deg) translateZ(0)`;
+            `rotateY(${turn + (lx || 0) * 6}deg) ` +
+            `rotateX(${-turn * 0.25 - (ly || 0) * 4}deg) translateZ(0)`;
         }
       }
     };
@@ -254,6 +264,49 @@
     const belt = [...icons, ...icons]
       .map(i => `<img src="assets/icons/${i}.png" alt="" loading="lazy">`).join('');
     host.innerHTML = `<div class="mq-belt">${belt}</div>`;
+  })();
+
+  /* ------------------------------------------------------------ manifesto --
+     One large line, lit word by word as it is scrolled through. The reveal is
+     bound to SCROLL POSITION, not a clock: the words that have passed the reading
+     line are sharp and bright, the ones ahead are dim and slightly out of focus,
+     and scrolling back up dims them again. It is the split headline's idea moved
+     out of the hero and made into a beat you scrub, which is the most Apple thing
+     a page can do — turn a sentence into something you operate. */
+  const manifesto = (function buildManifesto() {
+    const el = document.getElementById('manifestoline');
+    if (!el) return null;
+    // Under reduced motion the sentence stays plain, fully-lit text (the base CSS
+    // paints it that way); we simply never split it, so there is nothing to animate.
+    if (reduced) return null;
+
+    const words = el.textContent.trim().split(/\s+/);
+    el.textContent = '';
+    words.forEach((t, i) => {
+      const s = document.createElement('span');
+      s.className = 'mw';
+      // A trailing space per word keeps the line wrapping naturally; without it the
+      // inline-block words butt together and the line stops being a sentence.
+      s.textContent = t + (i < words.length - 1 ? ' ' : '');
+      el.appendChild(s);
+    });
+    const mw = Array.from(el.querySelectorAll('.mw'));
+
+    return {
+      update(scrollY, vh) {
+        // Progress as the line crosses the reading band — from its top reaching 82%
+        // down the viewport (nothing lit) to its bottom reaching 34% down (all lit).
+        // getBoundingClientRect is viewport-relative, so this is immune to the
+        // offsetParent question that `offsetTop` inside a positioned section raises.
+        const r = el.getBoundingClientRect();
+        const p = Math.min(1, Math.max(0, (vh * 0.82 - r.top) / (vh * 0.48 + r.height)));
+        const lit = Math.round(p * mw.length);
+        for (let i = 0; i < mw.length; i++) {
+          const on = i < lit;
+          if (mw[i]._on !== on) { mw[i].classList.toggle('lit', on); mw[i]._on = on; }
+        }
+      }
+    };
   })();
 
   /* ------------------------------------------------------- tap the phone --
@@ -345,6 +398,49 @@
     });
   }
 
+  /* --------------------------------------------------------- device tilt --
+     Desktop leans the hero toward the CURSOR. A phone has no cursor, so it leans
+     toward GRAVITY instead: physically tilt the device and the hero and showcase
+     phones tilt with it, in real time. This is the single biggest thing the page
+     was missing on mobile — every parallax cue here was hover-gated, so a phone,
+     the device this studio actually makes apps for, got a flatter page than a
+     laptop. Now it gets the richer one.
+
+     Two realities this has to survive:
+       · iOS 13+ requires a USER GESTURE to grant motion access. We do not nag with
+         a banner; we hang the request on the phone-tap that already exists, so the
+         same tap that flips the hero screen also brings it to life under your hand.
+       · The raw signal is jittery. A one-pole low-pass turns the twitch into drift,
+         which is the difference between "alive" and "broken". */
+  let tiltOn = false;
+  function applyTilt(e) {
+    if (e.gamma == null || e.beta == null) return;
+    // gamma −90…90 is left/right; beta is front/back, neutral held around 45° (the
+    // angle you actually hold a phone at). Scaled so a natural wrist tilt is ±1.
+    const gx = Math.max(-1, Math.min(1, e.gamma / 26));
+    const gy = Math.max(-1, Math.min(1, (e.beta - 45) / 26));
+    pointerX = pointerX * 0.82 + gx * 0.18;
+    pointerY = pointerY * 0.82 + gy * 0.18;
+    request();
+  }
+  function requestTilt() {
+    if (tiltOn || reduced) return;
+    const DOE = window.DeviceOrientationEvent;
+    if (!DOE) return;
+    const attach = () => { tiltOn = true; addEventListener('deviceorientation', applyTilt, { passive: true }); };
+    if (typeof DOE.requestPermission === 'function') {
+      DOE.requestPermission().then(s => { if (s === 'granted') attach(); }).catch(() => {});
+    } else {
+      attach();  // Android / older iOS: no gate, just listen.
+    }
+  }
+  // Fire the permission request on the hero phone's tap (mobile only — a mouse
+  // pointer already drives the lean, and asking a desktop for motion is nonsense).
+  if (heroPhone && matchMedia('(hover: none)').matches) {
+    const p = heroPhone.querySelector ? heroPhone : null;
+    if (p) p.addEventListener('click', requestTilt, { once: true });
+  }
+
   /* --------------------------------------------- ONE loop, ONE scroll read --
      Every scroll-driven thing on the page reads its geometry here, once, and
      writes in the same frame. Four independent scroll handlers each calling
@@ -367,7 +463,8 @@
       bar.style.width = (max > 0 ? (y / max) * 100 : 0) + '%';
     }
 
-    if (showcase) showcase.update(y, vh);
+    if (showcase) showcase.update(y, vh, pointerX, pointerY);
+    if (manifesto) manifesto.update(y, vh);
 
     // Hero device: drifts up and away as you leave, and leans toward the
     // pointer. Both are parallax, and parallax is the cheapest depth there is.

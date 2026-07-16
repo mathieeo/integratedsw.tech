@@ -22,7 +22,7 @@
    Nobody has to remember anything, and a bad deploy can no longer be permanent.
    ========================================================================== */
 
-const CACHE = 'ist-v3';
+const CACHE = 'ist-v4';
 
 // Precache the shell so the very first visit is instant and offline works.
 // Anything not listed here is still cached on first use — it just isn't
@@ -32,12 +32,16 @@ const SHELL = [
   '/index.html',
   '/assets/style.css',
   '/assets/cinema.css',
+  '/assets/wow.css',
   '/assets/fonts.css',
   '/assets/apps.js',
   '/assets/notes.js',
   '/assets/app.js',
   '/assets/enhance.js',
   '/assets/cinema.js',
+  '/assets/wow.js',
+  '/assets/dazzle.css',
+  '/assets/dazzle.js',
   '/manifest.webmanifest'
 ];
 

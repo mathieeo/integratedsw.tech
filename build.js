@@ -50,7 +50,7 @@ function head({ title, desc, canonical, og }) {
 </nav>`;
 }
 const foot = `<footer><a class="brand" href="/"><span class="mark">i</span> Integrated Software Technologies Inc.</a>
-<span>© 2026 · Built on-device, in Glendale, CA · integratedsw.tech</span></footer>
+<span>© 2026 · Built on-device, in Glendale, CA · integratedsw.tech · <a href="/privacy/" style="color:inherit">Privacy</a></span></footer>
 <script>addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('scrolled',scrollY>30)})</script>
 </body></html>`;
 
@@ -96,11 +96,88 @@ var s=document.createElement('script');s.src='https://itunes.apple.com/lookup?id
 <div class="subhead"><span class="micwrap" style="--a:${a.accent}">${icon}</span>
   <div><h1>${esc(a.name)}</h1><div class="cat" style="color:${a.accent}">${esc(a.cat)}</div></div></div>
 <p class="mlong">${esc(a.long || a.desc)}</p>
-<div class="mlinks">${store}</div>
+<div class="mlinks">${store} <a class="chip" href="/apps/${a.slug}/privacy/">Privacy Policy</a></div>
 ${meta}
 ${shots}
 </main>
 <script type="application/ld+json">${JSON.stringify(ld)}</script>` + foot;
+}
+
+/* ----------------------------------------------------------- privacy pages */
+/* Every App Store listing needs a working privacy policy URL, and only two
+   apps had one on this domain. One template, generated per app — the studio
+   stance (no accounts, no analytics, on-device) is the policy; apps that DO
+   have a third-party surface declare it via flags in apps.js (`ads:true`
+   for AdMob, as in Spinnit). The two original hand-written pages
+   (deck-privacy.html, spinnit-privacy.html) stay untouched so any listing
+   already pointing at them keeps working. */
+function privacyPage(a) {
+  const canonical = `${ROOT}/apps/${a.slug}/privacy/`;
+  const ads = a.ads ? `
+<h2>Advertising (Google AdMob)</h2>
+<p>${esc(a.name)} is free and supported by ads served through <strong>Google AdMob</strong>.
+To show ads, AdMob may collect information such as a device advertising identifier,
+approximate location (derived from IP), and app-usage and interaction data, used to serve
+and measure ads and to limit ad fraud.</p>
+<ul>
+  <li>On first launch the app asks for permission to track (Apple's App Tracking
+      Transparency prompt). If you decline, ads still show — just less personalized.</li>
+  <li>Google's handling of this data is governed by the
+      <a href="https://policies.google.com/privacy">Google Privacy Policy</a>.</li>
+  <li>The in-app <strong>Remove Ads</strong> purchase removes ads and stops ad-related
+      data collection entirely.</li>
+</ul>
+<h2>Purchases</h2>
+<p>Purchases are processed by Apple. We receive no payment details — Apple only tells the
+app that the purchase succeeded.</p>` : '';
+  const shortLine = a.ads
+    ? `${esc(a.name)} has no accounts and we run no servers. Your data stays on your device.
+       The only data collected comes from the Google AdMob ads that keep the app free —
+       and you can remove ads to stop that entirely.`
+    : `${esc(a.name)} collects nothing. It has no accounts, no analytics, and no
+       third-party trackers. Everything happens on your device.`;
+  return head({ title: `${a.name} — Privacy Policy`,
+                desc: `Privacy policy for ${a.name} by Integrated Software Technologies.`,
+                canonical, og: `${ROOT}/assets/og/${a.slug}.png` }) +
+    `<main class="subpage" style="--a:${a.accent}">
+<a class="backlink" href="/apps/${a.slug}/">← ${esc(a.name)}</a>
+<h1>${esc(a.name)} — Privacy Policy</h1>
+<p class="mlong"><strong>Short version:</strong> ${shortLine}</p>
+<h2>What ${esc(a.name)} stores on your device</h2>
+<p>Your content and settings are stored <strong>on your device</strong> (and, if you use
+iCloud, in your own private iCloud account through Apple). We never receive this
+information and operate no servers that could collect it.</p>
+<h2>What we don't do</h2>
+<ul>
+  <li>We do <strong>not</strong> collect your name, email, contacts, or photos.</li>
+  <li>We do <strong>not</strong> run analytics or third-party trackers${a.ads ? ' beyond the advertising described below' : ''}.</li>
+  <li>We do <strong>not</strong> sell personal data.</li>
+</ul>
+<h2>Permissions</h2>
+<p>If the app asks for a system permission (camera, local network, Face ID, photos…),
+it is used only to power the feature in front of you, processed on-device, and never
+transmitted to us.</p>
+${ads}
+<h2>Contact</h2>
+<p>Questions? Email <a href="mailto:matt@integratedsw.tech">matt@integratedsw.tech</a>.</p>
+<p class="mlong" style="opacity:.6">Last updated ${today}.</p>
+</main>` + foot;
+}
+
+function privacyIndex() {
+  const canonical = `${ROOT}/privacy/`;
+  return head({ title: 'Privacy — Integrated Software Technologies',
+                desc: 'Privacy policies for every Integrated Software Technologies app: no accounts, no analytics, on-device.',
+                canonical, og: `${ROOT}/assets/og.png` }) +
+    `<main class="subpage">
+<a class="backlink" href="/">← Home</a>
+<h1>Privacy</h1>
+<p class="mlong">Every app we ship is built the same way: no accounts, no analytics, no
+third-party trackers, everything on your device. Each app's policy:</p>
+<ul>
+${APPS.map(a => `  <li><a href="/apps/${a.slug}/privacy/">${esc(a.name)}</a></li>`).join('\n')}
+</ul>
+</main>` + foot;
 }
 
 /* -------------------------------------------------------------- note pages */
@@ -196,8 +273,9 @@ ${iconTag}
 
 /* --------------------------------------------------------------- sitemap -- */
 function sitemap() {
-  const urls = [`${ROOT}/`, `${ROOT}/press/`,
+  const urls = [`${ROOT}/`, `${ROOT}/press/`, `${ROOT}/privacy/`,
     ...APPS.map(a => `${ROOT}/apps/${a.slug}/`),
+    ...APPS.map(a => `${ROOT}/apps/${a.slug}/privacy/`),
     ...NOTES.map(n => `${ROOT}/notes/${n.slug}/`)];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -206,11 +284,68 @@ ${urls.map(u => `  <url><loc>${u}</loc><lastmod>${today}</lastmod></url>`).join(
 `;
 }
 
+/* -------------------------------------------------------- OG compression -- */
+/* qlmanage emits ~370 KB truecolor PNGs of what is mostly flat gradient — and
+   link-preview crawlers fetch these on every share. Palette-quantize with
+   dithering via Pillow (~4-6x smaller, no visible banding on this art). Silent
+   no-op if the Homebrew Python/Pillow pair isn't there. */
+const PYTHON = '/opt/homebrew/opt/python@3.12/bin/python3.12';
+function compressPNGs(files) {
+  const existing = files.filter(f => fs.existsSync(f));
+  if (!existing.length || !fs.existsSync(PYTHON)) return;
+  const script = `
+import sys
+from PIL import Image
+for p in sys.argv[1:]:
+    im = Image.open(p).convert("RGBA")
+    q = im.quantize(colors=256, method=2, dither=Image.Dither.FLOYDSTEINBERG)
+    q.save(p, optimize=True)
+`;
+  const tmp = path.join('/tmp', 'ist_pngq.py');
+  fs.writeFileSync(tmp, script);
+  try {
+    execSync(`"${PYTHON}" "${tmp}" ${existing.map(f => `"${f}"`).join(' ')}`,
+             { stdio: 'ignore' });
+    console.log(`  compressed ${existing.length} OG images`);
+  } catch (e) { console.warn('  OG compression skipped:', e.message); }
+}
+
+/* ------------------------------------------------------- ratings snapshot -- */
+/* Bake the App Store ratings into assets/ratings.js at build time. The browser
+   still asks the live lookup API (and overwrites this), but if Apple retires
+   that endpoint the way it retired the reviews feed, the site keeps showing
+   the last-built numbers instead of silently showing none. Offline builds
+   keep the previous snapshot. */
+async function ratingsSnapshot() {
+  const ids = APPS.map(a => idOf(a.store)).filter(Boolean);
+  if (!ids.length) return;
+  try {
+    const res = await fetch(`https://itunes.apple.com/lookup?id=${ids.join(',')}&country=us`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!data.results || !data.results.length) throw new Error('empty result');
+    write('assets/ratings.js',
+      `/* Build-time App Store snapshot (${today}) — regenerated by build.js.\n`
+      + `   Seeds the rating badges; the live lookup call overwrites it. */\n`
+      + `window.__RATINGS_SNAPSHOT = ${JSON.stringify({ results: data.results })};\n`);
+    console.log(`  ratings snapshot: ${data.results.length} apps`);
+  } catch (e) {
+    console.warn('  ratings snapshot skipped (' + e.message + ') — keeping the previous one');
+    if (!fs.existsSync(path.join(dir, 'assets', 'ratings.js'))) {
+      write('assets/ratings.js', 'window.__RATINGS_SNAPSHOT = null;\n');
+    }
+  }
+}
+
 /* ------------------------------------------------------------------- main -- */
+(async () => {
 console.log('Generating…');
 let n = 0;
 APPS.forEach(a => { write(`apps/${a.slug}/index.html`, appPage(a)); ogFor(a); n++; });
 console.log(`  ${n} app pages + OG images`);
+APPS.forEach(a => write(`apps/${a.slug}/privacy/index.html`, privacyPage(a)));
+write('privacy/index.html', privacyIndex());
+console.log(`  ${n} privacy pages + /privacy/ hub`);
 NOTES.forEach(x => write(`notes/${x.slug}/index.html`, notePage(x)));
 console.log(`  ${NOTES.length} note pages`);
 write('press/index.html', pressPage());
@@ -218,4 +353,8 @@ write('404.html', notFound());
 write('sitemap.xml', sitemap());
 write('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${ROOT}/sitemap.xml\n`);
 console.log('  press, 404, sitemap.xml, robots.txt');
+compressPNGs([...APPS.map(a => path.join(dir, 'assets', 'og', a.slug + '.png')),
+              path.join(dir, 'assets', 'og.png')]);
+await ratingsSnapshot();
 console.log('Done.');
+})();

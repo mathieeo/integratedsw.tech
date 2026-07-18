@@ -9,7 +9,8 @@ const APPS = [
     desc:"A graphical SSH client: browse a host like a file manager with a live terminal docked below.",
     long:"DeckGUI SSH is a full SSH client, SFTP file manager, and live server monitor in one beautifully designed app. Run a real terminal — vim, htop, and nano all work — browse and edit files with save-back, and watch CPU, memory, and disk in real time with trend graphs. Local port forwarding, jump hosts, and auto-reconnect are built in. Credentials live in the iOS Keychain behind Face ID, with on-device key generation and host-key verification. No accounts, no tracking.",
     store:"https://apps.apple.com/app/id6788512029", github:"" },
-  { name:"Spinnit", cat:"Entertainment", accent:"#a78bff", icon:"Spinnit", key:"spinnit", slug:"spinnit",
+  // ads:true → the generated privacy page includes the AdMob/ATT disclosure.
+  { name:"Spinnit", cat:"Entertainment", accent:"#a78bff", icon:"Spinnit", key:"spinnit", slug:"spinnit", ads:true,
     desc:"Can't decide? Give the wheel a flick and let it choose — with confetti, haptics, and sound.",
     long:"Spinnit is a delightful decision wheel. Spin for Yes/No or add any custom options, with your own colors, emoji, and 6, 9, or 12 slices. Winners get confetti, fireworks, hearts, or stars. Save unlimited wheels or start from templates — what to eat, truth or dare, dice, names — weight the odds, run best-of series, and use draw mode for raffles. Live tallies, history and stats, share a result or a whole wheel by QR code, and even “Hey Siri, spin the wheel.”",
     store:"https://apps.apple.com/app/id6788511873", github:"" },

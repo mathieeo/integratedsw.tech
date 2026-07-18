@@ -49,6 +49,12 @@
       if (card && !card.querySelector('.rating')) card.insertAdjacentHTML('beforeend', badge(r));
     });
   };
+  // Seed from the BUILD-TIME snapshot first (assets/ratings.js, written by
+  // build.js) so badges render even if Apple ever retires the lookup JSONP the
+  // way it retired the reviews feed — then let the live call overwrite it.
+  if (window.__RATINGS_SNAPSHOT) {
+    try { window.__istRatings(window.__RATINGS_SNAPSHOT); } catch (e) {}
+  }
   if (rated.length) {
     const s = document.createElement('script');
     s.src = 'https://itunes.apple.com/lookup?id=' + rated.map(x => x.id).join(',') +
@@ -187,49 +193,11 @@
     revealIn(jgrid);
   }
 
-  /* ------------------------------------------------ Testimonials (live) --- */
-  const rgrid = $('#reviewgrid'), rsec = $('#reviews');
-  const reviewIds = apps.filter(a => a.store).map(a => ({ name: a.name, id: idOf(a.store) })).filter(x => x.id);
-  const collected = [];
-  let pending = reviewIds.length, reviewsRendered = false;
-  function reviewsDone() {
-    if (reviewsRendered || !rgrid || !rsec) return;
-    reviewsRendered = true;
-    if (!collected.length) return; // no reviews yet → section stays hidden
-    rgrid.innerHTML = collected.slice(0, 6).map((rv, i) => `
-      <div class="card review reveal ${['', 'd1', 'd2'][i % 3]}" style="--a:var(--c2)">
-        <div class="glow" style="--gc:var(--c2)"></div>
-        <div class="stars big" aria-hidden="true">${'★'.repeat(rv.rating)}${'☆'.repeat(5 - rv.rating)}</div>
-        <div class="rvtitle">${rv.title}</div>
-        <div class="desc">“${rv.text}”</div>
-        <div class="rvby">${rv.author} · <span>${rv.app}</span></div>
-      </div>`).join('');
-    rsec.hidden = false;
-    $$('.card.review', rgrid).forEach(bindCard);
-    revealIn(rgrid);
-  }
-  reviewIds.forEach(({ name, id }) => {
-    const cb = '__rev_' + id;
-    window[cb] = function (feed) {
-      try {
-        ((feed && feed.feed && feed.feed.entry) || []).forEach(e => {
-          if (!e['im:rating']) return; // skip the app-info entry
-          collected.push({
-            app: name, rating: Math.max(1, Math.min(5, +e['im:rating'].label || 5)),
-            title: (e.title && e.title.label || '').slice(0, 80),
-            text: (e.content && e.content.label || '').replace(/\s+/g, ' ').slice(0, 200),
-            author: (e.author && e.author.name && e.author.name.label) || 'App Store user'
-          });
-        });
-      } catch (e) {}
-      if (--pending <= 0) reviewsDone();
-    };
-    const s = document.createElement('script');
-    s.src = `https://itunes.apple.com/us/rss/customerreviews/id=${id}/sortBy=mostRecent/json?callback=${cb}`;
-    s.onerror = () => { if (--pending <= 0) reviewsDone(); };
-    document.head.appendChild(s);
-  });
-  if (reviewIds.length) setTimeout(reviewsDone, 5000); // fallback if feeds hang
+  /* -------------------------------------------------- Testimonials: gone --
+     Apple retired the public customerreviews RSS feed — every request 400s —
+     so the live-testimonials loader here could never render again. It was
+     eleven failed script loads on every visit. Removed; if reviews come back
+     they come back hand-curated, not as a dead feed. */
 
   /* --------------------------------------------------------- Inquiry form */
   const form = $('#inquiry');

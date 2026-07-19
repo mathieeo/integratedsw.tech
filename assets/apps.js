@@ -5,6 +5,10 @@
    TO EDIT LINKS: set `store` (App Store URL); leave "" + status:"soon" for WIP.
    ============================================================================ */
 const APPS = [
+  { name:"Quitter", cat:"Health & Fitness", accent:"#61d2b0", icon:"Quitter", key:"quitter", slug:"quitter", shots:6,
+    desc:"Quit weed, smoking, alcohol and more. Day-by-day withdrawal tracking that tells you when it gets easier.",
+    long:"Quitter walks you through withdrawal one honest day at a time. Pick what you are quitting (weed, cigarettes, vaping, alcohol, caffeine, sugar, social media, or a custom habit) and get a researched day-by-day timeline: what to expect, what helps, and what to skip. A slip restarts your streak but never erases your lifetime clean days, longest streak, or money saved. The Craving SOS screen gets you through the hard ten minutes with a breathing ball and your own reasons read back to you, a one-tap mood log graphs the climb, milestones from 24 hours to one year get celebrated, and on supported iPhones an on-device AI companion answers questions about your exact day. No account, no ads, no cloud: everything stays on your phone.",
+    store:"", status:"soon", github:"" },
   { name:"DeckGUI SSH", cat:"Developer Tools", accent:"#22ff8c", icon:"Deck", key:"deck", slug:"deck",
     desc:"A graphical SSH client: browse a host like a file manager with a live terminal docked below.",
     long:"DeckGUI SSH is a full SSH client, SFTP file manager, and live server monitor in one beautifully designed app. Run a real terminal — vim, htop, and nano all work — browse and edit files with save-back, and watch CPU, memory, and disk in real time with trend graphs. Local port forwarding, jump hosts, and auto-reconnect are built in. Credentials live in the iOS Keychain behind Face ID, with on-device key generation and host-key verification. No accounts, no tracking.",

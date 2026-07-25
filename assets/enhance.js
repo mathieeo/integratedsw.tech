@@ -91,6 +91,8 @@
   /* --------------------------------------------------- Terminal easter egg */
   // hidden: only appears if you enter the Konami code. No visible trigger.
   let term, termBody, termInput;
+  let cmdHist = [], histIdx = 0;          // shell history + up/down recall
+  let snakeActive = false, snakeState = null;
   function buildTerm() {
     term = document.createElement('div');
     term.id = 'term';
@@ -107,43 +109,218 @@
     term.addEventListener('mousedown', e => { if (e.target === term) closeTerm(); });
     termInput.addEventListener('keydown', e => {
       if (e.key === 'Enter') { runTerm(termInput.value); termInput.value = ''; }
-      if (e.key === 'Escape') closeTerm();
+      else if (e.key === 'Escape') closeTerm();
+      // Shell-style history recall — the muscle memory any developer expects.
+      else if (e.key === 'ArrowUp') { e.preventDefault(); if (histIdx > 0) termInput.value = cmdHist[--histIdx] || ''; }
+      else if (e.key === 'ArrowDown') { e.preventDefault(); if (histIdx < cmdHist.length) { histIdx++; termInput.value = cmdHist[histIdx] || ''; } }
     });
     print('Integrated Software Technologies — web shell v1.0', 'muted');
     print('Type <b>help</b> for commands. You found the easter egg. 🥚', 'muted');
   }
   function print(html, cls) { const l = document.createElement('div'); l.className = 'terml ' + (cls || ''); l.innerHTML = html; termBody.appendChild(l); termBody.scrollTop = termBody.scrollHeight; }
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  // Match an app by its spaceless name (what `ls` prints) OR its short key,
+  // so both `open netscanpro` and `cat netscan` resolve.
+  const findApp = q => { q = q.replace(/\s/g, ''); return apps.find(a => a.name.toLowerCase().replace(/\s/g, '') === q || (a.key || '').toLowerCase() === q); };
+
+  const FORTUNES = [
+    'There are only two hard things in computer science: cache invalidation, naming things, and off-by-one errors.',
+    'It works on my machine. 🤷',
+    'Weeks of coding can save you hours of planning.',
+    'A user interface is like a joke — if you have to explain it, it’s not that good.',
+    '“Temporary” is the longest-lived word in software.',
+    'Deleted code is debugged code.',
+    'The best error message is the one that never shows up.',
+    'Ship it on-device. No server, no problem.',
+    'Real programmers count from 0.',
+    'To understand recursion, first understand recursion.',
+    '99 little bugs in the code… patch one down, compile it around, 127 little bugs in the code.',
+    'Premature optimization is the root of all evil — but so is shipping nothing.'
+  ];
+
   const TCMD = {
-    help: () => print('Commands: <b>ls</b>, <b>open</b> &lt;app&gt;, <b>about</b>, <b>contact</b>, <b>whoami</b>, <b>sudo</b>, <b>clear</b>, <b>exit</b>'),
+    help: () => {
+      print('Apps: <b>ls</b> · <b>open</b> &lt;app&gt; · <b>cat</b> &lt;app&gt;');
+      print('Fun:  <b>snake</b> · <b>matrix</b> · <b>fortune</b> · <b>cowsay</b> &lt;msg&gt; · <b>neofetch</b> · <b>coffee</b>');
+      print('Info: <b>about</b> · <b>contact</b> · <b>whoami</b> · <b>date</b> · <b>echo</b> · <b>history</b> · <b>clear</b> · <b>exit</b>');
+    },
     ls: () => print(apps.map(a => `<span class="tapp">${a.name.replace(/\s/g, '')}</span>`).join('  ')),
+    cat: (arg) => {
+      if (!arg) { print('usage: cat &lt;app&gt; — try <b>ls</b>', 'muted'); return; }
+      const a = findApp(arg);
+      if (!a) { print('cat: ' + esc(arg) + ': no such app', 'err'); return; }
+      print('<b class="tapp">' + esc(a.name) + '</b> — ' + esc(a.cat));
+      print(esc(a.long || a.desc));
+      if (a.store) print(esc(a.store), 'muted');
+    },
     about: () => print('Integrated Software Technologies Inc. — a one-person iOS studio. Native, on-device, no tracking. Built by Matthew Mesropian in Glendale, CA.'),
     contact: () => print('matt@integratedsw.tech · (818) 671-9866'),
     whoami: () => print('guest — but you clearly know your way around a keyboard.'),
-    sudo: () => print('Nice try. You already have root — this is your browser. 😎', 'ok'),
+    date: () => print(new Date().toString()),
+    echo: (arg, raw) => print(esc(raw) || '&nbsp;'),
+    fortune: () => print('🥠 ' + esc(FORTUNES[(Math.random() * FORTUNES.length) | 0])),
+    cowsay: (arg, raw) => print(cowsay(raw)),
+    coffee: () => print(['      ) )', '     ( (', '    ........', '    |      |]', '    \\      /', "     `----'", '', 'brewing… ☕ on-device, of course.'].join('\n'), 'ok'),
+    neofetch: () => neofetch(),
+    matrix: () => runMatrix(),
+    snake: () => startSnake(),
+    history: () => print(cmdHist.length ? cmdHist.map((c, i) => `  ${String(i + 1).padStart(3)}  ${esc(c)}`).join('\n') : 'no history yet.', 'muted'),
+    sudo: (arg, raw) => {
+      if (/\brm\b.*-.*r/.test(raw)) { print('rm: permission denied — and honestly, you’ll thank me later. 😌', 'err'); return; }
+      print('Nice try. You already have root — this is your browser. 😎', 'ok');
+    },
     clear: () => { termBody.innerHTML = ''; },
     exit: () => closeTerm(),
     '': () => {}
   };
+
   function runTerm(raw) {
     const line = raw.trim();
-    print(`<span class="termps">$</span> ${line.replace(/</g, '&lt;')}`, 'echo');
+    print(`<span class="termps">$</span> ${esc(line)}`, 'echo');
+    if (line && cmdHist[cmdHist.length - 1] !== line) cmdHist.push(line);
+    histIdx = cmdHist.length;
     const [cmd, ...rest] = line.split(/\s+/);
-    const arg = rest.join(' ').toLowerCase();
+    const rawArg = rest.join(' ');
+    const arg = rawArg.toLowerCase();
     if (cmd === 'open') {
-      const i = apps.findIndex(a => a.name.toLowerCase().replace(/\s/g, '') === arg.replace(/\s/g, ''));
+      const a = findApp(arg), i = a ? apps.indexOf(a) : -1;
       if (i >= 0) { print('opening ' + apps[i].name + '…', 'ok'); setTimeout(() => { closeTerm(); (window.openApp || openApp)(i); }, 350); }
-      else print('open: no such app: ' + (arg || '(none)') + ' — try <b>ls</b>', 'err');
+      else print('open: no such app: ' + (esc(arg) || '(none)') + ' — try <b>ls</b>', 'err');
       return;
     }
-    if (cmd in TCMD) TCMD[cmd]();
-    else print('command not found: ' + cmd + ' — try <b>help</b>', 'err');
+    if (cmd in TCMD) TCMD[cmd](arg, rawArg);
+    else print('command not found: ' + esc(cmd) + ' — try <b>help</b>', 'err');
   }
   function openTerm() { if (!term) buildTerm(); term.classList.add('open'); setTimeout(() => termInput.focus(), 60); }
-  function closeTerm() { term && term.classList.remove('open'); }
+  function closeTerm() { stopSnake(true); term && term.classList.remove('open'); }
+
+  /* ------------------------------------------------------- terminal toys -- */
+  function cowsay(text) {
+    text = (text || 'moo').replace(/\s+/g, ' ').trim().slice(0, 120);
+    const bar = ' ' + '_'.repeat(text.length + 2);
+    const bot = ' ' + '-'.repeat(text.length + 2);
+    const cow = [
+      '        \\   ^__^',
+      '         \\  (oo)\\_______',
+      '            (__)\\       )\\/\\',
+      '                ||----w |',
+      '                ||     ||'
+    ].join('\n');
+    return `<span style="white-space:pre">${bar}\n&lt; ${esc(text)} &gt;\n${bot}\n${cow}</span>`;
+  }
+
+  function neofetch() {
+    const live = apps.filter(a => a.status !== 'soon').length;
+    const logo = ['╔════════╗', '║   ▄▄   ║', '║        ║', '║   ██   ║', '║   ██   ║', '║   ██   ║', '╚════════╝'].join('\n');
+    const info = [
+      ['host', 'integratedsw.tech'],
+      ['studio', 'Integrated Software Technologies'],
+      ['founder', 'Matthew Mesropian'],
+      ['location', 'Glendale, CA'],
+      ['apps', live + ' shipped'],
+      ['stack', 'Swift · SwiftUI · C++ · Python'],
+      ['privacy', 'on-device · 0 trackers'],
+      ['uptime', 'since 2024']
+    ].map(([k, v]) => `<b class="tapp">${k}</b>  ${esc(v)}`).join('\n');
+    print(`<div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">`
+      + `<div style="color:#33e6d1;white-space:pre;line-height:1.15">${logo}</div>`
+      + `<div style="white-space:pre;line-height:1.5">${info}</div></div>`);
+  }
+
+  function runMatrix() {
+    const wrap = document.createElement('div');
+    wrap.className = 'mtxwrap';
+    wrap.innerHTML = '<canvas class="mtxcv" width="560" height="200"></canvas><div class="snakehud">decoding the mainframe…</div>';
+    termBody.appendChild(wrap);
+    termBody.scrollTop = termBody.scrollHeight;
+    const cv = wrap.querySelector('canvas'), cx = cv.getContext('2d');
+    const fs = 13, cols = Math.floor(cv.width / (fs * 0.72));
+    const ys = Array(cols).fill(0).map(() => (Math.random() * 15) | 0);
+    const glyphs = '01<>{}[]=;/\\+*アイウエオカサ0123456789abcdef';
+    const pick = () => glyphs[(Math.random() * glyphs.length) | 0];
+    cx.fillStyle = '#06070d'; cx.fillRect(0, 0, cv.width, cv.height);
+    const timer = setInterval(() => {
+      cx.fillStyle = 'rgba(6,7,13,0.12)'; cx.fillRect(0, 0, cv.width, cv.height);
+      cx.font = fs + 'px monospace';
+      for (let i = 0; i < cols; i++) {
+        const x = i * fs * 0.72, y = ys[i] * fs;
+        cx.fillStyle = '#6ef2e0'; cx.fillText(pick(), x, y);
+        cx.fillStyle = '#248c85'; cx.fillText(pick(), x, y - fs);
+        ys[i] = (y > cv.height && Math.random() > 0.96) ? 0 : ys[i] + 1;
+      }
+    }, 55);
+    setTimeout(() => { clearInterval(timer); const cap = wrap.querySelector('.snakehud'); if (cap) cap.textContent = 'decoded. it was on-device all along.'; }, 4600);
+  }
+
+  /* ----------------------------------------------------------- snake game -- */
+  function startSnake() {
+    if (snakeActive || !term) return;
+    snakeActive = true;
+    termInput.disabled = true; termInput.blur();
+    const cell = 14, cols = 28, rows = 16;
+    const wrap = document.createElement('div');
+    wrap.className = 'snakewrap';
+    wrap.innerHTML = `<canvas class="snakecv" width="${cols * cell}" height="${rows * cell}"></canvas>`
+      + `<div class="snakehud"><span class="snakescore">score 0</span> · arrows / WASD to move · Q to quit</div>`;
+    termBody.appendChild(wrap);
+    termBody.scrollTop = termBody.scrollHeight;
+    const cv = wrap.querySelector('canvas'), cx = cv.getContext('2d');
+    const scoreEl = wrap.querySelector('.snakescore');
+    let snake, dir, nextDir, food, score, dead;
+    function spawn() { let p; do { p = { x: (Math.random() * cols) | 0, y: (Math.random() * rows) | 0 }; } while (snake && snake.some(s => s.x === p.x && s.y === p.y)); return p; }
+    function reset() { snake = [{ x: 6, y: 8 }, { x: 5, y: 8 }, { x: 4, y: 8 }]; dir = { x: 1, y: 0 }; nextDir = dir; score = 0; scoreEl.textContent = 'score 0'; food = spawn(); dead = false; draw(); }
+    function draw() {
+      cx.fillStyle = '#06070d'; cx.fillRect(0, 0, cv.width, cv.height);
+      cx.fillStyle = '#fab84d'; cx.fillRect(food.x * cell + 2, food.y * cell + 2, cell - 4, cell - 4);
+      snake.forEach((s, i) => { cx.fillStyle = i === 0 ? '#6ef2e0' : '#33e6d1'; cx.fillRect(s.x * cell + 1, s.y * cell + 1, cell - 2, cell - 2); });
+    }
+    function over() {
+      dead = true;
+      cx.fillStyle = 'rgba(6,7,13,0.74)'; cx.fillRect(0, 0, cv.width, cv.height);
+      cx.textAlign = 'center';
+      cx.fillStyle = '#fa6b6b'; cx.font = 'bold 22px monospace'; cx.fillText('GAME OVER', cv.width / 2, cv.height / 2 - 4);
+      cx.fillStyle = '#98a0b8'; cx.font = '12px monospace'; cx.fillText('score ' + score + '  ·  Enter to retry  ·  Q to quit', cv.width / 2, cv.height / 2 + 18);
+      cx.textAlign = 'left';
+    }
+    function tick() {
+      if (dead) return;
+      dir = nextDir;
+      const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+      if (head.x < 0 || head.x >= cols || head.y < 0 || head.y >= rows || snake.some(s => s.x === head.x && s.y === head.y)) { over(); return; }
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) { score++; scoreEl.textContent = 'score ' + score; food = spawn(); } else { snake.pop(); }
+      draw();
+    }
+    reset();
+    const timer = setInterval(tick, 110);
+    snakeState = {
+      setDir(d) { if (dead) return; if (d.x === -dir.x && d.y === -dir.y) return; nextDir = d; },
+      retry() { if (dead) reset(); },
+      stop() { clearInterval(timer); }
+    };
+  }
+  function stopSnake(silent) {
+    if (!snakeActive) return;
+    snakeActive = false;
+    if (snakeState) { snakeState.stop(); snakeState = null; }
+    if (termInput) termInput.disabled = false;
+    if (!silent) { print('snake: quit — thanks for playing. 🐍', 'muted'); setTimeout(() => termInput && termInput.focus(), 40); }
+  }
+  function handleSnakeKey(e) {
+    const k = e.key;
+    if (k === 'q' || k === 'Q' || k === 'Escape') { e.preventDefault(); stopSnake(false); return; }
+    if (k === 'Enter') { e.preventDefault(); if (snakeState) snakeState.retry(); return; }
+    const m = { arrowup: [0, -1], arrowdown: [0, 1], arrowleft: [-1, 0], arrowright: [1, 0], w: [0, -1], s: [0, 1], a: [-1, 0], d: [1, 0] };
+    const dv = m[k.toLowerCase()];
+    if (dv) { e.preventDefault(); if (snakeState) snakeState.setDir({ x: dv[0], y: dv[1] }); }
+  }
 
   const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
   let kk = 0;
   addEventListener('keydown', e => {
+    // While snake is running it owns the keyboard: arrows steer (and must not
+    // scroll the page or advance the Konami counter), Q/Esc quit.
+    if (snakeActive) { handleSnakeKey(e); return; }
     // ` opens the terminal directly (Quake-style) — but never while typing in a
     // field, or the shortcut would eat backticks from the inquiry form and the
     // terminal's own input.

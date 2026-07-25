@@ -155,7 +155,7 @@
   // gravity and tumbles, and removes itself when it lands. Reused by the
   // inquiry form and the copy-to-clipboard buttons — the two moments on the
   // page where the visitor did a thing and deserves a little "yes".
-  const COLORS = ['#22d3ee', '#8b5cf6', '#ec4899', '#34d399', '#fbbf24', '#eaeefb'];
+  const COLORS = ['#33e6d1', '#fab84d', '#fa6b6b', '#34d399', '#fbbf24', '#eaeefb'];
   function confetti(x, y, count) {
     if (reduced) return;
     count = count || 26;

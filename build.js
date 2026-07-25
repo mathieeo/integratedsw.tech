@@ -40,7 +40,7 @@ function head({ title, desc, canonical, og }) {
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${esc(title)}"><meta name="twitter:image" content="${og}">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%238b5cf6'/><text x='50' y='68' font-size='54' font-family='sans-serif' font-weight='700' fill='%230b0b12' text-anchor='middle'>i</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='24' fill='%2333e6d1'/><text x='50' y='68' font-size='54' font-family='sans-serif' font-weight='700' fill='%230b0b12' text-anchor='middle'>i</text></svg>">
 <link rel="stylesheet" href="/assets/fonts.css"><link rel="stylesheet" href="/assets/style.css">
 </head><body>
 <div id="bg"><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div></div>
@@ -208,7 +208,7 @@ function pressPage() {
     { n: 'App mark (192px)', img: '/assets/icon-192.png', dl: '/assets/icon-192.png' },
     { n: 'Share card', img: '/assets/og.png', dl: '/assets/og.png' }
   ];
-  const swatches = [['Violet', '#8b5cf6'], ['Cyan', '#22d3ee'], ['Pink', '#ec4899'], ['Emerald', '#34d399'], ['Ink', '#06070d']];
+  const swatches = [['Cyan', '#33e6d1'], ['Amber', '#fab84d'], ['Teal', '#248c85'], ['Emerald', '#34d399'], ['Ink', '#06070d']];
   return head({ title: 'Press kit — Integrated Software Technologies', desc: 'Brand assets, logos, colors, and boilerplate for Integrated Software Technologies.', canonical, og: `${ROOT}/assets/og.png` }) +
     `<main class="subpage">
 <a class="backlink" href="/">← Home</a>
@@ -248,7 +248,7 @@ function ogFor(a) {
   const desc = (full.length > 64 ? full.slice(0, 62).trimEnd() + '…' : full).replace(/&/g, '&amp;');
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 630" preserveAspectRatio="xMidYMid meet">
 <defs>
-<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a.accent}"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a.accent}"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
 <radialGradient id="glow" cx="0.9" cy="0.05" r="0.8"><stop offset="0" stop-color="${a.accent}" stop-opacity="0.32"/><stop offset="1" stop-color="${a.accent}" stop-opacity="0"/></radialGradient>
 </defs>
 <rect width="1200" height="630" fill="#06070d"/><rect width="1200" height="630" fill="url(#glow)"/>

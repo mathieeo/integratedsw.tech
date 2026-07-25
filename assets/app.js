@@ -94,13 +94,13 @@ document.getElementById('statgrid').innerHTML = STATS.map(s =>
 
 // ---- open-source cross-platform tools ----
 const OSS = [
-  { name:"rateCheck", lang:"C++17", glyph:"💽", accent:"#22d3ee",
+  { name:"rateCheck", lang:"C++17", glyph:"💽", accent:"#33e6d1",
     desc:"A cross-platform disk and partition benchmarking utility with direct-disk read and write modes.",
     platforms:"Windows · macOS · Linux", github:"https://github.com/mathieeo/rateCheck" },
   { name:"SoftCOM", lang:"Python", glyph:"🔌", accent:"#34d399",
     desc:"A serial I/O utility for opening and interacting with serial-port devices.",
     platforms:"Windows · macOS · Linux", github:"https://github.com/mathieeo/SoftCOM" },
-  { name:"SerialFileCopy", lang:"Python", glyph:"🔁", accent:"#a855f7",
+  { name:"SerialFileCopy", lang:"Python", glyph:"🔁", accent:"#fab84d",
     desc:"Transfer files reliably over a serial connection, straight from the command line.",
     platforms:"Windows · macOS · Linux", pip:"pip install serialfilecopy",
     github:"https://github.com/mathieeo/SerialFileCopy" },
@@ -122,22 +122,22 @@ document.getElementById('osgrid').innerHTML = OSS.map((o, i) => {
 
 // ---- services (work with me) ----
 const SERVICES = [
-  { t:"IT Support", accent:"#22d3ee",
+  { t:"IT Support", accent:"#33e6d1",
     d:"On-site and remote IT help: setup, troubleshooting, backups, and keeping your tech running.",
     svg:'<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M6.5 7.5h.01M6.5 16.5h.01"/>' },
   { t:"Networking", accent:"#34d399",
     d:"Wi-Fi and LAN design, diagnostics, security audits, and getting every device talking.",
     svg:'<circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="19" r="2.2"/><circle cx="19" cy="19" r="2.2"/><path d="M12 7.2v3.3m0 0-5 6.3m5-6.3 5 6.3"/>' },
-  { t:"Websites", accent:"#a855f7",
+  { t:"Websites", accent:"#248c85",
     d:"Fast, modern, animated websites like this one, designed and deployed for you.",
     svg:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M6 6.5h.01M8.5 6.5h.01"/>' },
-  { t:"iOS & Android apps", accent:"#ec4899",
+  { t:"iOS & Android apps", accent:"#fa6b6b",
     d:"Native mobile apps and games, from concept to the App Store and Google Play.",
     svg:'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/>' },
   { t:"PC & Mac apps", accent:"#f59e0b",
     d:"Cross-platform desktop software for Windows, macOS, and Linux, built fast and reliable.",
     svg:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>' },
-  { t:"Games", accent:"#8b5cf6",
+  { t:"Games", accent:"#fab84d",
     d:"Fun, polished games and interactive experiences that feel great to play.",
     svg:'<rect x="2" y="7.5" width="20" height="9" rx="4.5"/><path d="M6.5 11v2M5.5 12h2"/><circle cx="16" cy="11.5" r="1"/><circle cx="18" cy="13.5" r="1"/>' },
 ];
@@ -242,18 +242,18 @@ addEventListener('pointermove', e => { mouse.x = e.clientX; mouse.y = e.clientY;
     // line + gentle repel to the cursor
     const mdx=d.x-mouse.x, mdy=d.y-mouse.y, md=Math.hypot(mdx,mdy)||1;
     if(md<180){ const o=(1-md/180)*.5;
-      cx.strokeStyle=`rgba(139,92,246,${o})`; cx.lineWidth=1;
+      cx.strokeStyle=`rgba(51,230,209,${o})`; cx.lineWidth=1;
       cx.beginPath(); cx.moveTo(d.x,d.y); cx.lineTo(mouse.x,mouse.y); cx.stroke();
       d.vx+=mdx/md*.02; d.vy+=mdy/md*.02;
     }
     // lines to nearby dots
     for(let j=i+1;j<dots.length;j++){
       const n=dots[j], dx=d.x-n.x, dy=d.y-n.y, dist=Math.hypot(dx,dy);
-      if(dist<LINK){ cx.strokeStyle=`rgba(150,170,255,${(1-dist/LINK)*.16})`; cx.lineWidth=1;
+      if(dist<LINK){ cx.strokeStyle=`rgba(45,190,180,${(1-dist/LINK)*.16})`; cx.lineWidth=1;
         cx.beginPath(); cx.moveTo(d.x,d.y); cx.lineTo(n.x,n.y); cx.stroke(); }
     }
     d.vx=Math.max(-.4,Math.min(.4,d.vx)); d.vy=Math.max(-.4,Math.min(.4,d.vy));
-    cx.beginPath(); cx.arc(d.x,d.y,d.r,0,7); cx.fillStyle=`rgba(160,180,255,${d.a})`; cx.fill();
+    cx.beginPath(); cx.arc(d.x,d.y,d.r,0,7); cx.fillStyle=`rgba(120,235,225,${d.a})`; cx.fill();
   }
   requestAnimationFrame(loop);
 })();

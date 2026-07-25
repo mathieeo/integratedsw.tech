@@ -27,6 +27,14 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const apps = (typeof APPS !== 'undefined') ? APPS : [];
   const shot = (a, n) => `assets/shots/${a.key}/0${n}.png`;
+  // The phone mockups below force whatever image this returns into a fixed
+  // ~9:19.5 device frame with object-fit:cover — right for a real device
+  // screenshot, but several apps' 01.png is instead a WIDE marketing/headline
+  // composite (≈3:4), which that crop mangles (text clipped at both edges).
+  // apps.js can set `heroShot` to point a mockup at a differently-shaped shot
+  // for that one app without renumbering its files or touching the gallery,
+  // which displays every shot at its own natural aspect ratio and is unaffected.
+  const heroShot = a => shot(a, a.heroShot || 1);
 
   /* ------------------------------------------------------ split headline -- */
   // Split on WORDS, not characters. Per-character reveals look impressive in a
@@ -99,7 +107,7 @@
     phone.className = 'phone';
     phone.innerHTML =
       `<div class="screen">${withShots.map((a, i) =>
-        `<img src="${shot(a, 1)}" alt="${a.name}" ${i === 0 ? 'class="on"' : ''} loading="${i === 0 ? 'eager' : 'lazy'}">`
+        `<img src="${heroShot(a)}" alt="${a.name}" ${i === 0 ? 'class="on"' : ''} loading="${i === 0 ? 'eager' : 'lazy'}">`
       ).join('')}<div class="glare"></div></div>`;
     stage.appendChild(phone);
 
@@ -171,7 +179,7 @@
     // the scroll scrubs. Lazy on everything but the first, or the page pays for
     // eight full-size screenshots it may never show.
     phone.innerHTML = `<div class="screen">${list.map((a, i) =>
-      `<img src="${shot(a, 1)}" alt="${a.name} screenshot" ${i === 0 ? 'class="on"' : ''} loading="${i === 0 ? 'eager' : 'lazy'}">`
+      `<img src="${heroShot(a)}" alt="${a.name} screenshot" ${i === 0 ? 'class="on"' : ''} loading="${i === 0 ? 'eager' : 'lazy'}">`
     ).join('')}<div class="glare"></div></div>`;
     wrap.appendChild(phone);
 

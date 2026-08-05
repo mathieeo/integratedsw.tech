@@ -48,7 +48,9 @@ const APPS = [
     desc:"Turn images into sound and sound back into images, using an on-device FFT.",
     long:"WaveVision is an audio-visual experiment: convert any image into sound by mapping pixels to frequencies, then turn sound back into an image with an on-device FFT. Fully offline, powered by the Accelerate framework, and endlessly fun to explore.",
     store:"https://apps.apple.com/us/app/wavevision/id6761349326" },
-  { name:"ToneScape", cat:"Health & Fitness", accent:"#2dd4bf", icon:"ToneScape", key:"tonescape", shots:4, slug:"tonescape",
+  // heroShot:2 → 01 is the fullscreen aurora (gorgeous but dark/abstract at
+  // hero size); the Sound tab at 02 reads clearly inside the hero phone frame.
+  { name:"ToneScape", cat:"Health & Fitness", accent:"#2dd4bf", icon:"ToneScape", key:"tonescape", shots:4, heroShot:2, slug:"tonescape",
     desc:"Ambient soundscapes for focus and sleep, with a home-screen widget.",
     long:"ToneScape generates calming ambient soundscapes for focus, relaxation, and sleep. Mix layers, set a timer, and keep it playing in the background — with a home-screen widget for one-tap ambience. Simple, beautiful, and easy on the battery.",
     store:"https://apps.apple.com/us/app/tonescape/id6761738557" },

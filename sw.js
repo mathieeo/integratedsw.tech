@@ -22,7 +22,11 @@
    Nobody has to remember anything, and a bad deploy can no longer be permanent.
    ========================================================================== */
 
-const CACHE = 'ist-v4';
+// Bumping CACHE is NOT the normal update path — stale-while-revalidate handles
+// that on its own, which is the whole point of the rewrite described above.
+// Bump it only to force a one-time flush for everyone, as with v5, which
+// shipped the fix for the homepage rendering blank when a script hung.
+const CACHE = 'ist-v5';
 
 // Precache the shell so the very first visit is instant and offline works.
 // Anything not listed here is still cached on first use — it just isn't
@@ -38,6 +42,7 @@ const SHELL = [
   '/assets/notes.js',
   '/assets/app.js',
   '/assets/enhance.js',
+  '/assets/term.js',
   '/assets/cinema.js',
   '/assets/wow.js',
   '/assets/dazzle.css',

@@ -53,6 +53,11 @@ function head({ title, desc, canonical, og }) {
 const foot = `<footer><a class="brand" href="/"><span class="mark">i</span> Integrated Software Technologies Inc.</a>
 <span>© 2026 · Built on-device, in Glendale, CA · integratedsw.tech · <a href="/privacy/" style="color:inherit">Privacy</a></span></footer>
 <script>addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('scrolled',scrollY>30)})</script>
+<!-- The terminal rides along on every generated page too, not just the
+     homepage: someone reading an app page is exactly the person who wants to
+     poke at it. apps.js is the catalog term.js reads. -->
+<script src="/assets/apps.js"></script>
+<script src="/assets/term.js"></script>
 </body></html>`;
 
 const svgApple = '<svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M16 1c.1 1.2-.4 2.4-1.1 3.2-.8.9-2 1.6-3.2 1.5-.1-1.2.5-2.4 1.2-3.1C13.7 1.6 15 1 16 1zm3.6 16.4c-.6 1.4-.9 2-1.7 3.2-1.1 1.7-2.6 3.8-4.5 3.8-1.7 0-2.1-1.1-4.4-1.1s-2.8 1.1-4.4 1.1c-1.9 0-3.3-1.9-4.4-3.6C-1 16.4-.4 9.9 3 8c1.3-.7 2.6-.6 3.7-.6 1.2 0 2 .7 3.4.7 1.3 0 2.1-.7 3.6-.7 1.1 0 2.3.1 3.4.9-3 1.6-2.5 5.9.5 7.1z"/></svg>';
@@ -354,6 +359,46 @@ write('404.html', notFound());
 write('sitemap.xml', sitemap());
 write('robots.txt', `User-agent: *\nAllow: /\n\nSitemap: ${ROOT}/sitemap.xml\n`);
 console.log('  press, 404, sitemap.xml, robots.txt');
+// ---------------------------------------------------------------------------
+// Server-render the homepage app grid.
+//
+// index.html is hand-maintained, so rather than generating the whole file we
+// fill one marked region inside it. This matters more than it looks: the
+// homepage used to ship with an EMPTY grid and let assets/app.js inject every
+// card, which meant one throwing script or one hanging request left a visitor
+// looking at a background and nothing else. Now the catalog is real HTML and
+// JS only enhances it.
+// ---------------------------------------------------------------------------
+function homeCards() {
+  const svgApple = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 1c.1 1.2-.4 2.4-1.1 3.2-.8.9-2 1.6-3.2 1.5-.1-1.2.5-2.4 1.2-3.1C13.7 1.6 15 1 16 1zm3.6 16.4c-.6 1.4-.9 2-1.7 3.2-1.1 1.7-2.6 3.8-4.5 3.8-1.7 0-2.1-1.1-4.4-1.1s-2.8 1.1-4.4 1.1c-1.9 0-3.3-1.9-4.4-3.6C-1 16.4-.4 9.9 3 8c1.3-.7 2.6-.6 3.7-.6 1.2 0 2 .7 3.4.7 1.3 0 2.1-.7 3.6-.7 1.1 0 2.3.1 3.4.9-3 1.6-2.5 5.9.5 7.1z"/></svg>';
+  return APPS.map((a, i) => {
+    const iconHTML = a.icon
+      ? `<img class="icon" src="assets/icons/${a.icon}.png" alt="${esc(a.name)} icon" loading="lazy">`
+      : `<div class="icon ph">${a.glyph || '📱'}</div>`;
+    let links;
+    if (a.status === 'soon') links = `<span class="chip soon">In development</span>`;
+    else if (a.store) links = `<a class="chip app" href="${a.store}" target="_blank" rel="noopener">${svgApple} View on the App Store</a>`;
+    else links = `<span class="chip soon">In review</span>`;
+    return `<div class="card reveal ${['', 'd1', 'd2'][i % 3]}" data-app="${i}" style="--a:${a.accent};cursor:pointer">`
+      + `<div class="glow" style="--gc:${a.accent}"></div>`
+      + `<div class="top">${iconHTML}<div><h3>${esc(a.name)}</h3><div class="cat">${esc(a.cat)}</div></div></div>`
+      + `<div class="desc">${esc(a.desc)}</div>`
+      + `<div class="links">${links}<span class="chip more">Details →</span></div></div>`;
+  }).join('');
+}
+
+{
+  const idx = path.join(dir, 'index.html');
+  const html = fs.readFileSync(idx, 'utf8');
+  const re = /<!--APPS:START-->[\s\S]*?<!--APPS:END-->/;
+  if (!re.test(html)) {
+    console.log('  WARNING: index.html has no APPS markers, homepage grid NOT server-rendered');
+  } else {
+    fs.writeFileSync(idx, html.replace(re, '<!--APPS:START-->' + homeCards() + '<!--APPS:END-->'));
+    console.log(`  homepage: ${APPS.length} app cards server-rendered into index.html`);
+  }
+}
+
 compressPNGs([...APPS.map(a => path.join(dir, 'assets', 'og', a.slug + '.png')),
               path.join(dir, 'assets', 'og.png')]);
 await ratingsSnapshot();

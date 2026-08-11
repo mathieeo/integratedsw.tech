@@ -9,7 +9,12 @@ const svgGit = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2A10 1
 
 // render app cards
 const grid = document.getElementById('appgrid');
-grid.innerHTML = APPS.map((a, i) => {
+// build.js server-renders these cards into index.html, so normally there is
+// nothing to do here. Only render if the grid came back empty (a page that has
+// no markers, or a stale cached index.html) — otherwise every card would be
+// drawn twice.
+const gridPrefilled = grid && grid.querySelector('.card');
+if (grid && !gridPrefilled) grid.innerHTML = APPS.map((a, i) => {
   const iconHTML = a.icon
     ? `<img class="icon" src="assets/icons/${a.icon}.png" alt="${a.name} icon" loading="lazy">`
     : `<div class="icon ph">${a.glyph||'📱'}</div>`;

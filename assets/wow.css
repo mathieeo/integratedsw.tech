@@ -87,7 +87,7 @@ body.cursor-press #cursor-ring{width:26px;height:26px}
    A gentle scale + de-blur added to the existing rise. It focuses IN, the same
    idea as the headline and the manifesto, so the whole page shares one language
    of coming-into-being. Kept tiny so text never renders blurry for long. */
-.reveal{filter:blur(6px);transition:opacity .7s cubic-bezier(.2,.8,.2,1),
+.js .reveal{filter:blur(6px);transition:opacity .7s cubic-bezier(.2,.8,.2,1),
   transform .7s cubic-bezier(.2,.8,.2,1),filter .7s cubic-bezier(.2,.8,.2,1)}
 .reveal.in{filter:none}
 /* the hero keeps its own focus-in (the split headline is the LCP — no second

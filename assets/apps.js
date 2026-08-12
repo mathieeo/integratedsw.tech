@@ -59,8 +59,8 @@ const APPS = [
   // heroShot:2 → 01 is the fullscreen aurora (gorgeous but dark/abstract at
   // hero size); the Sound tab at 02 reads clearly inside the hero phone frame.
   { name:"ToneScape", cat:"Health & Fitness", accent:"#2dd4bf", icon:"ToneScape", key:"tonescape", shots:4, heroShot:2, slug:"tonescape",
-    desc:"Ambient soundscapes for focus and sleep, synthesized live so they never loop.",
-    long:"ToneScape generates calming ambient soundscapes for focus, relaxation, and sleep. Mix layers, set a timer, and keep it playing in the background with the screen off. Every sound is synthesized as it plays rather than streamed from audio files, so nothing ever loops audibly however long you leave it running, and the app stays small and easy on the battery.",
+    desc:"Ambient soundscapes, binaural beats and generated noise for focus and sleep.",
+    long:"ToneScape generates calming soundscapes for focus, relaxation, and sleep. Layer pure tones, binaural beats and noise, set a sleep timer, and keep everything playing in the background with the screen off. The white, pink and brown noise and the ocean and forest ambiences are synthesized in real time rather than looped from a short sample, so they stay unpredictable however long you run them. Lock-screen controls and haptic feedback included.",
     store:"https://apps.apple.com/us/app/tonescape/id6761738557" },
   { name:"BinaryHexCalc", cat:"Developer Tools", accent:"#22d3ee", icon:"BinaryHexCalc", key:"binaryhexcalc", shots:3, slug:"binaryhexcalc",
     desc:"Binary, hexadecimal, and decimal side by side, with live bit toggling.",

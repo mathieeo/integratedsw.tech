@@ -42,7 +42,7 @@ const APPS = [
     store:"https://apps.apple.com/app/id6788135760", github:"" },
   { name:"SnapSweep", cat:"Photo & Video", accent:"#0ea5e9", icon:"SnapSweep", key:"snapsweep", slug:"snapsweep", shots:4,
     desc:"Reclaim your storage. Find duplicates, screenshots, and blurry shots, all on-device.",
-    long:"SnapSweep cleans up your photo library without ever uploading a thing. An on-device scan finds duplicates, screenshots, blurry shots, and junk using PhotoKit and Vision, then lets you review and sweep them in a fast swipe-to-decide flow. Watch your free storage climb — privately.",
+    long:"SnapSweep cleans up your photo library without sending it anywhere to be scanned. An on-device scan finds duplicates, screenshots, blurry shots, and junk using PhotoKit and Vision, then lets you review and sweep them in a fast swipe-to-decide flow. If you want to keep the originals, an optional SFTP export archives them to a server you choose before you sweep. Watch your free storage climb, privately.",
     store:"https://apps.apple.com/app/id6788139595", github:"" },
   { name:"DoughRatio", cat:"Food & Drink", accent:"#f59e0b", icon:"DoughRatioApp", key:"doughratio", slug:"doughratio", shots:4,
     desc:"Baker's percentages, hydration, and batch scaling, worked out the instant you type.",
@@ -59,8 +59,8 @@ const APPS = [
   // heroShot:2 → 01 is the fullscreen aurora (gorgeous but dark/abstract at
   // hero size); the Sound tab at 02 reads clearly inside the hero phone frame.
   { name:"ToneScape", cat:"Health & Fitness", accent:"#2dd4bf", icon:"ToneScape", key:"tonescape", shots:4, heroShot:2, slug:"tonescape",
-    desc:"Ambient soundscapes for focus and sleep, with a home-screen widget.",
-    long:"ToneScape generates calming ambient soundscapes for focus, relaxation, and sleep. Mix layers, set a timer, and keep it playing in the background — with a home-screen widget for one-tap ambience. Simple, beautiful, and easy on the battery.",
+    desc:"Ambient soundscapes for focus and sleep, synthesized live so they never loop.",
+    long:"ToneScape generates calming ambient soundscapes for focus, relaxation, and sleep. Mix layers, set a timer, and keep it playing in the background with the screen off. Every sound is synthesized as it plays rather than streamed from audio files, so nothing ever loops audibly however long you leave it running, and the app stays small and easy on the battery.",
     store:"https://apps.apple.com/us/app/tonescape/id6761738557" },
   { name:"BinaryHexCalc", cat:"Developer Tools", accent:"#22d3ee", icon:"BinaryHexCalc", key:"binaryhexcalc", shots:3, slug:"binaryhexcalc",
     desc:"Binary, hexadecimal, and decimal side by side, with live bit toggling.",

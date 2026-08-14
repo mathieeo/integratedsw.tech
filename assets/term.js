@@ -85,7 +85,6 @@
           'cinema.js': F('/assets/cinema.js'),
           'wow.js': F('/assets/wow.js'),
           'dazzle.js': F('/assets/dazzle.js'),
-          'notes.js': F('/assets/notes.js'),
           'ratings.js': F('/assets/ratings.js'),
           icons: D(iconFiles),
           shots: D(shotDirs)

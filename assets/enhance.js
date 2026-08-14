@@ -116,23 +116,6 @@
     card.addEventListener('pointerleave', () => { card.style.transform = ''; });
   }
 
-  /* -------------------------------------------------------------- Journal -- */
-  const jgrid = $('#journalgrid'), notes = (typeof NOTES !== 'undefined') ? NOTES : [];
-  if (jgrid && notes.length) {
-    const fmt = d => new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-    jgrid.innerHTML = notes.map((n, i) => `
-      <a class="card note reveal ${['', 'd1', 'd2'][i % 3]}" href="notes/${n.slug}/" style="--a:var(--c2)">
-        <div class="glow" style="--gc:var(--c2)"></div>
-        <div class="ntop"><span class="ndate">${fmt(n.date)}</span>
-          <span class="ntags">${(n.tags || []).slice(0, 2).map(t => `<span>${t}</span>`).join('')}</span></div>
-        <h3>${n.title}</h3>
-        <div class="desc">${n.dek}</div>
-        <span class="chip more">Read →</span>
-      </a>`).join('');
-    $$('.card.note', jgrid).forEach(bindCard);
-    revealIn(jgrid);
-  }
-
   /* -------------------------------------------------- Testimonials: gone --
      Apple retired the public customerreviews RSS feed — every request 400s —
      so the live-testimonials loader here could never render again. It was

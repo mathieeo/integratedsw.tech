@@ -39,7 +39,6 @@ const SHELL = [
   '/assets/wow.css',
   '/assets/fonts.css',
   '/assets/apps.js',
-  '/assets/notes.js',
   '/assets/ratings.js',
   '/assets/app.js',
   '/assets/enhance.js',
@@ -53,7 +52,7 @@ const SHELL = [
 
 // Content, not chrome. Anything matching this is served network-first — see the
 // long note in the fetch handler for why SWR is wrong for these specifically.
-const DATA = /^\/assets\/(apps|notes|ratings)\.js$/;
+const DATA = /^\/assets\/(apps|ratings)\.js$/;
 
 self.addEventListener('install', e => {
   // `addAll` is atomic — one 404 and the whole install fails, leaving the site

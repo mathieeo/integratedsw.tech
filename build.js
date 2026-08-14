@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 /* ============================================================================
    Integrated Software Technologies — static site generator
-   Reads assets/apps.js + assets/notes.js and emits:
+   Reads assets/apps.js and emits:
      apps/<slug>/index.html   per-app landing pages (+ live rating via iTunes)
-     notes/<slug>/index.html  journal / build-note pages
      press/index.html         press kit
      assets/og/<slug>.png     per-app share cards (via qlmanage + sips)
      sitemap.xml, robots.txt, 404.html
@@ -18,7 +17,6 @@ const { execSync } = require('child_process');
 const ROOT = 'https://integratedsw.tech';
 const dir = __dirname;
 const { APPS } = require('./assets/apps.js');
-const { NOTES } = require('./assets/notes.js');
 const today = new Date().toISOString().slice(0, 10);
 
 const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -47,7 +45,7 @@ function head({ title, desc, canonical, og }) {
 <div id="bg"><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div></div>
 <nav id="nav">
   <a class="brand" href="/"><span class="mark">i</span><span>Integrated Software<br><small>integratedsw.tech</small></span></a>
-  <div class="navlinks"><a href="/#apps">Apps</a><a href="/#journal">Journal</a><a href="/press/">Press</a><a class="cta" href="/#contact">Get in touch</a></div>
+  <div class="navlinks"><a href="/#apps">Apps</a><a href="/press/">Press</a><a class="cta" href="/#contact">Get in touch</a></div>
 </nav>`;
 }
 const foot = `<footer><a class="brand" href="/"><span class="mark">i</span> Integrated Software Technologies Inc.</a>
@@ -186,26 +184,6 @@ ${APPS.map(a => `  <li><a href="/apps/${a.slug}/privacy/">${esc(a.name)}</a></li
 </main>` + foot;
 }
 
-/* -------------------------------------------------------------- note pages */
-function notePage(n) {
-  const canonical = `${ROOT}/notes/${n.slug}/`;
-  const dt = new Date(n.date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
-  const ld = {
-    '@context': 'https://schema.org', '@type': 'BlogPosting', headline: n.title,
-    datePublished: n.date, description: n.dek, url: canonical, keywords: (n.tags || []).join(', '),
-    author: { '@type': 'Person', name: 'Matthew Mesropian' },
-    publisher: { '@type': 'Organization', name: 'Integrated Software Technologies Inc.' }
-  };
-  return head({ title: `${n.title} — Integrated Software Technologies`, desc: n.dek, canonical, og: `${ROOT}/assets/og.png` }) +
-    `<main class="subpage">
-<a class="backlink" href="/#journal">← Journal</a>
-<article class="prose"><h1>${esc(n.title)}</h1>
-<div class="meta">${dt} · ${(n.tags || []).join(' · ')}</div>
-${n.body}</article>
-</main>
-<script type="application/ld+json">${JSON.stringify(ld)}</script>` + foot;
-}
-
 /* -------------------------------------------------------------- press page */
 function pressPage() {
   const canonical = `${ROOT}/press/`;
@@ -281,8 +259,7 @@ ${iconTag}
 function sitemap() {
   const urls = [`${ROOT}/`, `${ROOT}/press/`, `${ROOT}/privacy/`,
     ...APPS.map(a => `${ROOT}/apps/${a.slug}/`),
-    ...APPS.map(a => `${ROOT}/apps/${a.slug}/privacy/`),
-    ...NOTES.map(n => `${ROOT}/notes/${n.slug}/`)];
+    ...APPS.map(a => `${ROOT}/apps/${a.slug}/privacy/`)];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map(u => `  <url><loc>${u}</loc><lastmod>${today}</lastmod></url>`).join('\n')}
@@ -352,8 +329,6 @@ console.log(`  ${n} app pages + OG images`);
 APPS.forEach(a => write(`apps/${a.slug}/privacy/index.html`, privacyPage(a)));
 write('privacy/index.html', privacyIndex());
 console.log(`  ${n} privacy pages + /privacy/ hub`);
-NOTES.forEach(x => write(`notes/${x.slug}/index.html`, notePage(x)));
-console.log(`  ${NOTES.length} note pages`);
 write('press/index.html', pressPage());
 write('404.html', notFound());
 write('sitemap.xml', sitemap());

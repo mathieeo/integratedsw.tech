@@ -358,6 +358,13 @@ body:hover #spotlight{opacity:1}
 .inquiry textarea{resize:vertical;min-height:96px;font-family:var(--body)}
 .inquiry button[type=submit]{align-self:flex-start;margin-top:4px}
 .inquiry .fnote{font-size:12.5px;color:var(--dim2);font-weight:500}
+/* Honeypot: pushed out of the layout rather than display:none, which some bots
+   check for. Never visible, never focusable, never announced. */
+.inquiry .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.inquiry.sending button[type=submit]{opacity:.6;pointer-events:none}
+.inquiry .fnote.ok{color:var(--c4)}
+.inquiry .fnote.err{color:#ff8a8a}
+.inquiry input.bad,.inquiry textarea.bad{border-color:#ff8a8a}
 @media(max-width:640px){.inquiry .frow,.inquiry .frow:has(select){grid-template-columns:1fr}}
 
 /* ==========================================================================

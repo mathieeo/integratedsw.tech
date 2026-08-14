@@ -196,10 +196,13 @@
   window.istConfetti = confetti;
 
   const form = document.getElementById('inquiry');
-  if (form) form.addEventListener('submit', () => {
+  // Listens for the custom event enhance.js fires once the inquiry has actually
+  // gone somewhere, NOT for `submit`. The form validates now, so a plain submit
+  // listener would throw a party over a rejected email address.
+  if (form) form.addEventListener('ist:sent', () => {
     const b = form.querySelector('button[type=submit]');
     if (b) { const r = b.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top + r.height / 2, 34); }
-  }, true);   // capture: fire alongside the mailto handler in enhance.js, not instead of it
+  });
 
   document.addEventListener('click', e => {
     const c = e.target.closest && e.target.closest('.copy');

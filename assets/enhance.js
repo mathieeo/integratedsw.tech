@@ -140,17 +140,114 @@
      they come back hand-curated, not as a dead feed. */
 
   /* --------------------------------------------------------- Inquiry form */
+  // Paste the Web3Forms access key here. One is free at https://web3forms.com —
+  // enter matt@integratedsw.tech and they email the key straight back; there is
+  // no account to create.
+  //
+  // Leaving this empty is SAFE. The form silently reverts to the old mailto:
+  // behaviour, so the site is never worse than it was before. The key is a
+  // public submit token by design, not a secret: it only permits posting to
+  // this one inbox, which is all the form does anyway.
+  const FORM_KEY = '';
+
   const form = $('#inquiry');
-  if (form) form.addEventListener('submit', e => {
-    e.preventDefault();
-    const f = new FormData(form), g = k => (f.get(k) || '').toString().trim();
-    const subject = `Project inquiry: ${g('service')}`;
-    const body =
-      `Name: ${g('name')}\nEmail: ${g('email')}\n\n` +
-      `Service: ${g('service')}\nBudget: ${g('budget')}\nTimeline: ${g('timeline')}\n\n` +
-      `Details:\n${g('message') || '(none provided)'}\n`;
-    location.href = `mailto:matt@integratedsw.tech?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  });
+  if (form) {
+    const note = $('#formnote');
+    let noteDefault = note ? note.textContent : '';
+    const say = (msg, cls) => {
+      if (!note) return;
+      note.textContent = msg;
+      note.className = 'fnote' + (cls ? ' ' + cls : '');
+    };
+    const field = k => form.querySelector(`[name="${k}"]`);
+    const mark = (k, bad) => { const el = field(k); if (el) el.classList.toggle('bad', bad); };
+
+    // The markup promises the mailto: behaviour, because that is what runs with
+    // no key. Once a key exists the promise changes, so the copy has to as well
+    // — a form that says "sent straight to my inbox" while opening Mail.app is
+    // a small lie, and this is the one part of the site asking for trust.
+    if (FORM_KEY && note) {
+      note.textContent = 'Sent straight to my inbox. No accounts, no tracking, nothing stored on this site.';
+      noteDefault = note.textContent;
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const f = new FormData(form), g = k => (f.get(k) || '').toString().trim();
+
+      // Dropped with no request at all: a human never sees the honeypot, so
+      // anything in it is automated and is not worth a round trip.
+      if (g('botcheck')) return;
+
+      // The form was `novalidate` and accepted anything, which meant an inquiry
+      // could arrive with no way to reply to it. A name and a plausible email
+      // are the minimum that makes the message worth sending.
+      const emailOK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(g('email'));
+      mark('name', !g('name'));
+      mark('email', !emailOK);
+      if (!g('name') || !emailOK) {
+        say(!g('name')
+          ? 'Please add your name so I know who I am replying to.'
+          : 'That email does not look right, and I would not be able to reply.', 'err');
+        const bad = field(!g('name') ? 'name' : 'email');
+        if (bad && bad.focus) bad.focus();
+        return;
+      }
+
+      const subject = `Project inquiry: ${g('service')}`;
+      const body =
+        `Name: ${g('name')}\nEmail: ${g('email')}\n\n` +
+        `Service: ${g('service')}\nBudget: ${g('budget')}\nTimeline: ${g('timeline')}\n\n` +
+        `Details:\n${g('message') || '(none provided)'}\n`;
+      const mailto = () => {
+        location.href = `mailto:matt@integratedsw.tech?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      };
+
+      if (!FORM_KEY) { form.dispatchEvent(new CustomEvent('ist:sent')); mailto(); return; }
+
+      form.classList.add('sending');
+      say('Sending…');
+      try {
+        const r = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            access_key: FORM_KEY,
+            subject,
+            from_name: g('name'),
+            // Web3Forms treats `email` as the reply-to, which is the point:
+            // replying to the notification goes straight back to the sender.
+            email: g('email'),
+            name: g('name'),
+            service: g('service'),
+            budget: g('budget'),
+            timeline: g('timeline'),
+            message: g('message') || '(none provided)'
+          })
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok || data.success === false) throw new Error(data.message || 'send failed');
+        form.reset();
+        say('Thanks, that reached me. I usually reply within a day.', 'ok');
+        form.dispatchEvent(new CustomEvent('ist:sent'));
+      } catch (err) {
+        // Offline, blocked by an extension, or the service is down. Never
+        // dead-end the visitor: hand them the pre-filled email instead.
+        say('Could not send from here, so I am opening your email app instead.', 'err');
+        mailto();
+      } finally {
+        form.classList.remove('sending');
+      }
+    });
+
+    // Clear the error state the moment they start fixing it.
+    form.addEventListener('input', e => {
+      if (e.target.classList && e.target.classList.contains('bad')) {
+        e.target.classList.remove('bad');
+        if (note && note.classList.contains('err')) say(noteDefault);
+      }
+    });
+  }
 
   /* --------------------------------------------------- Rich results: apps -- */
   // ItemList of SoftwareApplication for Google (injected; Google renders JS).

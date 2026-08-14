@@ -215,8 +215,18 @@ document.documentElement.className+=' js';</script>
           </select></label>
       </div>
       <label>Project details<textarea name="message" rows="4" placeholder="Tell me what you're trying to build or fix…"></textarea></label>
+      <!-- Honeypot. Nobody real ever sees this, so anything that fills it in is
+           a bot and the submit is dropped before it costs a request. aria-hidden
+           plus tabindex=-1 keeps it out of screen readers and the tab order;
+           bare display:none is a pattern plenty of bots already recognise. -->
+      <div class="hp" aria-hidden="true">
+        <label>Leave this field empty<input type="text" name="botcheck" tabindex="-1" autocomplete="off"></label>
+      </div>
       <button class="btn primary" type="submit">Send inquiry →</button>
-      <p class="fnote">Opens your email app with everything filled in — no accounts, no tracking, nothing stored.</p>
+      <!-- Describes the mailto: path, which is what runs until a Web3Forms key
+           is set in enhance.js. That file rewrites this line when a key exists,
+           so the promise always matches the actual behaviour. -->
+      <p class="fnote" id="formnote">Opens your email app with everything filled in — no accounts, no tracking, nothing stored.</p>
     </form>
   </div>
 </section>

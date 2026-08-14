@@ -102,9 +102,12 @@ const OSS = [
   { name:"rateCheck", lang:"C++17", glyph:"💽", accent:"#33e6d1",
     desc:"A cross-platform disk and partition benchmarking utility with direct-disk read and write modes.",
     platforms:"Windows · macOS · Linux", github:"https://github.com/mathieeo/rateCheck" },
+  // PyPI declares this as "SoftCOM" but names are normalised (PEP 503), so the
+  // lowercase form is what people actually type and it resolves correctly.
   { name:"SoftCOM", lang:"Python", glyph:"🔌", accent:"#34d399",
-    desc:"A serial I/O utility for opening and interacting with serial-port devices.",
-    platforms:"Windows · macOS · Linux", github:"https://github.com/mathieeo/SoftCOM" },
+    desc:"A full-screen serial terminal for embedded work: live port monitoring, command history and capture, with a simulator mode when no hardware is attached.",
+    platforms:"Windows · macOS · Linux", pip:"pip install softcom",
+    github:"https://github.com/mathieeo/SoftCOM" },
   { name:"SerialFileCopy", lang:"Python", glyph:"🔁", accent:"#fab84d",
     desc:"Transfer files reliably over a serial connection, straight from the command line.",
     platforms:"Windows · macOS · Linux", pip:"pip install serialfilecopy",

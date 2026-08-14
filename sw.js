@@ -40,6 +40,7 @@ const SHELL = [
   '/assets/fonts.css',
   '/assets/apps.js',
   '/assets/notes.js',
+  '/assets/ratings.js',
   '/assets/app.js',
   '/assets/enhance.js',
   '/assets/term.js',
@@ -49,6 +50,10 @@ const SHELL = [
   '/assets/dazzle.js',
   '/manifest.webmanifest'
 ];
+
+// Content, not chrome. Anything matching this is served network-first — see the
+// long note in the fetch handler for why SWR is wrong for these specifically.
+const DATA = /^\/assets\/(apps|notes|ratings)\.js$/;
 
 self.addEventListener('install', e => {
   // `addAll` is atomic — one 404 and the whole install fails, leaving the site
@@ -88,6 +93,31 @@ self.addEventListener('fetch', e => {
           return r;
         })
         .catch(() => caches.match(req).then(hit => hit || caches.match('/')))
+    );
+    return;
+  }
+
+  // DATA is network-first, like the document — not stale-while-revalidate.
+  //
+  // These files are not static assets, they are the site's content. The app grid
+  // in index.html is server-rendered at build time and therefore rides the
+  // navigation policy above (always fresh), while cinema.js builds its slides at
+  // runtime from apps.js. Under SWR those two paths disagree for exactly one load
+  // after every deploy — which is how Quitter showed "In review" in the scroll
+  // section while the card grid on the same page already showed the App Store
+  // button. Same data, two render paths, two freshness policies.
+  //
+  // Serving them network-first costs one request and makes the page internally
+  // consistent. The cache is still the offline fallback.
+  if (DATA.test(url.pathname)) {
+    e.respondWith(
+      fetch(req)
+        .then(r => {
+          const copy = r.clone();
+          caches.open(CACHE).then(c => c.put(req, copy));
+          return r;
+        })
+        .catch(() => caches.match(req))
     );
     return;
   }

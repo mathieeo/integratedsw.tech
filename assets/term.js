@@ -258,6 +258,16 @@
 
   /* ------------------------------------------------------------- man pages  */
   const MAN = {
+    pip: 'pip install <package>\n    softcom and serialfilecopy are real packages on PyPI. Everything else 404s,\n    accurately.',
+    npm: 'npm install\n    Reports the truth: this site has no dependencies at all.',
+    rot13: 'rot13 <text>\n    Rotate letters by 13. Works on a pipe: echo hi | rot13',
+    base64: 'base64 [-d] <text>\n    Encode, or decode with -d. Works on a pipe.',
+    ping: 'ping [host]\n    Four packets of pure fiction. It is a static site.',
+    stack: 'stack\n    What this site and these apps are actually built with.',
+    hire: 'hire\n    Contact details, and what the studio takes on.',
+    which: 'which <command>\n    Whether a command exists in this shell.',
+    ps: 'ps\n    What is running. Mostly nothing, which is the point.',
+    df: 'df\n    Disk usage. Nothing is stored, so nothing fills up.',
     ls: 'ls [-l] [-a] [path]\n    List directory contents. -l long form with sizes, -a include dotfiles.',
     cd: 'cd [path]\n    Change directory. `cd` alone or `cd ~` goes home, `cd -` goes back.',
     cat: 'cat <file>\n    Print a file. Fetches the real file from the server and highlights it.',
@@ -287,10 +297,13 @@
 
   CMD.help = () => {
     print('<b>Files</b>    ls · cd · pwd · cat · curl · view-source · head · tail · grep · wc · tree · find · du · stat');
-    print('<b>Site</b>     apps · open &lt;app&gt; · about · contact · sitemap · whoami · uname');
+    print('<b>Site</b>     apps · open &lt;app&gt; · about · contact · sitemap · stack · hire · whoami · uname');
+    print('<b>System</b>   ps · top · df · env · uptime · which · ping · pip · npm');
+    print('<b>Text</b>     rot13 · base64 [-d] · echo · grep · wc');
     print('<b>Fun</b>      2048 · snake · matrix · typing · figlet &lt;text&gt; · sl · cowsay &lt;msg&gt; · fortune · neofetch · coffee');
-    print('<b>Shell</b>    man &lt;cmd&gt; · history · alias · echo · date · clear · exit');
+    print('<b>Shell</b>    man &lt;cmd&gt; · history · alias · date · clear · exit');
     print('Pipes work: <span class="tapp">curl assets/style.css | grep accent | head -5</span>', 'muted');
+    print('So does <span class="tapp">echo hello | rot13 | base64</span>. Writing files does not. 🙃', 'muted');
     print('Tab completes commands and paths. Up/Down walks history.', 'muted');
   };
 
@@ -590,6 +603,175 @@
     print('Nice try. You already have root — this is your browser. 😎', 'ok');
   };
 
+  /* --------------------------------------------------- the read-only wall */
+  // Every attempt to write lands here. The filesystem is a fiction assembled
+  // from the real site, so there is genuinely nothing to write to — but "not
+  // supported" is a boring answer for someone who just tried to redirect into a
+  // file, and they earned a better one.
+  const NOPE = [
+    'uh&hellip; I&rsquo;m not that dumb. 🙃',
+    'Nice try. This filesystem is read-only, and so am I.',
+    'Absolutely not. I&rsquo;ve seen what happens to people who let strangers write files.',
+    'That would require me to trust you. We just met.',
+    'I admire the confidence. The answer is still no.',
+    'You want write access to a static site. Bold. Denied.',
+    'Sorry &mdash; this whole place is <b>chmod 444</b> and vibes.',
+    'Writing here would be a choice. I am choosing not to. 😌',
+    'Denied. But genuinely, respect for trying it.',
+    'The only thing this site writes is good copy.'
+  ];
+  const nope = () => print(NOPE[Math.floor(Math.random() * NOPE.length)], 'err');
+
+  ['touch', 'mkdir', 'rmdir', 'rm', 'mv', 'cp', 'ln', 'chmod', 'chown', 'dd',
+   'tee', 'nano', 'vim', 'vi', 'emacs', 'truncate', 'shred', 'save', 'write'
+  ].forEach(c => { CMD[c] = () => { nope(); }; });
+
+  /* ------------------------------------------------------------ packaging */
+  // SoftCOM really is on PyPI, so this is not purely a bit: it prints the
+  // command that actually works, because whoever types `pip install` in here is
+  // exactly the person who might want it.
+  const PKGS = {
+    softcom: {
+      version: '1.6.0',
+      summary: 'Full-screen serial-port terminal (prompt_toolkit TUI) for embedded work.',
+      extra: 'Run <b>softcom</b>, or <b>python -m SoftCOM</b>. <b>-s</b> replays a simulated device.'
+    },
+    serialfilecopy: {
+      version: '1.2.1',
+      summary: 'Push a file to an embedded target over a serial console, then verify it by md5.',
+      extra: 'Usage: <b>serialfilecopy &lt;device&gt; &lt;baud&gt; &lt;user&gt; - &lt;file&gt;</b> &mdash; the <b>-</b> prompts for the password instead of leaving it in argv.'
+    }
+  };
+
+  CMD.pip = (args) => {
+    const sub = args[0];
+    if (sub === 'list') {
+      pre(Object.keys(PKGS).map(k => `  ${k.padEnd(18)} ${PKGS[k].version}`).join('\n'));
+      return print('Both are real, and both are on PyPI.', 'muted');
+    }
+    if (sub !== 'install') return print('Usage: <b>pip install softcom</b> &middot; <b>pip list</b>', 'muted');
+    const name = (args[1] || '').toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    if (!name) return print('ERROR: You must give at least one requirement to install.', 'err');
+    const p = PKGS[name];
+    if (!p) {
+      print(`ERROR: Could not find a version that satisfies the requirement ${esc(name)}`, 'err');
+      return print('This studio ships two Python packages: <b>softcom</b> and <b>serialfilecopy</b>.', 'muted');
+    }
+    print(`Collecting ${esc(name)}`);
+    print(`  Downloading ${esc(name)}-${p.version}-py3-none-any.whl`, 'muted');
+    print(`Installing collected packages: ${esc(name)}`);
+    print(`Successfully installed ${esc(name)}-${p.version}`, 'ok');
+    print('&nbsp;');
+    print(esc(p.summary), 'muted');
+    print(`Genuinely on PyPI &mdash; <b>pip install ${esc(name)}</b> works in a real shell. ${p.extra}`);
+  };
+
+  CMD.npm = (args) => {
+    if (args[0] === 'install' || args[0] === 'i') {
+      print('up to date, audited 0 packages in 0ms', 'ok');
+      print('found 0 vulnerabilities', 'ok');
+      print('&nbsp;');
+      return print('No package.json. No node_modules. This whole site is hand-written HTML, CSS and JS, built by one Node script using nothing but built-ins. That is not nostalgia, it is why it loads instantly.', 'muted');
+    }
+    print('Try <b>npm install</b>. The result may surprise you.', 'muted');
+  };
+
+  /* ---------------------------------------------------------- system-ish */
+  CMD.ps = () => pre([
+    '  PID TTY          TIME CMD',
+    '    1 ?        00:00:01 static-site',
+    '   42 ?        00:00:00 service-worker --data=network-first',
+    '  108 ?        00:00:00 intersection-observer',
+    '  256 ?        00:00:00 terminal  ← you are here',
+    '  512 ?        00:00:00 trackers [defunct]',
+    ' 1024 ?        00:12:37 matt --building --coffee'
+  ].join('\n'));
+  CMD.top = CMD.ps;
+
+  CMD.df = () => {
+    pre([
+      'Filesystem     Size  Used  Avail  Use%  Mounted on',
+      'integratedsw   ∞     0     ∞      0%    /',
+      'cookies        0     0     0      -     /tracking',
+      'your-data      0     0     0      -     /dev/null'
+    ].join('\n'));
+    print('Nothing is stored, so nothing fills up.', 'muted');
+  };
+
+  CMD.env = () => pre([
+    'USER=guest',
+    'SHELL=/bin/browser',
+    'TRACKERS=0',
+    'COOKIES=0',
+    'ANALYTICS=none',
+    'BUILD=node build.js',
+    'DEPLOY=git push'
+  ].join('\n'));
+
+  CMD.uptime = () => {
+    const s = Math.max(0, Math.floor((Date.now() - performance.timeOrigin) / 1000));
+    print(`up ${Math.floor(s / 60)}m ${s % 60}s on this page &middot; load average: 0.00, 0.00, 0.00`);
+  };
+
+  CMD.which = (args) => {
+    const c = args[0];
+    if (!c) return print('usage: which &lt;command&gt;', 'muted');
+    print(c in CMD ? `/bin/${esc(c)}` : `which: no ${esc(c)} in (/bin:/usr/bin)`, c in CMD ? 'ok' : 'err');
+  };
+
+  CMD.ping = (args) => {
+    const host = (args[0] || 'integratedsw.tech').slice(0, 60);
+    print(`PING ${esc(host)} &mdash; 56 data bytes`);
+    let n = 0;
+    const t = setInterval(() => {
+      print(`64 bytes from ${esc(host)}: icmp_seq=${n} ttl=64 time=${(Math.random() * 6 + 1).toFixed(1)} ms`);
+      if (++n >= 4) {
+        clearInterval(t);
+        print('4 packets transmitted, 4 received, 0.0% packet loss', 'ok');
+        print('(Static site. Those numbers are vibes.)', 'muted');
+      }
+    }, 300);
+  };
+
+  CMD.stack = () => pre([
+    '  Site       hand-written HTML · CSS · vanilla JS',
+    '  Build      node build.js — Node built-ins only, zero deps',
+    '  Deploy     git push → GitHub Pages',
+    '  Apps       Swift · SwiftUI · on-device, no backend',
+    '  Tools      C++/Qt · Python (softcom, serialfilecopy)',
+    '  Trackers   none. not "minimal". none.'
+  ].join('\n'));
+
+  CMD.hire = () => {
+    print('Available for iOS, embedded and instrumentation work.', 'ok');
+    print('Native Swift apps · DSP and sensor pipelines · C++/Qt desktop · Python tooling.');
+    print('matt@integratedsw.tech · (818) 671-9866');
+  };
+  CMD.work = CMD.hire;
+
+  /* ------------------------------------------ real utilities, pipe-friendly */
+  CMD.rot13 = (args, raw, stdin, piping) => {
+    const src = stdin != null ? stdin : raw;
+    if (!src) { print('usage: rot13 &lt;text&gt;   (or pipe into it)', 'muted'); return ''; }
+    const out = src.replace(/[a-z]/gi, ch => {
+      const b = ch <= 'Z' ? 65 : 97;
+      return String.fromCharCode((ch.charCodeAt(0) - b + 13) % 26 + b);
+    });
+    if (!piping) pre(esc(out));
+    return out;
+  };
+
+  CMD.base64 = (args, raw, stdin, piping) => {
+    const dec = args[0] === '-d' || args[0] === '--decode';
+    const src = stdin != null ? stdin : (dec ? args.slice(1).join(' ') : raw);
+    if (!src) { print('usage: base64 [-d] &lt;text&gt;   (or pipe into it)', 'muted'); return ''; }
+    let out;
+    try { out = dec ? atob(src.trim()) : btoa(src); }
+    catch { print('base64: invalid input', 'err'); return ''; }
+    if (!piping) pre(esc(out));
+    return out;
+  };
+
   CMD.clear = () => { termBody.innerHTML = ''; };
   CMD.exit = () => closeTerm();
   CMD[''] = () => {};
@@ -855,6 +1037,17 @@
 
   /* ======================================================== the shell itself */
   async function runPipeline(line) {
+    // Redirection is by far the most common way someone tries to write here, and
+    // it never reaches a command — `echo hi > f` would otherwise just echo
+    // "hi > f", which reads like the write silently worked. Catch it up front.
+    // Quoted segments are stripped first so `grep ">"` still behaves.
+    const unquoted = line.replace(/"[^"]*"/g, '').replace(/'[^']*'/g, '');
+    if (/>/.test(unquoted)) {
+      nope();
+      print('Everything here is fetched from the real site, so there is nothing to write to. Reading, though, is wide open — try <b>cat</b>, <b>curl</b> or <b>view-source</b>.', 'muted');
+      return;
+    }
+
     const stages = line.split('|').map(s => s.trim()).filter(Boolean);
     let stdin = null;
     for (let i = 0; i < stages.length; i++) {

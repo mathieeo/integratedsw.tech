@@ -83,14 +83,6 @@ header p.sub{margin-top:24px;font-size:clamp(16px,2.4vw,21px);color:var(--dim);m
 .scrollcue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);color:var(--dim2);animation:bob 1.8s ease-in-out infinite}
 @keyframes bob{50%{transform:translate(-50%,8px)}}
 
-/* floating icon cluster in hero */
-.floaticons{margin-top:52px;display:flex;gap:14px;flex-wrap:wrap;justify-content:center;max-width:560px}
-.floaticons img{width:56px;height:56px;border-radius:14px;box-shadow:0 10px 26px rgba(0,0,0,.5);
-  animation:floaty 5s ease-in-out infinite;border:1px solid var(--stroke)}
-.floaticons img:nth-child(2n){animation-delay:-1.5s}
-.floaticons img:nth-child(3n){animation-delay:-2.8s}
-@keyframes floaty{50%{transform:translateY(-10px)}}
-
 /* ---- section shell ---- */
 section{padding:clamp(70px,10vw,130px) clamp(18px,5vw,64px);max-width:1200px;margin:0 auto;position:relative}
 .eyebrow{font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
@@ -265,8 +257,6 @@ body:hover #spotlight{opacity:1}
 .card .icon{transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s;will-change:transform}
 .card:hover .icon{transform:translateY(-3px) rotate(-4deg) scale(1.06)}
 .card .icon:hover{transform:translateY(-4px) rotate(5deg) scale(1.12);box-shadow:0 16px 34px -6px color-mix(in srgb,var(--a) 55%,rgba(0,0,0,.5))}
-.floaticons img{transition:transform .3s cubic-bezier(.2,.8,.2,1)}
-.floaticons img:hover{transform:translateY(-12px) scale(1.14) rotate(-6deg);z-index:2}
 
 /* ---- terminal easter egg ------------------------------------------------ */
 #term{position:fixed;inset:0;z-index:420;display:grid;place-items:center;padding:24px;
@@ -299,8 +289,7 @@ body:hover #spotlight{opacity:1}
 .snakescore{color:#33e6d1;font-weight:700}
 
 @media(prefers-reduced-motion:reduce){
-  .card:hover .icon,.card .icon:hover,.floaticons img:hover{transform:none}
-}
+  .card:hover .icon,.card .icon:hover,}
 
 /* ==========================================================================
    MORE FEATURES — device frames · journal · reviews · inquiry form · pages

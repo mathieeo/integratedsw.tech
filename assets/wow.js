@@ -91,7 +91,6 @@
   /* ---- scroll-reactive marquee + hero parallax + back-to-top ------------ */
   (function scrollLife() {
     const marquee = document.getElementById('marquee');
-    const floats = document.getElementById('floaticons');
     const doc = document.documentElement;
 
     // Back-to-top button (built here so the markup stays clean).
@@ -140,9 +139,7 @@
       targetSkew *= 0.9; vel *= 0.9;
       if (marquee) marquee.style.transform = `skewX(${skew.toFixed(2)}deg) translateX(${drift.toFixed(1)}px)`;
 
-      // hero cluster: ease toward the pointer target for a floating plane.
       dxn = lerp(dxn, pxn, 0.08); dyn = lerp(dyn, pyn, 0.08);
-      if (floats) floats.style.transform = `translate(${(-dxn * 14).toFixed(1)}px,${(-dyn * 10).toFixed(1)}px)`;
 
       const restingBelt = Math.abs(skew) < 0.02 && Math.abs(drift) < 0.1 && Math.abs(vel) < 0.4;
       const restingHero = Math.abs(dxn - pxn) < 0.005 && Math.abs(dyn - pyn) < 0.005;

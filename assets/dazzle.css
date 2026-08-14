@@ -10,11 +10,6 @@
 /* dazzle.js now drives the hero icons frame-by-frame (idle float + magnetic
    repel + click boing), so hand it the wheel by silencing the CSS keyframe
    float — otherwise the two fight over the same transform and it jitters. */
-/* The base sheet puts a .3s transition on the icons' transform (nice for the
-   CSS hover), but dazzle.js now writes transform every frame — a per-frame
-   change through a .3s transition smears and lags badly. Hand it a raw
-   transform so each spring step lands crisply. */
-.dazzle .floaticons img{animation:none;transition:none;will-change:transform;cursor:pointer}
 
 /* The background palette drifts as you travel down the page — the whole site
    slowly changes light, like a room from noon to dusk. It is tied to scroll

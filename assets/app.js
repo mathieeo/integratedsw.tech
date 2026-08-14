@@ -84,12 +84,6 @@ function openLightbox(src){ lb.querySelector('img').src = src; lb.classList.add(
 function closeLightbox(){ lb.classList.remove('open'); }
 lb.addEventListener('click', closeLightbox);
 
-// hero floating icons — derived from the catalog like the marquee, so a new
-// app in apps.js shows up here for free (the old hardcoded list silently
-// dropped every app added after it was written)
-document.getElementById('floaticons').innerHTML =
-  APPS.filter(a => a.icon).map(a => `<img src="assets/icons/${a.icon}.png" alt="">`).join('');
-
 // stats
 const liveCount = APPS.filter(a => a.status !== 'soon').length;
 const STATS = [[liveCount,"","iOS apps"],[100,"%","On-device"],[0,"","Trackers"],[0,"","Accounts"]];

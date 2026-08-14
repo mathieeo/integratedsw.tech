@@ -40,7 +40,6 @@ body.cursor-press #cursor-ring{width:26px;height:26px}
    The cluster of real app icons drifts a few pixels against the pointer, as a
    single plane floating in front of the blobs. Depth for the price of a
    translate; the per-icon float keyframe still runs underneath it. */
-#floaticons{will-change:transform}
 
 /* ---- back-to-top ---------------------------------------------------------
    Appears once you are a screen or two down, carries the studio mark, and rides
@@ -101,7 +100,7 @@ select:focus-visible,textarea:focus-visible{outline:2px solid var(--c1);outline-
 @media(prefers-reduced-motion:reduce){
   #cursor-dot,#cursor-ring,#totop::before{display:none}
   .reveal{filter:none}
-  #marquee,#floaticons{transform:none!important}
+  #marquee{transform:none!important}
   .navlinks a:not(.cta)::after{transition:none}
 }
 @media(hover:none){ #cursor-dot,#cursor-ring{display:none} }

@@ -148,7 +148,7 @@
   // behaviour, so the site is never worse than it was before. The key is a
   // public submit token by design, not a secret: it only permits posting to
   // this one inbox, which is all the form does anyway.
-  const FORM_KEY = '';
+  const FORM_KEY = '5e673ac9-cbd9-40bd-8329-bd19c37f43c7';
 
   const form = $('#inquiry');
   if (form) {

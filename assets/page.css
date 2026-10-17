@@ -1,0 +1,79 @@
+/* integratedsw.tech: the generated pages (apps, privacy, press, 404), redesign 2026-10-17.
+   Builds on studio.css (tokens, nav, frame, section bars, buttons, footer, ruler scrollbar);
+   only what the subpages add lives here. */
+main.sub{padding-top:var(--nav)}
+.bar a{color:var(--mute)}
+.bar a:hover{color:var(--paper)}
+.h1sub{font:620 clamp(36px,5.4vw,72px)/1.02 var(--wide);font-stretch:118%;letter-spacing:-.015em;max-width:15em}
+
+/* app page hero: copy on the left, the app's screens rising out of its colour on the right */
+.ah{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}
+.ah .copy{padding:clamp(40px,6vw,88px) clamp(16px,3vw,40px);display:grid;gap:20px;align-content:center;justify-items:start}
+.aicon{width:84px;height:84px;border-radius:20px;box-shadow:0 0 0 1px rgba(242,241,238,.14),0 24px 60px color-mix(in srgb,var(--c) 32%,transparent)}
+.ah h1{font:800 clamp(40px,6vw,88px)/.95 var(--wide);font-stretch:125%;letter-spacing:-.01em}
+.ah .tag{margin:0;font:600 clamp(18px,1.7vw,23px)/1.35 var(--wide);font-stretch:108%;max-width:26em}
+.facts{margin:0;display:flex;flex-wrap:wrap;gap:6px 14px;font:500 11.5px/1.5 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.facts span:first-child{color:var(--c)}
+.facts i{font-style:normal;color:var(--faint)}
+.ah .ctas{justify-content:flex-start;margin-top:4px}
+.btn svg.apple{fill:currentColor;stroke:none}
+.ah .stage{aspect-ratio:auto;min-height:440px;border-left:1px solid var(--rule)}
+.ah .stage .s1{width:44%;transform:translate(-22%,24%)}
+.ah .stage .s2{width:38%;transform:translate(-108%,36%) rotate(-5deg)}
+.ah .stage .ic{display:none}
+.ah .stage.bare{display:grid;place-items:center}
+.ah .stage.bare img.big{width:42%;max-width:180px;border-radius:22%;box-shadow:0 30px 80px color-mix(in srgb,var(--c) 40%,transparent)}
+@media (max-width:860px){.ah{grid-template-columns:1fr}.ah .stage{min-height:0;aspect-ratio:4/3;border-left:0;border-top:1px solid var(--rule)}.ah .stage .s1{width:40%}.ah .stage .s2{width:34%}}
+
+/* the full App Store screenshot strip */
+.strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-top:1px solid var(--rule)}
+.strip::-webkit-scrollbar{display:none}
+.strip figure{flex:none;width:clamp(210px,23vw,300px);margin:0;padding:clamp(16px,2vw,26px);border-right:1px solid var(--rule);scroll-snap-align:start;display:grid;gap:12px}
+.strip img{display:block;width:100%;height:auto;border-radius:14px;box-shadow:-1.5px 0 0 rgba(255,96,96,.3),1.5px 0 0 rgba(96,170,255,.34),0 0 0 1px rgba(242,241,238,.12)}
+.strip figcaption{font:500 11px/1 var(--mono);letter-spacing:.16em;color:var(--faint)}
+
+/* next app */
+.nextapp{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;padding:clamp(28px,4vw,52px) clamp(16px,3vw,40px);background:radial-gradient(60% 140% at 100% 50%,color-mix(in srgb,var(--c) 16%,transparent),transparent 70%)}
+.nextapp .k{font:500 11.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.nextapp .nn{display:flex;align-items:center;gap:16px;font:800 clamp(28px,4.4vw,60px)/1 var(--wide);font-stretch:125%;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.nextapp .nn img{width:clamp(40px,4.4vw,60px);height:auto;border-radius:22%}
+.nextapp:hover .nn{transform:translateX(8px)}
+
+/* long-form text: privacy policies, press boilerplate */
+.prose{padding:0 clamp(16px,3vw,40px) clamp(48px,7vw,96px);max-width:48rem}
+.prose h2{font:620 21px/1.25 var(--wide);font-stretch:112%;margin:38px 0 10px}
+.prose p,.prose li{color:var(--mute);font-size:16.5px;line-height:1.65}
+.prose ul{padding-left:1.2em}
+.prose li{margin:6px 0}
+.prose strong,.prose b{color:var(--paper);font-weight:600}
+.prose a{color:var(--paper);border-bottom:1px solid rgba(242,241,238,.3)}
+.prose a:hover{border-color:var(--paper)}
+.prose .dated{font:500 11.5px/1.6 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:36px}
+
+/* privacy hub */
+.plist{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--rule)}
+.plist a{display:flex;align-items:center;gap:14px;padding:20px clamp(16px,2.4vw,32px);border-bottom:1px solid var(--rule);min-width:0}
+.plist a:not(:nth-child(3n)){border-right:1px solid var(--rule)}
+.plist img{width:36px;height:36px;border-radius:9px;flex:none}
+.plist b{font:600 17px/1.2 var(--wide);font-stretch:110%}
+.plist span{display:block;font:500 10.5px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.plist a:hover b{color:var(--c,var(--accent))}
+@media (max-width:860px){.plist{grid-template-columns:1fr 1fr}.plist a{border-right:0!important}.plist a:nth-child(odd){border-right:1px solid var(--rule)!important}}
+@media (max-width:520px){.plist{grid-template-columns:1fr}.plist a:nth-child(odd){border-right:0!important}}
+
+/* press kit */
+.assets3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--rule)}
+.assets3 > div{display:grid;gap:14px;align-content:start;justify-items:start;padding:clamp(20px,2.6vw,32px);min-width:0}
+.assets3 > div + div{border-left:1px solid var(--rule)}
+.assets3 .pv{width:100%;aspect-ratio:16/10;display:grid;place-items:center;background:var(--deep);border:1px solid var(--rule)}
+.assets3 .pv img{max-width:62%;max-height:72%;width:auto;height:auto}
+.assets3 h3{font:600 17px/1.2 var(--wide);font-stretch:110%}
+.swatches{display:flex;flex-wrap:wrap;border-top:1px solid var(--rule)}
+.swatches span{display:flex;align-items:center;gap:12px;padding:18px clamp(16px,2.4vw,32px);border-right:1px solid var(--rule);font:500 11.5px/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.swatches i{width:28px;height:28px;border:1px solid var(--rule)}
+@media (max-width:760px){.assets3{grid-template-columns:1fr}.assets3 > div + div{border-left:0;border-top:1px solid var(--rule)}}
+
+/* 404 */
+.lost{padding:clamp(80px,14vw,180px) clamp(16px,3vw,40px);display:grid;justify-items:center;text-align:center;gap:24px}
+.lost .code{font:800 clamp(80px,16vw,220px)/.85 var(--wide);font-stretch:125%;color:var(--paper)}
+.intro strong{color:var(--paper);font-weight:600}

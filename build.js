@@ -24,14 +24,21 @@ const idOf = url => (String(url || '').match(/id(\d+)/) || [])[1];
 const mkdir = p => fs.mkdirSync(p, { recursive: true });
 const write = (rel, html) => { const f = path.join(dir, rel); mkdir(path.dirname(f)); fs.writeFileSync(f, html); };
 
-/* -------------------------------------------------------------- shared head */
+/* -------------------------------------------------------------- shared shell */
+/* Every generated page wears the studio homepage's system (redesign 2026-10-17): studio.css +
+   page.css, the same nav, hairline frame, section bars and footer, the ruler scrollbar
+   (studio.js) and the terminal (term.js + term.css). Asset paths are absolute because
+   404.html is served at any depth. */
+const MARK = '<svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="url(#mg)"/><circle cx="50" cy="29" r="9" fill="#fab84d"/><rect x="41.5" y="44" width="17" height="34" rx="8.5" fill="#0b0b12"/></svg>';
+const MARK_DEFS = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="mg" x1="6%" y1="32%" x2="94%" y2="68%"><stop offset="0" stop-color="#33e6d1"/><stop offset=".55" stop-color="#6ef2e0"/><stop offset="1" stop-color="#248c85"/></linearGradient></defs></svg>';
+const pad2 = n => String(n).padStart(2, '0');
 function head({ title, desc, canonical, og }) {
   return `<!doctype html><html lang="en"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${canonical}">
-<meta name="theme-color" content="#06070d">
+<meta name="theme-color" content="#0f1013">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Integrated Software Technologies">
 <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${canonical}"><meta property="og:image" content="${og}">
@@ -40,89 +47,117 @@ function head({ title, desc, canonical, og }) {
 <meta name="twitter:title" content="${esc(title)}"><meta name="twitter:image" content="${og}">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/icon-192.png">
-<link rel="stylesheet" href="/assets/fonts.css"><link rel="stylesheet" href="/assets/style.css">
+<link rel="preload" href="/assets/studio/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/studio.css"><link rel="stylesheet" href="/assets/page.css"><link rel="stylesheet" href="/assets/term.css">
 </head><body>
-<div id="bg"><div class="blob a"></div><div class="blob b"></div><div class="blob c"></div></div>
-<nav id="nav">
-  <a class="brand" href="/"><span class="mark">i</span><span>Integrated Software<br><small>integratedsw.tech</small></span></a>
-  <div class="navlinks"><a href="/#apps">Apps</a><a href="/press/">Press</a><a class="cta" href="/#contact">Get in touch</a></div>
-</nav>`;
+${MARK_DEFS}
+<header class="nav"><a class="logo" href="/" aria-label="Integrated Software, home">${MARK}</a>
+  <nav class="links" aria-label="Site"><a href="/">Home</a><a href="/#apps">Apps</a><a href="/#tools">Open source</a><a href="/#studio">Studio</a><a href="/press/">Press</a></nav>
+  <span class="sp"></span><a class="cta" href="/#contact">Get in touch</a></header>
+<main id="main" class="sub"><div class="frame">
+`;
 }
-const foot = `<footer><a class="brand" href="/"><span class="mark">i</span> Integrated Software Technologies Inc.</a>
-<span>© 2026 · Built on-device, in Glendale, CA · integratedsw.tech · <a href="/privacy/" style="color:inherit">Privacy</a></span></footer>
-<script>addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('scrolled',scrollY>30)})</script>
-<!-- The terminal rides along on every generated page too, not just the
-     homepage: someone reading an app page is exactly the person who wants to
-     poke at it. apps.js is the catalog term.js reads. -->
+const ODO = '<span class="odo"><span>' + Array.from({ length: 10 }, (_, d) => `<i>${d}</i>`).join('') + '</span></span>';
+function foot() {
+  return `
+<footer><div class="foot">
+  <div class="brand">${MARK}<p>Native iOS apps that run entirely on your device, made by a one-person studio.</p><span class="mono" style="font-size:11px;color:var(--faint)">matt@integratedsw.tech</span></div>
+  <div><h4>Apps</h4><span style="display:grid;gap:10px">${APPS.map(a => `<a href="/apps/${a.slug}/">${esc(a.name)}</a>`).join('')}</span></div>
+  <div><h4>Open source</h4><a href="https://github.com/mathieeo/rateCheck" target="_blank" rel="noopener">rateCheck</a><a href="https://github.com/mathieeo/SoftCOM" target="_blank" rel="noopener">SoftCOM</a><a href="https://github.com/mathieeo/SerialFileCopy" target="_blank" rel="noopener">SerialFileCopy</a></div>
+  <div><h4>Studio</h4><a href="/#studio">Services</a><a href="/#contact">Contact</a><a href="/press/">Press kit</a><a href="/privacy/">Privacy</a></div>
+</div>
+<div class="legal"><span>© 2026 Integrated Software Technologies Inc.</span><span>Designed, coded and shipped solo</span></div></footer>
+</div></main>
+<div class="sbar" id="sbar" role="scrollbar" aria-controls="main" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Page position" tabindex="0">
+  <div class="sb-frost"></div><div class="sb-tape" id="tape"></div><div class="sb-win" id="win"></div>
+  <div class="sb-hov" id="hov"><span id="hovv">000%</span></div>
+  <div class="sb-ind" id="ind"><span class="line"></span><span class="read" aria-hidden="true">${ODO}${ODO}${ODO}%</span></div>
+</div>
+<!-- The terminal rides along on every page: someone reading an app page is exactly the
+     person who wants to poke at it. apps.js is the catalog term.js reads. -->
 <script src="/assets/apps.js"></script>
 <script src="/assets/term.js"></script>
+<script src="/assets/studio.js"></script>
 </body></html>`;
+}
 
 const svgApple = '<svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15"><path d="M16 1c.1 1.2-.4 2.4-1.1 3.2-.8.9-2 1.6-3.2 1.5-.1-1.2.5-2.4 1.2-3.1C13.7 1.6 15 1 16 1zm3.6 16.4c-.6 1.4-.9 2-1.7 3.2-1.1 1.7-2.6 3.8-4.5 3.8-1.7 0-2.1-1.1-4.4-1.1s-2.8 1.1-4.4 1.1c-1.9 0-3.3-1.9-4.4-3.6C-1 16.4-.4 9.9 3 8c1.3-.7 2.6-.6 3.7-.6 1.2 0 2 .7 3.4.7 1.3 0 2.1-.7 3.6-.7 1.1 0 2.3.1 3.4.9-3 1.6-2.5 5.9.5 7.1z"/></svg>';
 
 /* --------------------------------------------------------------- app pages */
 function appPage(a) {
+  const i = APPS.indexOf(a), next = APPS[(i + 1) % APPS.length];
   const id = idOf(a.store);
   const canonical = `${ROOT}/apps/${a.slug}/`;
   const og = `${ROOT}/assets/og/${a.slug}.png`;
-  const icon = a.icon
-    ? `<img class="micon" src="/assets/icons/${a.icon}.png" alt="${esc(a.name)} icon">`
-    : `<div class="micon ph">📱</div>`;
+  // App Store facts are baked in at build time from the lookup above (no request to Apple
+  // from the visitor's browser); every build refreshes them.
+  const info = storeInfo[id], facts = [];
+  if (info) {
+    if (info.formattedPrice) facts.push(info.price === 0 ? 'Free' : info.formattedPrice);
+    if (info.userRatingCount > 0) facts.push(`★ ${(info.averageUserRating || 0).toFixed(1)} (${info.userRatingCount})`);
+    if (info.version) facts.push('Version ' + info.version);
+    if (info.currentVersionReleaseDate) facts.push('Updated ' + new Date(info.currentVersionReleaseDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }));
+    if (info.fileSizeBytes) facts.push(Math.round(info.fileSizeBytes / 1048576) + ' MB');
+    if (info.minimumOsVersion) facts.push('iOS ' + info.minimumOsVersion + '+');
+  }
   const store = a.store
-    ? `<a class="chip app" href="${a.store}" target="_blank" rel="noopener">${svgApple} View on the App Store</a>`
-    : `<span class="chip soon">${a.status === 'soon' ? 'In development' : 'In review'}</span>`;
-  const shots = a.key
-    ? `<div class="mshots">` + Array.from({ length: a.shots || 5 }, (_, i) => i + 1).map(k =>
-        `<div class="device"><img class="shot" src="/assets/shots/${a.key}/${String(k).padStart(2, '0')}.png" alt="${esc(a.name)} screenshot ${k}" loading="lazy"></div>`).join('') + `</div>`
-    : '';
-  const meta = id
-    ? `<div class="mmeta" id="meta"></div>
-<script>(function(){window.__m=function(d){var r=(d.results||[])[0];if(!r)return;var b=[];
-if(r.formattedPrice)b.push(r.formattedPrice);
-if(r.userRatingCount>0)b.push('★ '+(r.averageUserRating||0).toFixed(1)+' ('+r.userRatingCount.toLocaleString()+')');
-if(r.version)b.push('Version '+r.version);
-if(r.currentVersionReleaseDate)b.push('Updated '+new Date(r.currentVersionReleaseDate).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}));
-if(r.fileSizeBytes)b.push(Math.round(r.fileSizeBytes/1048576)+' MB');
-if(r.minimumOsVersion)b.push('iOS '+r.minimumOsVersion+'+');
-document.getElementById('meta').innerHTML=b.map(function(x){return '<span>'+x+'</span>'}).join('<i>·</i>');};
-var s=document.createElement('script');s.src='https://itunes.apple.com/lookup?id=${id}&country=us&callback=__m';s.onerror=function(){};document.head.appendChild(s);})();</script>`
-    : '';
+    ? `<a class="btn" href="${a.store}" target="_blank" rel="noopener">${svgApple.replace('<svg ', '<svg class="apple" ')}Download on the App Store</a>`
+    : `<span class="btn ghost" aria-disabled="true">${a.status === 'soon' ? 'In development' : 'In review'}</span>`;
+  const studioShot = n => fs.existsSync(path.join(dir, 'assets', 'studio', 'shots', `${a.key}-${n}.jpg`));
+  const stage = a.key && studioShot(1)
+    ? `<div class="stage">`
+      + (studioShot(2) ? `<div class="shot s2"><img src="/assets/studio/shots/${a.key}-2.jpg" alt="" loading="lazy"></div>` : '')
+      + `<div class="shot s1"><img src="/assets/studio/shots/${a.key}-1.jpg" alt="${esc(a.name)} screen"></div></div>`
+    : `<div class="stage bare">${a.icon ? `<img class="big" src="/assets/icons/${a.icon}.png" alt="">` : ''}</div>`;
+  const shots = a.key ? Array.from({ length: a.shots || 5 }, (_, k) => `${pad2(k + 1)}.png`)
+    .filter(f => fs.existsSync(path.join(dir, 'assets', 'shots', a.key, f))) : [];
   const ld = {
     '@context': 'https://schema.org', '@type': 'SoftwareApplication', name: a.name,
     applicationCategory: 'MobileApplication', operatingSystem: 'iOS', description: a.desc,
     url: a.store || canonical, image: `${ROOT}/assets/icons/${a.icon}.png`,
     author: { '@type': 'Organization', name: 'Integrated Software Technologies Inc.', url: ROOT }
   };
-  // Price comes from the App Store, never from a hardcoded zero. This used to
-  // say price '0' for every app, which quietly published "free" as structured
-  // fact about every paid one. When the price is not known the offer is
-  // OMITTED: saying nothing is correct, saying "free" about a $4.99 app is not.
-  const listing = storeInfo[idOf(a.store)];
-  if (listing && typeof listing.price === 'number') {
-    ld.offers = { '@type': 'Offer', price: String(listing.price),
-                  priceCurrency: listing.currency || 'USD' };
+  // Price comes from the App Store, never from a hardcoded zero. When the price is not
+  // known the offer is OMITTED: saying nothing is correct, saying "free" about a paid app is not.
+  if (info && typeof info.price === 'number') {
+    ld.offers = { '@type': 'Offer', price: String(info.price), priceCurrency: info.currency || 'USD' };
   }
-  return head({ title: `${a.name} — ${a.cat} for iOS`, desc: a.desc, canonical, og }) +
-    `<main class="subpage" style="--a:${a.accent}">
-<a class="backlink" href="/#apps">← All apps</a>
-<div class="subhead"><span class="micwrap" style="--a:${a.accent}">${icon}</span>
-  <div><h1>${esc(a.name)}</h1><div class="cat" style="color:${a.accent}">${esc(a.cat)}</div></div></div>
-<p class="mlong">${esc(a.long || a.desc)}</p>
-<div class="mlinks">${store} <a class="chip" href="/apps/${a.slug}/privacy/">Privacy Policy</a></div>
-${meta}
-${shots}
-</main>
-<script type="application/ld+json">${JSON.stringify(ld)}</script>` + foot;
+  return head({ title: `${a.name} — ${a.cat} for iOS`, desc: a.desc, canonical, og }) + `
+<section class="block" data-name="${esc(a.name)}" style="--c:${a.accent}">
+  <div class="bar"><span><a href="/#apps">← All apps</a></span><span>${esc(a.cat)} · ${pad2(i + 1)} / ${pad2(APPS.length)}</span></div>
+  <div class="ah">
+    <div class="copy">
+      ${a.icon ? `<img class="aicon" src="/assets/icons/${a.icon}.png" alt="${esc(a.name)} icon" width="84" height="84">` : ''}
+      <h1>${esc(a.name)}</h1>
+      <p class="tag">${esc(a.desc)}</p>
+      ${facts.length ? `<p class="facts">${facts.map(f => `<span>${esc(f)}</span>`).join('<i>·</i>')}</p>` : ''}
+      <div class="ctas">${store}<a class="btn ghost" href="/apps/${a.slug}/privacy/">Privacy policy</a></div>
+    </div>
+    ${stage}
+  </div>
+</section>
+<section class="block" data-name="About">
+  <div class="bar"><span>01 / <b>About</b></span><span>${esc(a.cat)}</span></div>
+  <div class="intro"><h2>What <em class="s">${esc(a.name)}</em> does.</h2><p>${esc(a.long || a.desc)}</p></div>
+</section>
+${shots.length ? `<section class="block" data-name="Screens">
+  <div class="bar"><span>02 / <b>Screens</b></span><span>${shots.length} from the App Store</span></div>
+  <div class="strip">${shots.map((f, k) => `<figure><img src="/assets/shots/${a.key}/${f}" alt="${esc(a.name)} screenshot ${k + 1}" loading="lazy"><figcaption>${pad2(k + 1)}</figcaption></figure>`).join('')}</div>
+</section>` : ''}
+<section class="block" data-name="Next app">
+  <a class="nextapp" href="/apps/${next.slug}/" style="--c:${next.accent}"><span class="k">Next app</span><span class="nn">${next.icon ? `<img src="/assets/icons/${next.icon}.png" alt="">` : ''}${esc(next.name)} →</span></a>
+</section>
+<script type="application/ld+json">${JSON.stringify(ld)}</script>` + foot();
 }
 
 /* ----------------------------------------------------------- privacy pages */
-/* Every App Store listing needs a working privacy policy URL, and only two
-   apps had one on this domain. One template, generated per app — the studio
-   stance (no accounts, no analytics, on-device) is the policy; apps that DO
-   have a third-party surface declare it via flags in apps.js (`ads:true`
-   for AdMob, as in Spinnit). The two original hand-written pages
-   (deck-privacy.html, spinnit-privacy.html) stay untouched so any listing
-   already pointing at them keeps working. */
+/* Every App Store listing needs a working privacy policy URL. One template, generated per
+   app; apps with a third-party surface declare it via flags in apps.js (`ads:true` for
+   AdMob, as in Spinnit). The two original hand-written pages (deck-privacy.html,
+   spinnit-privacy.html) stay untouched so listings pointing at them keep working.
+   POLICY_DATE is the date the policy TEXT last changed: bump it only when the wording
+   does. (Builds used to stamp today's date, so every deploy claimed a policy update.) */
+const POLICY_DATE = '2026-09-15';
 function privacyPage(a) {
   const canonical = `${ROOT}/apps/${a.slug}/privacy/`;
   const ads = a.ads ? `
@@ -151,11 +186,12 @@ app that the purchase succeeded.</p>` : '';
        third-party trackers. Everything happens on your device.`;
   return head({ title: `${a.name} — Privacy Policy`,
                 desc: `Privacy policy for ${a.name} by Integrated Software Technologies.`,
-                canonical, og: `${ROOT}/assets/og/${a.slug}.png` }) +
-    `<main class="subpage" style="--a:${a.accent}">
-<a class="backlink" href="/apps/${a.slug}/">← ${esc(a.name)}</a>
-<h1>${esc(a.name)} — Privacy Policy</h1>
-<p class="mlong"><strong>Short version:</strong> ${shortLine}</p>
+                canonical, og: `${ROOT}/assets/og/${a.slug}.png` }) + `
+<section class="block" data-name="Privacy" style="--c:${a.accent}">
+  <div class="bar"><span><a href="/apps/${a.slug}/">← ${esc(a.name)}</a></span><span>Privacy policy · ${POLICY_DATE}</span></div>
+  <div class="intro"><h1 class="h1sub">${esc(a.name)} <em class="s">privacy policy.</em></h1>
+  <p><strong>Short version:</strong> ${shortLine}</p></div>
+  <div class="prose">
 <h2>What ${esc(a.name)} stores on your device</h2>
 <p>Your content and settings are stored <strong>on your device</strong> (and, if you use
 iCloud, in your own private iCloud account through Apple). We never receive this
@@ -173,24 +209,23 @@ transmitted to us.</p>
 ${ads}
 <h2>Contact</h2>
 <p>Questions? Email <a href="mailto:matt@integratedsw.tech">matt@integratedsw.tech</a>.</p>
-<p class="mlong" style="opacity:.6">Last updated ${today}.</p>
-</main>` + foot;
+<p class="dated">Last updated ${POLICY_DATE}.</p>
+  </div>
+</section>` + foot();
 }
 
 function privacyIndex() {
   const canonical = `${ROOT}/privacy/`;
   return head({ title: 'Privacy — Integrated Software Technologies',
                 desc: 'Privacy policies for every Integrated Software Technologies app: no accounts, no analytics, on-device.',
-                canonical, og: `${ROOT}/assets/og.png` }) +
-    `<main class="subpage">
-<a class="backlink" href="/">← Home</a>
-<h1>Privacy</h1>
-<p class="mlong">Every app we ship is built the same way: no accounts, no analytics, no
-third-party trackers, everything on your device. Each app's policy:</p>
-<ul>
-${APPS.map(a => `  <li><a href="/apps/${a.slug}/privacy/">${esc(a.name)}</a></li>`).join('\n')}
-</ul>
-</main>` + foot;
+                canonical, og: `${ROOT}/assets/og.png` }) + `
+<section class="block" data-name="Privacy">
+  <div class="bar"><span><a href="/">← Home</a></span><span>${APPS.length} apps · one policy each</span></div>
+  <div class="intro"><h1 class="h1sub">Privacy, <em class="s">by design.</em></h1>
+  <p>Every app we ship is built the same way: no accounts, no analytics, no
+third-party trackers, everything on your device. Each app's policy:</p></div>
+  <div class="plist">${APPS.map(a => `<a href="/apps/${a.slug}/privacy/" style="--c:${a.accent}">${a.icon ? `<img src="/assets/icons/${a.icon}.png" alt="">` : ''}<div><b>${esc(a.name)}</b><span>Privacy policy →</span></div></a>`).join('')}</div>
+</section>` + foot();
 }
 
 /* -------------------------------------------------------------- press page */
@@ -201,32 +236,28 @@ function pressPage() {
     { n: 'App mark (192px)', img: '/assets/icon-192.png', dl: '/assets/icon-192.png' },
     { n: 'Share card', img: '/assets/og.png', dl: '/assets/og.png' }
   ];
-  const swatches = [['Cyan', '#33e6d1'], ['Amber', '#fab84d'], ['Teal', '#248c85'], ['Emerald', '#34d399'], ['Ink', '#06070d']];
-  return head({ title: 'Press kit — Integrated Software Technologies', desc: 'Brand assets, logos, colors, and boilerplate for Integrated Software Technologies.', canonical, og: `${ROOT}/assets/og.png` }) +
-    `<main class="subpage">
-<a class="backlink" href="/">← Home</a>
-<article class="prose"><h1>Press kit</h1>
-<div class="meta">Logos, colors, and boilerplate — free to use when writing about the studio or its apps.</div>
-<p><b>Integrated Software Technologies Inc.</b> is a one-person iOS studio run by Matthew Mesropian in Glendale, CA. It designs and ships native, on-device apps — developer tools, network utilities, LiDAR measuring, and audio — with no accounts and no tracking.</p>
-<p>Contact: <a href="mailto:matt@integratedsw.tech" style="color:var(--c2);font-weight:600">matt@integratedsw.tech</a> · (818) 671-9866</p>
-</article>
-<div class="pressgrid">
-${assets.map(x => `<div class="asset"><img src="${x.img}" alt="${x.n}"><div class="an">${x.n}</div><a class="chip gh" href="${x.dl}" download>Download</a></div>`).join('')}
-</div>
-<div class="swatches">
-${swatches.map(([n, c]) => `<span class="swatch"><i style="background:${c}"></i>${n} · ${c}</span>`).join('')}
-</div>
-</main>` + foot;
+  const swatches = [['Ink', '#0f1013'], ['Paper', '#f2f1ee'], ['Accent', '#4fe0cf'], ['Mark cyan', '#33e6d1'], ['Mark amber', '#fab84d']];
+  return head({ title: 'Press kit — Integrated Software Technologies', desc: 'Brand assets, logos, colors, and boilerplate for Integrated Software Technologies.', canonical, og: `${ROOT}/assets/og.png` }) + `
+<section class="block" data-name="Press">
+  <div class="bar"><span><a href="/">← Home</a></span><span>Press kit</span></div>
+  <div class="intro"><h1 class="h1sub">Press <em class="s">kit.</em></h1><p>Logos, colors, and boilerplate, free to use when writing about the studio or its apps.</p></div>
+  <div class="prose">
+    <p><b>Integrated Software Technologies Inc.</b> is a one-person iOS studio run by Matthew Mesropian in Glendale, CA. It designs and ships native, on-device apps (developer tools, network utilities, LiDAR measuring, and audio) with no accounts and no tracking.</p>
+    <p>Contact: <a href="mailto:matt@integratedsw.tech">matt@integratedsw.tech</a> · (818) 671-9866</p>
+  </div>
+  <div class="assets3">${assets.map(x => `<div><div class="pv"><img src="${x.img}" alt="${x.n}"></div><h3>${x.n}</h3><a class="btn ghost sm" href="${x.dl}" download>Download</a></div>`).join('')}</div>
+  <div class="swatches">${swatches.map(([n, c]) => `<span><i style="background:${c}"></i>${n} · ${c}</span>`).join('')}</div>
+</section>` + foot();
 }
 
 /* ---------------------------------------------------------------- 404 page */
 function notFound() {
-  return head({ title: 'Not found — Integrated Software Technologies', desc: 'That page does not exist.', canonical: `${ROOT}/404`, og: `${ROOT}/assets/og.png` }) +
-    `<main class="subpage" style="text-align:center;padding-top:24vh">
-<div class="prose" style="margin:0 auto"><h1>404</h1>
-<div class="meta">That page wandered off-device.</div>
-<p><a class="chip app" href="/" style="margin-top:6px">← Back home</a></p></div>
-</main>` + foot;
+  return head({ title: 'Not found — Integrated Software Technologies', desc: 'That page does not exist.', canonical: `${ROOT}/404`, og: `${ROOT}/assets/og.png` }) + `
+<section class="block" data-name="Not found">
+  <div class="bar"><span>404</span><span>Page not found</span></div>
+  <div class="lost"><span class="code" aria-hidden="true">404</span><h1 class="h1sub">That page <em class="s">wandered</em> off-device.</h1>
+  <div class="ctas"><a class="btn" href="/">Back home</a><a class="btn ghost" href="/#apps">See the apps</a></div></div>
+</section>` + foot();
 }
 
 /* ---------------------------------------------------- per-app OG images ---- */

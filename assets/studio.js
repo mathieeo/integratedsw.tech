@@ -65,7 +65,7 @@ if (form) {
 
 /* ---------- rich results: the app list, with the REAL prices from the build-time App Store snapshot
    (the old homepage told Google every app cost 0) ---------- */
-try {
+if (document.getElementById('appgrid')) try {
   const snap = (window.__RATINGS_SNAPSHOT && window.__RATINGS_SNAPSHOT.results) || [];
   const byId = {}; snap.forEach(r => { byId[String(r.trackId)] = r; });
   const idOf = u => ((u || '').match(/id(\d+)/) || [])[1];
@@ -80,10 +80,13 @@ try {
 } catch (e) {}
 
 /* ---------- PWA ---------- */
-if ('serviceWorker' in navigator && location.protocol.startsWith('http')) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
 
 /* ---------- the hero tunnel: real screens drifting toward you ---------- */
-const orbit = document.getElementById('orbit'), rings = document.getElementById('rings'), rctx = rings.getContext('2d');
+const hero = (() => {
+const orbit = document.getElementById('orbit'), rings = document.getElementById('rings');
+if (!orbit || !rings) return null;
+const rctx = rings.getContext('2d');
 const MEDIA = APPS.flatMap(a => [a.key + '-1', a.key + '-2']);
 const small = innerWidth < 700;
 const COUNT = small ? 16 : 28, Z0 = 1, Z1 = 4.4;
@@ -133,17 +136,22 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 if (!reduce) requestAnimationFrame(loop);
+return { size, placeCards, drawRings };
+})();
 
 /* ---------- the ruler scrollbar ----------
    A tape of 201 half-percent ticks scrolls 1:1 with the page; the accent line sits at T + p*L and always points
    at its own percentage on the tape (tape tick p lands at T + p*tapeH - scrollY = T + p*L when
    tapeH = docH - T - B). Ticks near the line swell with scroll speed and relax when you stop. */
-const sbar = document.getElementById('sbar'), tape = document.getElementById('tape'), win = document.getElementById('win');
-const hov = document.getElementById('hov'), hovv = document.getElementById('hovv'), ind = document.getElementById('ind');
-const odoCols = [...ind.querySelectorAll('.odo span')];
 const index = document.getElementById('index');
 const sections = [...document.querySelectorAll('[data-name]')];
-const navLinks = [...document.querySelectorAll('.nav .links a')];
+const navLinks = [...document.querySelectorAll('.nav .links a[data-s]')];
+const rail = (() => {
+const sbar = document.getElementById('sbar');
+if (!sbar) return null;
+const tape = document.getElementById('tape'), win = document.getElementById('win');
+const hov = document.getElementById('hov'), hovv = document.getElementById('hovv'), ind = document.getElementById('ind');
+const odoCols = [...ind.querySelectorAll('.odo span')];
 let T = 60, B = 24, L = 0, docH = 0, vh = 0, tapeH = 0, ticks = [], shownVal = -1, amp = 0, lastSY = scrollY, lastRT = 0, swollen = new Set(), liveTimer = 0;
 const clamp01 = v => Math.max(0, Math.min(1, v));
 function buildTape() {
@@ -196,6 +204,9 @@ sbar.addEventListener('keydown', e => {
   else if (e.key === 'Home' || e.key === 'End') { e.preventDefault(); goP(e.key === 'End' ? 1 : 0, true); }
 });
 addEventListener('scroll', () => { sbar.classList.add('live'); clearTimeout(liveTimer); liveTimer = setTimeout(() => sbar.classList.remove('live'), 700); }, { passive: true });
+buildTape(); requestAnimationFrame(railFrame);
+return { build: buildTape };
+})();
 
 /* ---------- split section index ---------- */
 let current = -1;
@@ -209,6 +220,7 @@ function scramble(el, text) {
 }
 /* in the hero the index is a table of contents at the bottom; after it, the sections you passed stack up top with the current one large */
 function renderIndex(cur) {
+  if (!index) return;
   if (cur === 0) { index.innerHTML = sections.slice(1).map((s, i) => `<span class="${i === 0 ? 'next' : ''}">${s.dataset.name}</span>`).join(''); return; }
   index.innerHTML = sections.slice(0, cur + 1).map((s, i) => `<span class="${i === cur ? 'now' : ''}">${s.dataset.name}</span>`).join('');
   scramble(index.querySelector('.now'), sections[cur].dataset.name.toUpperCase());
@@ -219,10 +231,10 @@ function onScroll() {
 }
 let ticking = false;
 addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; onScroll(); }); } }, { passive: true });
-let rz; const relayout = () => { clearTimeout(rz); rz = setTimeout(() => { size(); buildTape(); onScroll(); if (reduce) { placeCards(0); drawRings(0); } }, 150); };
+let rz; const relayout = () => { clearTimeout(rz); rz = setTimeout(() => { if (hero) hero.size(); if (rail) rail.build(); onScroll(); if (reduce && hero) { hero.placeCards(0); hero.drawRings(0); } }, 150); };
 addEventListener('resize', relayout);
 if (window.ResizeObserver) new ResizeObserver(relayout).observe(document.body);
-buildTape(); onScroll(); requestAnimationFrame(railFrame);
-addEventListener('load', () => { buildTape(); onScroll(); });
-if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { buildTape(); onScroll(); });
+onScroll();
+addEventListener('load', () => { if (rail) rail.build(); onScroll(); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (rail) rail.build(); onScroll(); });
 })();

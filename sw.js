@@ -27,7 +27,9 @@
 // Bump it only to force a one-time flush for everyone, as with v5, which
 // shipped the fix for the homepage rendering blank when a script hung.
 // v6 (2026-10-17): the studio redesign replaced the whole homepage and its assets.
-const CACHE = 'ist-v6';
+// v7 (same day): every page restyled, and the fetches below now bypass the HTTP cache
+// (GitHub Pages sends max-age=600, which kept serving pre-deploy pages for 10 minutes).
+const CACHE = 'ist-v7';
 
 // Precache the shell so the very first visit is instant and offline works.
 // Anything not listed here is still cached on first use — it just isn't
@@ -86,10 +88,13 @@ self.addEventListener('fetch', e => {
   // connection allows, and the cache is only the offline safety net.
   if (req.mode === 'navigate') {
     e.respondWith(
-      fetch(req)
+      // cache: 'no-cache' revalidates with the server instead of trusting the browser's HTTP
+      // cache, so a deploy shows on the very next load. Each page is stored under its OWN
+      // URL (it used to be stored under '/', so offline the homepage became whatever page
+      // was visited last).
+      fetch(req, { cache: 'no-cache' })
         .then(r => {
-          const copy = r.clone();
-          caches.open(CACHE).then(c => c.put('/', copy));
+          if (r && r.ok) { const copy = r.clone(); caches.open(CACHE).then(c => c.put(req, copy)); }
           return r;
         })
         .catch(() => caches.match(req).then(hit => hit || caches.match('/')))
@@ -111,7 +116,7 @@ self.addEventListener('fetch', e => {
   // consistent. The cache is still the offline fallback.
   if (DATA.test(url.pathname)) {
     e.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-cache' })
         .then(r => {
           const copy = r.clone();
           caches.open(CACHE).then(c => c.put(req, copy));
@@ -127,7 +132,7 @@ self.addEventListener('fetch', e => {
   // background either way. No hand-bumped version constant, no stuck deploys.
   e.respondWith(
     caches.match(req).then(hit => {
-      const fresh = fetch(req)
+      const fresh = fetch(req, { cache: 'no-cache' })
         .then(r => {
           if (r && r.ok) {
             const copy = r.clone();

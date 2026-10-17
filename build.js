@@ -7,7 +7,7 @@
      assets/og/<slug>.png     per-app share cards (via qlmanage + sips)
      sitemap.xml, robots.txt, 404.html
    Run:  node build.js
-   Homepage (index.html) is hand-maintained and NOT touched here.
+   Homepage (index.html) is hand-maintained EXCEPT the app grid between the APPS markers (homeCards below).
    ============================================================================ */
 'use strict';
 const fs = require('fs');
@@ -381,20 +381,28 @@ console.log('  press, 404, sitemap.xml, robots.txt');
 // JS only enhances it.
 // ---------------------------------------------------------------------------
 function homeCards() {
-  const svgApple = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 1c.1 1.2-.4 2.4-1.1 3.2-.8.9-2 1.6-3.2 1.5-.1-1.2.5-2.4 1.2-3.1C13.7 1.6 15 1 16 1zm3.6 16.4c-.6 1.4-.9 2-1.7 3.2-1.1 1.7-2.6 3.8-4.5 3.8-1.7 0-2.1-1.1-4.4-1.1s-2.8 1.1-4.4 1.1c-1.9 0-3.3-1.9-4.4-3.6C-1 16.4-.4 9.9 3 8c1.3-.7 2.6-.6 3.7-.6 1.2 0 2 .7 3.4.7 1.3 0 2.1-.7 3.6-.7 1.1 0 2.3.1 3.4.9-3 1.6-2.5 5.9.5 7.1z"/></svg>';
+  // The studio homepage (2026-10-17): a ruled two-column grid. Each card shows two real screens
+  // (assets/studio/shots/<key>-1.jpg and -2.jpg) rising out of a panel tinted in the app's accent,
+  // and the price comes from the App Store lookup above, so it is never typed by hand.
+  // An app without screenshots yet still renders, with just its icon in the panel.
   return APPS.map((a, i) => {
-    const iconHTML = a.icon
-      ? `<img class="icon" src="assets/icons/${a.icon}.png" alt="${esc(a.name)} icon" loading="lazy">`
-      : `<div class="icon ph">${a.glyph || '📱'}</div>`;
-    let links;
-    if (a.status === 'soon') links = `<span class="chip soon">In development</span>`;
-    else if (a.store) links = `<a class="chip app" href="${a.store}" target="_blank" rel="noopener">${svgApple} View on the App Store</a>`;
-    else links = `<span class="chip soon">In review</span>`;
-    return `<div class="card reveal ${['', 'd1', 'd2'][i % 3]}" data-app="${i}" style="--a:${a.accent};cursor:pointer">`
-      + `<div class="glow" style="--gc:${a.accent}"></div>`
-      + `<div class="top">${iconHTML}<div><h3>${esc(a.name)}</h3><div class="cat">${esc(a.cat)}</div></div></div>`
-      + `<div class="desc">${esc(a.desc)}</div>`
-      + `<div class="links">${links}<span class="chip more">Details →</span></div></div>`;
+    const shot = n => path.join(dir, 'assets', 'studio', 'shots', `${a.key}-${n}.jpg`);
+    const s1 = a.key && fs.existsSync(shot(1)), s2 = a.key && fs.existsSync(shot(2));
+    const info = storeInfo[String(idOf(a.store))];
+    const price = info && info.formattedPrice ? (info.price === 0 ? 'FREE' : info.formattedPrice) : '';
+    let go;
+    if (a.status === 'soon') go = `<span>In development</span>`;
+    else if (a.store) go = `<a href="${a.store}" target="_blank" rel="noopener">App Store ↗</a>`;
+    else go = `<span>In review</span>`;
+    return `<article class="app" style="--c:${a.accent}">`
+      + `<div class="bar"><span>${esc(a.cat)}</span><span>${String(i + 1).padStart(2, '0')}</span></div>`
+      + `<div class="stage">`
+      + (a.icon ? `<img class="ic" src="assets/icons/${a.icon}.png" alt="" loading="lazy">` : '')
+      + (s2 ? `<div class="shot s2"><img src="assets/studio/shots/${a.key}-2.jpg" alt="" loading="lazy"></div>` : '')
+      + (s1 ? `<div class="shot s1"><img src="assets/studio/shots/${a.key}-1.jpg" alt="${esc(a.name)} screen" loading="lazy"></div>` : '')
+      + `</div>`
+      + `<div class="txt"><h3>${esc(a.name)}${price ? `<small>${price}</small>` : ''}</h3><p>${esc(a.desc)}</p>`
+      + `<div class="go">${go}<a href="apps/${a.slug}/">Details →</a></div></div></article>`;
   }).join('');
 }
 

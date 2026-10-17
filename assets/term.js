@@ -73,6 +73,9 @@
         'sw.js': F('/sw.js'),
         apps: D(appDirs),
         assets: D({
+          'studio.css': F('/assets/studio.css'),
+          'studio.js': F('/assets/studio.js'),
+          'term.css': F('/assets/term.css'),
           'style.css': F('/assets/style.css'),
           'cinema.css': F('/assets/cinema.css'),
           'wow.css': F('/assets/wow.css'),

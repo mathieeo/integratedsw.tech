@@ -26,7 +26,8 @@
 // that on its own, which is the whole point of the rewrite described above.
 // Bump it only to force a one-time flush for everyone, as with v5, which
 // shipped the fix for the homepage rendering blank when a script hung.
-const CACHE = 'ist-v5';
+// v6 (2026-10-17): the studio redesign replaced the whole homepage and its assets.
+const CACHE = 'ist-v6';
 
 // Precache the shell so the very first visit is instant and offline works.
 // Anything not listed here is still cached on first use — it just isn't
@@ -34,19 +35,19 @@ const CACHE = 'ist-v5';
 const SHELL = [
   '/',
   '/index.html',
-  '/assets/style.css',
-  '/assets/cinema.css',
-  '/assets/wow.css',
-  '/assets/fonts.css',
+  '/assets/studio.css',
+  '/assets/term.css',
+  '/assets/studio/fonts/archivo.woff2',
+  '/assets/studio/fonts/inter.woff2',
+  '/assets/studio/fonts/geist-mono.woff2',
+  '/assets/studio/fonts/instrument-serif-italic.woff2',
   '/assets/apps.js',
   '/assets/ratings.js',
-  '/assets/app.js',
-  '/assets/enhance.js',
   '/assets/term.js',
-  '/assets/cinema.js',
-  '/assets/wow.js',
-  '/assets/dazzle.css',
-  '/assets/dazzle.js',
+  '/assets/studio.js',
+  // the app pages still use the original theme
+  '/assets/style.css',
+  '/assets/fonts.css',
   '/manifest.webmanifest'
 ];
 

@@ -71,7 +71,7 @@
         'sitemap.xml': F('/sitemap.xml'),
         'robots.txt': F('/robots.txt'),
         'sw.js': F('/sw.js'),
-        apps: D(appDirs),
+        apps: D(Object.assign({ 'index.html': F('/apps/index.html') }, appDirs)),
         assets: D({
           'studio.css': F('/assets/studio.css'),
           'studio.js': F('/assets/studio.js'),

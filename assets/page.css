@@ -77,3 +77,32 @@ main.sub{padding-top:var(--nav)}
 .lost{padding:clamp(80px,14vw,180px) clamp(16px,3vw,40px);display:grid;justify-items:center;text-align:center;gap:24px}
 .lost .code{font:800 clamp(80px,16vw,220px)/.85 var(--wide);font-stretch:125%;color:var(--paper)}
 .intro strong{color:var(--paper);font-weight:600}
+
+/* /apps/: the lineup, a ruled grid of every app */
+.lineup{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--rule)}
+.lu{display:flex;flex-direction:column;min-width:0;border-bottom:1px solid var(--rule);border-right:1px solid var(--rule)}
+.lu:nth-child(4n){border-right:0}
+.lu .hd{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 16px;font:500 10.5px/1.3 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.lu .hd span:last-child{text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lu .num{background:var(--c);color:#0b0b0e;padding:4px 7px;font-weight:700;letter-spacing:.08em}
+.lu .pic{position:relative;aspect-ratio:16/10;overflow:hidden;border-block:1px solid var(--rule);background:radial-gradient(70% 90% at 50% 110%,color-mix(in srgb,var(--c) 30%,transparent),transparent 72%),var(--deep)}
+.lu .pic img{position:absolute;left:50%;top:13%;width:44%;transform:translateX(-50%);border-radius:12px 12px 0 0;box-shadow:-1.5px 0 0 rgba(255,96,96,.3),1.5px 0 0 rgba(96,170,255,.34),0 0 0 1px rgba(242,241,238,.12);transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+.lu:hover .pic img{transform:translateX(-50%) translateY(-6%)}
+.lu .tx{padding:0 18px 22px;display:grid;gap:10px;flex:1;align-content:start}
+.lu .ic{width:56px;height:56px;border-radius:14px;margin-top:-30px;position:relative;z-index:2;box-shadow:0 0 0 3px var(--ink),0 12px 28px rgba(0,0,0,.5)}
+.lu h3{font:700 clamp(22px,1.9vw,28px)/1.05 var(--wide);font-stretch:118%;margin-top:4px}
+.lu p{margin:0;color:var(--mute);font-size:15px;line-height:1.5}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.tags span{font:500 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:5px 7px;border:1px solid var(--rule);color:var(--mute)}
+.tags span.hot{color:var(--c);border-color:color-mix(in srgb,var(--c) 45%,transparent)}
+.lu .go{margin-top:8px;font:500 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--paper)}
+.lu:hover .go{color:var(--c)}
+@media (max-width:1180px){.lineup{grid-template-columns:repeat(3,minmax(0,1fr))}.lu:nth-child(4n){border-right:1px solid var(--rule)}.lu:nth-child(3n){border-right:0}}
+@media (max-width:860px){.lineup{grid-template-columns:repeat(2,minmax(0,1fr))}.lu:nth-child(3n){border-right:1px solid var(--rule)}.lu:nth-child(2n){border-right:0}}
+@media (max-width:560px){.lineup{grid-template-columns:1fr}.lu{border-right:0!important}}
+
+/* six principles in two ruled rows */
+.tri6 > div:nth-child(3n+1){border-left:0}
+.tri6 > div:nth-child(n+4){border-top:1px solid var(--rule)}
+@media (max-width:860px){.tri6 > div{border-top:1px solid var(--rule)}.tri6 > div:first-child{border-top:0}}
+.intro p.fine{font:500 11px/1.7 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--faint);max-width:none}

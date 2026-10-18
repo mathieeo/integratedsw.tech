@@ -12,7 +12,7 @@ const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g,
 /* ---------- ticker and footer, from the same catalog as the grid ---------- */
 const tick = APPS.map(a => `<span><i style="--c:${a.c}"></i>${esc(a.name)}</span>`).join('');
 const tk = document.getElementById('ticker'); if (tk) tk.innerHTML = tick + tick;
-const fa = document.getElementById('footApps'); if (fa) fa.innerHTML = APPS.map(a => `<a href="/apps/${a.slug}/">${esc(a.name)}</a>`).join('');
+const fa = document.getElementById('footApps'); if (fa) fa.innerHTML = '<a href="/apps/">All apps</a>' + APPS.map(a => `<a href="/apps/${a.slug}/">${esc(a.name)}</a>`).join('');
 
 /* ---------- copy buttons ---------- */
 function copy(text, btn, fallbackLabel) {
@@ -63,21 +63,7 @@ if (form) {
   });
 }
 
-/* ---------- rich results: the app list, with the REAL prices from the build-time App Store snapshot
-   (the old homepage told Google every app cost 0) ---------- */
-if (document.getElementById('appgrid')) try {
-  const snap = (window.__RATINGS_SNAPSHOT && window.__RATINGS_SNAPSHOT.results) || [];
-  const byId = {}; snap.forEach(r => { byId[String(r.trackId)] = r; });
-  const idOf = u => ((u || '').match(/id(\d+)/) || [])[1];
-  const ld = { '@context': 'https://schema.org', '@type': 'ItemList', itemListElement: APPS.filter(a => a.store).map((a, n) => {
-    const r = byId[idOf(a.store)];
-    const item = { '@type': 'SoftwareApplication', name: a.name, applicationCategory: 'MobileApplication', operatingSystem: 'iOS', url: a.store, description: a.desc,
-      author: { '@type': 'Organization', name: 'Integrated Software Technologies Inc.' } };
-    if (r && typeof r.price === 'number') item.offers = { '@type': 'Offer', price: r.price.toFixed(2), priceCurrency: r.currency || 'USD' };
-    return { '@type': 'ListItem', position: n + 1, item };
-  }) };
-  const s = document.createElement('script'); s.type = 'application/ld+json'; s.textContent = JSON.stringify(ld); document.head.appendChild(s);
-} catch (e) {}
+/* (the app ItemList rich result moved to /apps/, server-rendered by build.js with real prices) */
 
 /* ---------- PWA ---------- */
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));

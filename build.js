@@ -52,7 +52,7 @@ function head({ title, desc, canonical, og }) {
 </head><body>
 ${MARK_DEFS}
 <header class="nav"><a class="logo" href="/" aria-label="Integrated Software, home">${MARK}</a>
-  <nav class="links" aria-label="Site"><a href="/">Home</a><a href="/#apps">Apps</a><a href="/#tools">Open source</a><a href="/#studio">Studio</a><a href="/press/">Press</a></nav>
+  <nav class="links" aria-label="Site"><a href="/">Home</a><a href="/apps/">Apps</a><a href="/#tools">Open source</a><a href="/#studio">Studio</a><a href="/press/">Press</a></nav>
   <span class="sp"></span><a class="cta" href="/#contact">Get in touch</a></header>
 <main id="main" class="sub"><div class="frame">
 `;
@@ -62,7 +62,7 @@ function foot() {
   return `
 <footer><div class="foot">
   <div class="brand">${MARK}<p>Native iOS apps that run entirely on your device, made by a one-person studio.</p><span class="mono" style="font-size:11px;color:var(--faint)">matt@integratedsw.tech</span></div>
-  <div><h4>Apps</h4><span style="display:grid;gap:10px">${APPS.map(a => `<a href="/apps/${a.slug}/">${esc(a.name)}</a>`).join('')}</span></div>
+  <div><h4>Apps</h4><span style="display:grid;gap:10px"><a href="/apps/">All apps</a>${APPS.map(a => `<a href="/apps/${a.slug}/">${esc(a.name)}</a>`).join('')}</span></div>
   <div><h4>Open source</h4><a href="https://github.com/mathieeo/rateCheck" target="_blank" rel="noopener">rateCheck</a><a href="https://github.com/mathieeo/SoftCOM" target="_blank" rel="noopener">SoftCOM</a><a href="https://github.com/mathieeo/SerialFileCopy" target="_blank" rel="noopener">SerialFileCopy</a></div>
   <div><h4>Studio</h4><a href="/#studio">Services</a><a href="/#contact">Contact</a><a href="/press/">Press kit</a><a href="/privacy/">Privacy</a></div>
 </div>
@@ -124,7 +124,7 @@ function appPage(a) {
   }
   return head({ title: `${a.name} — ${a.cat} for iOS`, desc: a.desc, canonical, og }) + `
 <section class="block" data-name="${esc(a.name)}" style="--c:${a.accent}">
-  <div class="bar"><span><a href="/#apps">← All apps</a></span><span>${esc(a.cat)} · ${pad2(i + 1)} / ${pad2(APPS.length)}</span></div>
+  <div class="bar"><span><a href="/apps/">← All apps</a></span><span>${esc(a.cat)} · ${pad2(i + 1)} / ${pad2(APPS.length)}</span></div>
   <div class="ah">
     <div class="copy">
       ${a.icon ? `<img class="aicon" src="/assets/icons/${a.icon}.png" alt="${esc(a.name)} icon" width="84" height="84">` : ''}
@@ -146,6 +146,86 @@ ${shots.length ? `<section class="block" data-name="Screens">
 </section>` : ''}
 <section class="block" data-name="Next app">
   <a class="nextapp" href="/apps/${next.slug}/" style="--c:${next.accent}"><span class="k">Next app</span><span class="nn">${next.icon ? `<img src="/assets/icons/${next.icon}.png" alt="">` : ''}${esc(next.name)} →</span></a>
+</section>
+<script type="application/ld+json">${JSON.stringify(ld)}</script>` + foot();
+}
+
+const NUM_WORDS = ['Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen','Twenty'];
+function iconWall(root) {
+  return APPS.map(a => `<a href="${root}apps/${a.slug}/" style="--c:${a.accent}">`
+    + (a.icon ? `<img src="${root}assets/icons/${a.icon}.png" alt="" loading="lazy">` : '')
+    + `<span>${esc(a.name)}</span></a>`).join('');
+}
+
+/* ------------------------------------------------------------ the apps page */
+/* /apps/ (2026-10-18), on the model of the user's reference site: an icon-wall hero, the
+   lineup (a ruled grid, one card per app linking to its page), principles, a contact prompt,
+   and the ItemList rich result with the real prices from the App Store lookup. */
+function appsIndex() {
+  const canonical = `${ROOT}/apps/`, n = APPS.length, word = NUM_WORDS[n] || String(n);
+  const dev = (storeResults || []).map(r => r.artistViewUrl).find(Boolean);
+  const devUrl = dev ? dev.split('?')[0] : '';
+  const cards = APPS.map((a, i) => {
+    const info = storeInfo[String(idOf(a.store))], tags = [];
+    if (info && info.formattedPrice) tags.push(`<span class="hot">${info.price === 0 ? 'Free' : esc(info.formattedPrice)}</span>`);
+    else if (a.status === 'soon') tags.push('<span class="hot">In development</span>');
+    tags.push('<span>iPhone</span>');
+    if (info && info.minimumOsVersion) tags.push(`<span>iOS ${esc(String(info.minimumOsVersion).replace(/\.0$/, ''))}+</span>`);
+    if (info && info.userRatingCount > 0) tags.push(`<span>★ ${(info.averageUserRating || 0).toFixed(1)}</span>`);
+    const shot = a.key && fs.existsSync(path.join(dir, 'assets', 'studio', 'shots', `${a.key}-1.jpg`));
+    return `<a class="lu" href="/apps/${a.slug}/" style="--c:${a.accent}">`
+      + `<div class="hd"><span class="num">${pad2(i + 1)}</span><span>${esc(a.cat)}</span></div>`
+      + `<div class="pic">${shot ? `<img src="/assets/studio/shots/${a.key}-1.jpg" alt="" loading="lazy">` : ''}</div>`
+      + `<div class="tx">${a.icon ? `<img class="ic" src="/assets/icons/${a.icon}.png" alt="" loading="lazy">` : ''}`
+      + `<h3>${esc(a.name)}</h3><p>${esc(a.desc)}</p><div class="tags">${tags.join('')}</div>`
+      + `<span class="go">Explore ${esc(a.name)} ↗</span></div></a>`;
+  }).join('');
+  const principles = [
+    ['100% on-device', 'Your data never leaves your phone. The work happens on the iPhone in your hand.'],
+    ['Native SwiftUI', 'Fast, fluid, and built for the latest iOS.'],
+    ['Tools you own', "No subscriptions where they don't belong. Buy it once and it is yours."],
+    ['No accounts, no trackers', 'Nothing to sign up for and nothing tracking you.'],
+    ['Free tools on the side', 'The command-line tools from the workbench are open source on GitHub and pip.'],
+    ['Made solo', 'Designed, coded and shipped by Matthew Mesropian.'],
+  ];
+  const ld = { '@context': 'https://schema.org', '@type': 'ItemList', itemListElement: APPS.filter(a => a.store).map((a, k) => {
+    const info = storeInfo[String(idOf(a.store))];
+    const item = { '@type': 'SoftwareApplication', name: a.name, applicationCategory: 'MobileApplication', operatingSystem: 'iOS',
+      url: `${ROOT}/apps/${a.slug}/`, description: a.desc, author: { '@type': 'Organization', name: 'Integrated Software Technologies Inc.' } };
+    if (info && typeof info.price === 'number') item.offers = { '@type': 'Offer', price: String(info.price), priceCurrency: info.currency || 'USD' };
+    return { '@type': 'ListItem', position: k + 1, item };
+  }) };
+  return head({ title: `All apps — Integrated Software Technologies`,
+                desc: `${word} native iOS apps that run entirely on your device: vibration analysis, network audits, SSH, LiDAR measuring, audio and everyday tools.`,
+                canonical, og: `${ROOT}/assets/og.png` }) + `
+<section class="block" data-name="Apps">
+  <div class="bar"><span>01 / <b>The apps</b></span><span>${n} apps · iPhone · on-device</span></div>
+  <div class="split">
+    <div class="intro">
+      <h1 class="h1sub">${word} apps. One <em class="s">studio.</em></h1>
+      <p>Vibration analysis, network audits, SSH terminals, LiDAR measuring, audio and everyday tools. Native iOS apps that run entirely on your device, made by one person.</p>
+      <div class="ctas"><a class="btn" href="#lineup">Browse the lineup</a>${devUrl ? `<a class="btn ghost" href="${devUrl}" target="_blank" rel="noopener">All on the App Store ↗</a>` : ''}</div>
+      <p class="fine">iPhone · 100% on-device · no accounts · no trackers</p>
+    </div>
+    <div class="wallwrap"><div class="iconwall">${iconWall('/')}</div></div>
+  </div>
+</section>
+<section class="block" id="lineup" data-name="Lineup">
+  <div class="bar"><span>02 / <b>The lineup</b></span><span>Pick an app to explore</span></div>
+  <div class="lineup">${cards}</div>
+</section>
+<section class="block" data-name="Principles">
+  <div class="bar"><span>03 / <b>Principles</b></span><span>How every app is made</span></div>
+  <div class="intro"><h2>Made the <em class="s">careful</em> way.</h2></div>
+  <div class="tri tri6">${principles.map(([t, d], k) => `<div><span class="k">${'ABCDEF'[k]}</span><h3>${t}</h3><p>${d}</p></div>`).join('')}</div>
+</section>
+<section class="block" data-name="Contact">
+  <div class="close">
+    <span class="k">No project too small</span>
+    <h2>Need something <em class="s">built?</em></h2>
+    <p>Beyond my own apps, I take on client work across IT, networking, web and software.</p>
+    <div class="ctas"><a class="btn" href="/#contact">Hire the studio</a><a class="btn ghost" href="/">Back home</a></div>
+  </div>
 </section>
 <script type="application/ld+json">${JSON.stringify(ld)}</script>` + foot();
 }
@@ -297,7 +377,7 @@ ${iconTag}
 
 /* --------------------------------------------------------------- sitemap -- */
 function sitemap() {
-  const urls = [`${ROOT}/`, `${ROOT}/press/`, `${ROOT}/privacy/`,
+  const urls = [`${ROOT}/`, `${ROOT}/apps/`, `${ROOT}/press/`, `${ROOT}/privacy/`,
     ...APPS.map(a => `${ROOT}/apps/${a.slug}/`),
     ...APPS.map(a => `${ROOT}/apps/${a.slug}/privacy/`)];
   return `<?xml version="1.0" encoding="UTF-8"?>
@@ -395,6 +475,7 @@ APPS.forEach(a => { write(`apps/${a.slug}/index.html`, appPage(a)); ogFor(a); n+
 console.log(`  ${n} app pages + OG images`);
 APPS.forEach(a => write(`apps/${a.slug}/privacy/index.html`, privacyPage(a)));
 write('privacy/index.html', privacyIndex());
+write('apps/index.html', appsIndex());
 console.log(`  ${n} privacy pages + /privacy/ hub`);
 write('press/index.html', pressPage());
 write('404.html', notFound());
@@ -411,31 +492,9 @@ console.log('  press, 404, sitemap.xml, robots.txt');
 // looking at a background and nothing else. Now the catalog is real HTML and
 // JS only enhances it.
 // ---------------------------------------------------------------------------
-function homeCards() {
-  // The studio homepage (2026-10-17): a ruled two-column grid. Each card shows two real screens
-  // (assets/studio/shots/<key>-1.jpg and -2.jpg) rising out of a panel tinted in the app's accent,
-  // and the price comes from the App Store lookup above, so it is never typed by hand.
-  // An app without screenshots yet still renders, with just its icon in the panel.
-  return APPS.map((a, i) => {
-    const shot = n => path.join(dir, 'assets', 'studio', 'shots', `${a.key}-${n}.jpg`);
-    const s1 = a.key && fs.existsSync(shot(1)), s2 = a.key && fs.existsSync(shot(2));
-    const info = storeInfo[String(idOf(a.store))];
-    const price = info && info.formattedPrice ? (info.price === 0 ? 'FREE' : info.formattedPrice) : '';
-    let go;
-    if (a.status === 'soon') go = `<span>In development</span>`;
-    else if (a.store) go = `<a href="${a.store}" target="_blank" rel="noopener">App Store ↗</a>`;
-    else go = `<span>In review</span>`;
-    return `<article class="app" style="--c:${a.accent}">`
-      + `<div class="bar"><span>${esc(a.cat)}</span><span>${String(i + 1).padStart(2, '0')}</span></div>`
-      + `<div class="stage">`
-      + (a.icon ? `<img class="ic" src="assets/icons/${a.icon}.png" alt="" loading="lazy">` : '')
-      + (s2 ? `<div class="shot s2"><img src="assets/studio/shots/${a.key}-2.jpg" alt="" loading="lazy"></div>` : '')
-      + (s1 ? `<div class="shot s1"><img src="assets/studio/shots/${a.key}-1.jpg" alt="${esc(a.name)} screen" loading="lazy"></div>` : '')
-      + `</div>`
-      + `<div class="txt"><h3>${esc(a.name)}${price ? `<small>${price}</small>` : ''}</h3><p>${esc(a.desc)}</p>`
-      + `<div class="go">${go}<a href="apps/${a.slug}/">Details →</a></div></div></article>`;
-  }).join('');
-}
+// The homepage's apps section is a teaser since 2026-10-18 (the full cards were "hard to
+// read"): a wall of icons, each linking to its app page, beside a link to /apps/.
+function homeCards() { return iconWall(''); }
 
 {
   const idx = path.join(dir, 'index.html');

@@ -7,7 +7,7 @@
 <meta name="description" content="Integrated Software Technologies builds fast, private, on-device iOS apps: developer tools, network utilities, LiDAR measuring, audio, and more.">
 <link rel="canonical" href="https://integratedsw.tech/">
 <meta name="author" content="Matthew Mesropian">
-<meta name="theme-color" content="#0f1013">
+<meta name="theme-color" content="#0b0b0c">
 
 <!-- Rich share cards (Open Graph + Twitter) -->
 <meta property="og:type" content="website">
@@ -29,8 +29,8 @@
 
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/studio/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/studio.css">
-<link rel="stylesheet" href="assets/term.css">
+<link rel="stylesheet" href="assets/studio.css?v=107eec10c3">
+<link rel="stylesheet" href="assets/term.css?v=7369b8815a">
 
 <!-- Google rich results: who we are -->
 <script type="application/ld+json">
@@ -38,8 +38,9 @@
 </script>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="isl0" gradientUnits="userSpaceOnUse" x1="64.0" y1="128.0" x2="199.8" y2="10.3"><stop offset="0" stop-color="#d50303"/><stop offset="1" stop-color="#bb0000"/></linearGradient><linearGradient id="isl1" gradientUnits="userSpaceOnUse" x1="308.6" y1="8.3" x2="49.2" y2="302.7"><stop offset="0" stop-color="#7e0000"/><stop offset="1" stop-color="#070000"/></linearGradient><linearGradient id="isl2" gradientUnits="userSpaceOnUse" x1="293.2" y1="184.8" x2="155.0" y2="304.1"><stop offset="0" stop-color="#e40505"/><stop offset="1" stop-color="#fe0808"/></linearGradient></defs></svg>
 <header class="nav" id="nav">
-  <a class="logo" href="#top" aria-label="Integrated Software, home"><svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="mg" x1="6%" y1="32%" x2="94%" y2="68%"><stop offset="0" stop-color="#33e6d1"/><stop offset=".55" stop-color="#6ef2e0"/><stop offset="1" stop-color="#248c85"/></linearGradient></defs><rect width="100" height="100" rx="24" fill="url(#mg)"/><circle cx="50" cy="29" r="9" fill="#fab84d"/><rect x="41.5" y="44" width="17" height="34" rx="8.5" fill="#0b0b12"/></svg></a>
+  <a class="logo" href="#top" aria-label="Integrated Software, home"><svg viewBox="0 0 358.6 314.4" aria-hidden="true"><path fill="url(#isl0)" d="M0.0 0.0 L220.8 1.0 L182.9 49.4 L71.8 49.4 L111.6 134.4 L81.8 170.5 Z"/><path fill="url(#isl1)" d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/><path fill="url(#isl2)" d="M275.9 142.4 L358.6 314.4 L134.3 314.4 L173.7 264.4 L284.9 264.4 L244.5 178.0 Z"/></svg></a>
   <nav class="links" aria-label="Sections">
     <a href="#top" data-s="0">Home</a><a href="/apps/" data-s="1">Apps</a><a href="#ownership" data-s="2">Ownership</a><a href="#tools" data-s="3">Open source</a><a href="#studio" data-s="4">Studio</a>
   </nav>
@@ -51,7 +52,7 @@
 <section class="hero" id="top" data-name="Integrated">
   <div class="orbit" id="orbit" aria-hidden="true"><canvas id="rings"></canvas></div>
   <div class="hcopy">
-    <h1 class="word"><svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="url(#mg)"/><circle cx="50" cy="29" r="9" fill="#fab84d"/><rect x="41.5" y="44" width="17" height="34" rx="8.5" fill="#0b0b12"/></svg>INTEGRATED</h1>
+    <h1 class="word"><span class="plate"><svg viewBox="0 0 358.6 314.4" aria-hidden="true"><path fill="url(#isl0)" d="M0.0 0.0 L220.8 1.0 L182.9 49.4 L71.8 49.4 L111.6 134.4 L81.8 170.5 Z"/><path fill="url(#isl1)" d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/><path fill="url(#isl2)" d="M275.9 142.4 L358.6 314.4 L134.3 314.4 L173.7 264.4 L284.9 264.4 L244.5 178.0 Z"/></svg></span>INTEGRATED</h1>
     <p class="tagline">Native apps, <em class="s">built to feel alive.</em></p>
     <p class="lede">Integrated Software Technologies designs and ships native iOS apps that run entirely on your device. Field instruments, developer tools, audio, and more.</p>
     <div class="ctas">
@@ -67,13 +68,11 @@
 <div class="frame">
   <section class="block" id="apps" data-name="Apps">
     <div class="bar"><span>01 / <b>The apps</b></span><span>14 on the App Store</span></div>
-    <div class="split">
-      <div class="intro">
-        <h2>Built to run on <em class="s">your</em> device.</h2>
-        <p>Fourteen native apps, from vibration analysis and network audits to SSH terminals, LiDAR measuring and on-device audio. Each one has its own page, with real screens from the app.</p>
-        <div class="ctas"><a class="btn" href="/apps/">See all 14 apps →</a></div>
-      </div>
-      <div class="wallwrap"><div class="iconwall" id="appgrid"><!--APPS:START--><a href="apps/rotor/" style="--c:#4db8d9"><img src="assets/icons/Rotor.png" alt="" loading="lazy"><span>Rotor</span></a><a href="apps/beacon/" style="--c:#3ae0ca"><img src="assets/icons/Beacon.png" alt="" loading="lazy"><span>Beacon</span></a><a href="apps/quitter/" style="--c:#61d2b0"><img src="assets/icons/Quitter.png" alt="" loading="lazy"><span>Quitter</span></a><a href="apps/deck/" style="--c:#22ff8c"><img src="assets/icons/Deck.png" alt="" loading="lazy"><span>DeckGUI SSH</span></a><a href="apps/spinnit/" style="--c:#a78bff"><img src="assets/icons/Spinnit.png" alt="" loading="lazy"><span>Spinnit</span></a><a href="apps/tunnel/" style="--c:#22d3ee"><img src="assets/icons/Tunnel.png" alt="" loading="lazy"><span>Tunnel</span></a><a href="apps/netscan/" style="--c:#34d399"><img src="assets/icons/NetScanPro.png" alt="" loading="lazy"><span>NetScan Pro</span></a><a href="apps/depthtag/" style="--c:#38bdf8"><img src="assets/icons/DepthTag.png" alt="" loading="lazy"><span>DepthTag</span></a><a href="apps/snapsweep/" style="--c:#0ea5e9"><img src="assets/icons/SnapSweep.png" alt="" loading="lazy"><span>SnapSweep</span></a><a href="apps/doughratio/" style="--c:#f59e0b"><img src="assets/icons/DoughRatioApp.png" alt="" loading="lazy"><span>DoughRatio</span></a><a href="apps/scoresplit/" style="--c:#ef4444"><img src="assets/icons/ScoreSplit.png" alt="" loading="lazy"><span>Score Split</span></a><a href="apps/wavevision/" style="--c:#a855f7"><img src="assets/icons/WaveVision.png" alt="" loading="lazy"><span>WaveVision</span></a><a href="apps/tonescape/" style="--c:#2dd4bf"><img src="assets/icons/ToneScape.png" alt="" loading="lazy"><span>ToneScape</span></a><a href="apps/binaryhexcalc/" style="--c:#22d3ee"><img src="assets/icons/BinaryHexCalc.png" alt="" loading="lazy"><span>BinaryHexCalc</span></a><!--APPS:END--></div></div>
+    <div class="intro teaser">
+      <h2>Built to run on <em class="s">your</em> device.</h2>
+      <p>Fourteen native apps, from vibration analysis and network audits to SSH terminals, LiDAR measuring and on-device audio. Each one has its own page, with real screens from the app.</p>
+      <div class="iconwall" id="appgrid"><!--APPS:START--><a href="apps/rotor/" style="--c:#4db8d9"><img src="assets/icons/Rotor.png" alt="" loading="lazy"><span>Rotor</span></a><a href="apps/beacon/" style="--c:#3ae0ca"><img src="assets/icons/Beacon.png" alt="" loading="lazy"><span>Beacon</span></a><a href="apps/quitter/" style="--c:#61d2b0"><img src="assets/icons/Quitter.png" alt="" loading="lazy"><span>Quitter</span></a><a href="apps/deck/" style="--c:#22ff8c"><img src="assets/icons/Deck.png" alt="" loading="lazy"><span>DeckGUI SSH</span></a><a href="apps/spinnit/" style="--c:#a78bff"><img src="assets/icons/Spinnit.png" alt="" loading="lazy"><span>Spinnit</span></a><a href="apps/tunnel/" style="--c:#22d3ee"><img src="assets/icons/Tunnel.png" alt="" loading="lazy"><span>Tunnel</span></a><a href="apps/netscan/" style="--c:#34d399"><img src="assets/icons/NetScanPro.png" alt="" loading="lazy"><span>NetScan Pro</span></a><a href="apps/depthtag/" style="--c:#38bdf8"><img src="assets/icons/DepthTag.png" alt="" loading="lazy"><span>DepthTag</span></a><a href="apps/snapsweep/" style="--c:#0ea5e9"><img src="assets/icons/SnapSweep.png" alt="" loading="lazy"><span>SnapSweep</span></a><a href="apps/doughratio/" style="--c:#f59e0b"><img src="assets/icons/DoughRatioApp.png" alt="" loading="lazy"><span>DoughRatio</span></a><a href="apps/scoresplit/" style="--c:#ef4444"><img src="assets/icons/ScoreSplit.png" alt="" loading="lazy"><span>Score Split</span></a><a href="apps/wavevision/" style="--c:#a855f7"><img src="assets/icons/WaveVision.png" alt="" loading="lazy"><span>WaveVision</span></a><a href="apps/tonescape/" style="--c:#2dd4bf"><img src="assets/icons/ToneScape.png" alt="" loading="lazy"><span>ToneScape</span></a><a href="apps/binaryhexcalc/" style="--c:#22d3ee"><img src="assets/icons/BinaryHexCalc.png" alt="" loading="lazy"><span>BinaryHexCalc</span></a><!--APPS:END--></div>
+      <div class="ctas"><a class="btn" href="/apps/">See all 14 apps →</a></div>
     </div>
   </section>
 
@@ -97,9 +96,9 @@
       <p>Command-line utilities for embedded and hardware work. Install them with pip or build them from GitHub.</p>
     </div>
     <div class="tri" id="tooltri">
-      <div style="--c:#4fe0cf"><span class="k">A · <span class="lang">C++17</span></span><h3>rateCheck</h3><p>A cross-platform disk and partition benchmarking utility with direct-disk read and write modes.</p><div class="row"><a class="btn ghost sm" href="https://github.com/mathieeo/rateCheck" target="_blank" rel="noopener">View source</a></div></div>
-      <div style="--c:#34d399"><span class="k">B · <span class="lang">Python</span></span><h3>SoftCOM</h3><p>A full-screen serial terminal for embedded work: live port monitoring, command history and capture, with a simulator mode when no hardware is attached.</p><div class="cmd"><code>$ pip install softcom</code><button type="button" data-copy="pip install softcom">Copy</button></div><div class="row"><a class="btn ghost sm" href="https://github.com/mathieeo/SoftCOM" target="_blank" rel="noopener">View source</a></div></div>
-      <div style="--c:#fab84d"><span class="k">C · <span class="lang">Python</span></span><h3>SerialFileCopy</h3><p>Transfer files reliably over a serial connection, straight from the command line.</p><div class="cmd"><code>$ pip install serialfilecopy</code><button type="button" data-copy="pip install serialfilecopy">Copy</button></div><div class="row"><a class="btn ghost sm" href="https://github.com/mathieeo/SerialFileCopy" target="_blank" rel="noopener">View source</a></div></div>
+      <div style="--c:var(--accent)"><span class="k">A · <span class="lang">C++17</span></span><h3>rateCheck</h3><p>A cross-platform disk and partition benchmarking utility with direct-disk read and write modes.</p><div class="row"><a class="btn ghost sm" href="https://github.com/mathieeo/rateCheck" target="_blank" rel="noopener">View source</a></div></div>
+      <div style="--c:var(--accent)"><span class="k">B · <span class="lang">Python</span></span><h3>SoftCOM</h3><p>A full-screen serial terminal for embedded work: live port monitoring, command history and capture, with a simulator mode when no hardware is attached.</p><div class="cmd"><code>$ pip install softcom</code><button type="button" data-copy="pip install softcom">Copy</button></div><div class="row"><a class="btn ghost sm" href="https://github.com/mathieeo/SoftCOM" target="_blank" rel="noopener">View source</a></div></div>
+      <div style="--c:var(--accent)"><span class="k">C · <span class="lang">Python</span></span><h3>SerialFileCopy</h3><p>Transfer files reliably over a serial connection, straight from the command line.</p><div class="cmd"><code>$ pip install serialfilecopy</code><button type="button" data-copy="pip install serialfilecopy">Copy</button></div><div class="row"><a class="btn ghost sm" href="https://github.com/mathieeo/SerialFileCopy" target="_blank" rel="noopener">View source</a></div></div>
     </div>
   </section>
 
@@ -110,12 +109,12 @@
       <p>Beyond my own apps, I take on client work across IT, networking, web and software. If you can describe it, I can probably build it or fix it.</p>
     </div>
     <div class="svc" id="svc">
-      <div style="--c:#4fe0cf"><div class="bar"><span>Service</span><span>01</span></div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M6.5 7.5h.01M6.5 16.5h.01"/></svg></span><h3>IT Support</h3><p>On-site and remote IT help: setup, troubleshooting, backups, and keeping your tech running.</p></div>
-      <div style="--c:#34d399"><div class="bar"><span>Service</span><span>02</span></div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="19" r="2.2"/><circle cx="19" cy="19" r="2.2"/><path d="M12 7.2v3.3m0 0-5 6.3m5-6.3 5 6.3"/></svg></span><h3>Networking</h3><p>Wi-Fi and LAN design, diagnostics, security audits, and getting every device talking.</p></div>
-      <div style="--c:#38bdf8"><div class="bar"><span>Service</span><span>03</span></div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9h18"/><path d="M6 6.5h.01M8.5 6.5h.01"/></svg></span><h3>Websites</h3><p>Fast, modern, animated websites like this one, designed and deployed for you.</p></div>
-      <div style="--c:#ef4444"><div class="bar"><span>Service</span><span>04</span></div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span><h3>iOS &amp; Android apps</h3><p>Native mobile apps and games, from concept to the App Store and Google Play.</p></div>
-      <div style="--c:#f59e0b"><div class="bar"><span>Service</span><span>05</span></div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg></span><h3>PC &amp; Mac apps</h3><p>Cross-platform desktop software for Windows, macOS, and Linux, built fast and reliable.</p></div>
-      <div style="--c:#a78bff"><div class="bar"><span>Service</span><span>06</span></div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7.5" width="20" height="9" rx="4.5"/><path d="M6.5 11v2M5.5 12h2"/><circle cx="16" cy="11.5" r="1"/><circle cx="18" cy="13.5" r="1"/></svg></span><h3>Games</h3><p>Fun, polished games and interactive experiences that feel great to play.</p></div>
+      <div style="--c:var(--accent)"><div class="bar"><span>Service</span><span>01</span></div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M6.5 7.5h.01M6.5 16.5h.01"/></svg></span><h3>IT Support</h3><p>On-site and remote IT help: setup, troubleshooting, backups, and keeping your tech running.</p></div>
+      <div style="--c:var(--accent)"><div class="bar"><span>Service</span><span>02</span></div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="19" r="2.2"/><circle cx="19" cy="19" r="2.2"/><path d="M12 7.2v3.3m0 0-5 6.3m5-6.3 5 6.3"/></svg></span><h3>Networking</h3><p>Wi-Fi and LAN design, diagnostics, security audits, and getting every device talking.</p></div>
+      <div style="--c:var(--accent)"><div class="bar"><span>Service</span><span>03</span></div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M3 9h18"/><path d="M6 6.5h.01M8.5 6.5h.01"/></svg></span><h3>Websites</h3><p>Fast, modern, animated websites like this one, designed and deployed for you.</p></div>
+      <div style="--c:var(--accent)"><div class="bar"><span>Service</span><span>04</span></div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg></span><h3>iOS &amp; Android apps</h3><p>Native mobile apps and games, from concept to the App Store and Google Play.</p></div>
+      <div style="--c:var(--accent)"><div class="bar"><span>Service</span><span>05</span></div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg></span><h3>PC &amp; Mac apps</h3><p>Cross-platform desktop software for Windows, macOS, and Linux, built fast and reliable.</p></div>
+      <div style="--c:var(--accent)"><div class="bar"><span>Service</span><span>06</span></div><span class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7.5" width="20" height="9" rx="4.5"/><path d="M6.5 11v2M5.5 12h2"/><circle cx="16" cy="11.5" r="1"/><circle cx="18" cy="13.5" r="1"/></svg></span><h3>Games</h3><p>Fun, polished games and interactive experiences that feel great to play.</p></div>
     </div>
   </section>
 
@@ -149,7 +148,7 @@
 
   <footer>
     <div class="foot">
-      <div class="brand"><svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="url(#mg)"/><circle cx="50" cy="29" r="9" fill="#fab84d"/><rect x="41.5" y="44" width="17" height="34" rx="8.5" fill="#0b0b12"/></svg><p>Native iOS apps that run entirely on your device, made by a one-person studio.</p><span class="mono" style="font-size:11px;color:var(--faint)">matt@integratedsw.tech</span></div>
+      <div class="brand"><span class="plate"><svg viewBox="0 0 358.6 314.4" aria-hidden="true"><path fill="url(#isl0)" d="M0.0 0.0 L220.8 1.0 L182.9 49.4 L71.8 49.4 L111.6 134.4 L81.8 170.5 Z"/><path fill="url(#isl1)" d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/><path fill="url(#isl2)" d="M275.9 142.4 L358.6 314.4 L134.3 314.4 L173.7 264.4 L284.9 264.4 L244.5 178.0 Z"/></svg></span><p>Native iOS apps that run entirely on your device, made by a one-person studio.</p><span class="mono" style="font-size:11px;color:var(--faint)">matt@integratedsw.tech</span></div>
       <div><h4>Apps</h4><span id="footApps" style="display:grid;gap:10px"></span></div>
       <div><h4>Open source</h4><a href="https://github.com/mathieeo/rateCheck" target="_blank" rel="noopener">rateCheck</a><a href="https://github.com/mathieeo/SoftCOM" target="_blank" rel="noopener">SoftCOM</a><a href="https://github.com/mathieeo/SerialFileCopy" target="_blank" rel="noopener">SerialFileCopy</a></div>
       <div><h4>Studio</h4><a href="#studio">Services</a><a href="#contact">Contact</a><a href="/press/">Press kit</a><a href="/privacy/">Privacy</a></div>
@@ -168,9 +167,9 @@
 </div>
 <div class="index" id="index" aria-hidden="true"></div>
 
-<script src="assets/apps.js"></script>
+<script src="assets/apps.js?v=304afff4e0"></script>
 <script src="assets/ratings.js"></script>
-<script src="assets/term.js"></script>
-<script src="assets/studio.js"></script>
+<script src="assets/term.js?v=d0074ecf3c"></script>
+<script src="assets/studio.js?v=234f8c0a45"></script>
 </body>
 </html>

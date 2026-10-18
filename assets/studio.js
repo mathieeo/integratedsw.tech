@@ -91,7 +91,7 @@ function size() {
 }
 function drawRings(t) {
   rctx.clearRect(0, 0, W, H); const cx = W / 2, cy = H / 2;
-  const RINGS = [[1.25, 'rgba(79,224,207,.55)', 4.2, .07], [1.9, 'rgba(242,241,238,.16)', 5.4, -.05], [2.7, 'rgba(250,184,77,.38)', 3.6, .09], [3.8, 'rgba(79,224,207,.28)', 4.8, -.12]];
+  const RINGS = [[1.25, 'rgba(255,43,43,.6)', 4.2, .07], [1.9, 'rgba(242,241,238,.16)', 5.4, -.05], [2.7, 'rgba(242,241,238,.24)', 3.6, .09], [3.8, 'rgba(192,0,0,.45)', 4.8, -.12]];
   for (const [z, col, len, sp] of RINGS) {
     const r = R / z, a0 = t * sp + z * 1.7;
     rctx.beginPath(); rctx.ellipse(cx, cy, r, r * .86, 0, a0, a0 + len); rctx.strokeStyle = col; rctx.lineWidth = 1.4; rctx.stroke();

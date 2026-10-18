@@ -803,7 +803,8 @@
 
   CMD.neofetch = () => {
     const live = apps.filter(a => a.status !== 'soon').length;
-    const logo = ['╔════════╗', '║   ▄▄   ║', '║        ║', '║   ██   ║', '║   ██   ║', '║   ██   ║', '╚════════╝'].join('\n');
+    // the company logo (2026-10-18): two chevrons and the diagonal bar, the bar in the logo's deep red
+    const logo = ["\\¯¯¯¯¯¯¯¯/     //", " \\  ¯¯¯¯¯     //", "  \\  \\       //", "   \\  \\     //", "    \\/     //    /\\", "          //    \\  \\", "         //      \\  \\", "        //    _____  \\", "       //    /________\\"].join('\n').replace(/\/\//g, '<span style="color:#9b0d0d">//</span>');
     const info = [
       ['host', 'integratedsw.tech'], ['studio', 'Integrated Software Technologies'],
       ['founder', 'Matthew Mesropian'], ['location', 'Glendale, CA'],
@@ -813,7 +814,7 @@
       ['privacy', 'on-device · 0 trackers'], ['uptime', 'since 2024']
     ].map(([k, v]) => `<b class="tapp">${k}</b>  ${esc(v)}`).join('\n');
     print('<div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">'
-      + `<div style="color:#33e6d1;white-space:pre;line-height:1.15">${logo}</div>`
+      + `<div style="color:#ff3b3b;white-space:pre;line-height:1.15">${logo}</div>`
       + `<div style="white-space:pre;line-height:1.5">${info}</div></div>`);
   };
 
@@ -864,7 +865,7 @@
     ];
     const wrap = document.createElement('div');
     wrap.className = 'terml';
-    wrap.innerHTML = '<span style="white-space:pre;color:#33e6d1"></span>';
+    wrap.innerHTML = '<span style="white-space:pre;color:#ff4d4d"></span>';
     const span = wrap.firstChild;
     termBody.appendChild(wrap);
     termBody.scrollTop = termBody.scrollHeight;
@@ -974,7 +975,7 @@
       ctx.fillStyle = 'rgba(6,7,13,.16)'; ctx.fillRect(0, 0, cv.width, cv.height);
       ctx.font = '13px monospace';
       drops.forEach((y, i) => {
-        ctx.fillStyle = Math.random() < 0.06 ? '#c9fff2' : '#33e6d1';
+        ctx.fillStyle = Math.random() < 0.06 ? '#ffd6d6' : '#ff2b2b';
         ctx.fillText(glyphs[(Math.random() * glyphs.length) | 0], i * 11, y * 14);
         drops[i] = (y * 14 > cv.height && Math.random() > 0.975) ? 0 : y + 1;
       });
@@ -1014,7 +1015,7 @@
       ctx.fillStyle = '#fab84d';
       ctx.fillRect(food[0] * CELL + 3, food[1] * CELL + 3, CELL - 6, CELL - 6);
       snake.forEach((s, i) => {
-        ctx.fillStyle = i ? '#1f9e8c' : '#33e6d1';
+        ctx.fillStyle = i ? '#a30d0d' : '#ff2b2b';
         ctx.fillRect(s[0] * CELL + 1, s[1] * CELL + 1, CELL - 2, CELL - 2);
       });
     }

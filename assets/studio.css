@@ -8,13 +8,13 @@
 /* Layout: a hairline blueprint frame. Full-bleed hero with real app screens drifting through a tunnel, then numbered sections inside ruled gutters. */
 :root{
   color-scheme:dark;
-  --ink:#0f1013;
-  --deep:#08080a;
+  --ink:#0b0b0c;
+  --deep:#050505;
   --paper:#f2f1ee;
   --mute:rgba(242,241,238,.62);
   --faint:rgba(242,241,238,.38);
   --rule:rgba(242,241,238,.13);
-  --accent:#4fe0cf;
+  --accent:#ff2b2b;
   --wide:'Archivo','Helvetica Neue',Arial,sans-serif;
   --serif:'Instrument Serif','Iowan Old Style',Georgia,serif;
   --body:'Inter',-apple-system,'Segoe UI',system-ui,sans-serif;
@@ -32,9 +32,12 @@ em.s{font-family:var(--serif);font-style:italic;font-weight:400;font-stretch:100
 .mono{font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em}
 
 /* ---------- nav ---------- */
-.nav{position:fixed;top:0;left:0;right:0;z-index:50;height:calc(var(--nav) + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px);display:flex;align-items:stretch;background:rgba(15,16,19,.86);border-bottom:1px solid var(--rule)}
-.nav .logo{width:var(--nav);display:grid;place-items:center;border-right:1px solid var(--rule);flex:none}
-.nav .logo svg{width:24px;height:24px}
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;height:calc(var(--nav) + env(safe-area-inset-top,0px));padding-top:env(safe-area-inset-top,0px);display:flex;align-items:stretch;background:rgba(11,11,12,.86);border-bottom:1px solid var(--rule)}
+.nav .logo{width:var(--nav);display:grid;place-items:center;border-right:1px solid var(--rule);flex:none;background:#fff}
+.nav .logo svg{width:30px;height:auto;display:block}
+/* the logo sits on a white plate: its bar fades to black, which would vanish on the black ground */
+.plate{display:inline-grid;place-items:center;flex:none;background:#fff}
+.plate svg{width:74%;height:auto;display:block}
 .nav .links{display:flex;align-items:center;gap:6px;padding-inline:14px;font:500 11.5px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase}
 .nav .links a{padding:6px 8px;color:var(--mute)}
 .nav .links a:hover{color:var(--paper)}
@@ -59,10 +62,10 @@ em.s{font-family:var(--serif);font-style:italic;font-weight:400;font-stretch:100
 .orbit canvas{position:absolute;inset:0;width:100%;height:100%}
 .card{position:absolute;left:0;top:0;width:var(--w,120px);border-radius:12px;overflow:hidden;will-change:transform,opacity;background:#15161a;box-shadow:-1.5px 0 0 rgba(255,96,96,.38),1.5px 0 0 rgba(96,170,255,.42),0 0 0 1px rgba(242,241,238,.1),0 24px 48px rgba(0,0,0,.55)}
 .card img{display:block;width:100%;height:auto}
-.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(56% 52% at 50% 56%,rgba(15,16,19,.95),rgba(15,16,19,.78) 50%,rgba(15,16,19,.2) 82%,transparent 100%);pointer-events:none}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(56% 52% at 50% 56%,rgba(11,11,12,.95),rgba(11,11,12,.78) 50%,rgba(11,11,12,.2) 82%,transparent 100%);pointer-events:none}
 .hcopy{display:grid;justify-items:center;text-align:center;gap:22px;width:100%}
 .word{display:flex;align-items:center;gap:.16em;font:800 clamp(28px,7.3vw,124px)/.92 var(--wide);font-stretch:125%;letter-spacing:-.01em;color:var(--paper)}
-.word svg{width:.8em;height:.8em;flex:none}
+.word .plate{width:.84em;height:.84em;border-radius:.17em}
 .tagline{font:600 clamp(22px,2.7vw,38px)/1.1 var(--wide);font-stretch:112%;letter-spacing:-.01em}
 .tagline em.s{font-size:1.08em}
 .lede{margin:0;max-width:34em;color:var(--mute);font-size:clamp(16px,1.35vw,19px);line-height:1.55}
@@ -158,7 +161,7 @@ em.s{font-family:var(--serif);font-style:italic;font-weight:400;font-stretch:100
 .foot a{color:var(--mute);font-size:15px}
 .foot a:hover{color:var(--paper)}
 .foot .brand p{margin:0;color:var(--mute);max-width:24em}
-.foot .brand svg{width:34px;height:34px}
+.foot .brand .plate{width:44px;height:44px;border-radius:10px}
 .legal{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:16px clamp(16px,3vw,40px);border-top:1px solid var(--rule);font:500 11px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
 @media (max-width:860px){.foot{grid-template-columns:1fr 1fr}.foot > div + div{border-left:0}.foot > div{border-top:1px solid var(--rule)}.foot .brand{grid-column:1/-1;border-top:0}}
 
@@ -167,7 +170,7 @@ em.s{font-family:var(--serif);font-style:italic;font-weight:400;font-stretch:100
 html:not(.no-rail){scrollbar-width:none}
 html:not(.no-rail)::-webkit-scrollbar,html:not(.no-rail) body::-webkit-scrollbar{display:none}
 .sbar{--rw:60px;position:fixed;top:0;bottom:0;right:0;width:var(--rw);z-index:45;cursor:crosshair;overflow:hidden;touch-action:none;outline:none;-webkit-user-select:none;user-select:none}
-.sb-frost{position:absolute;inset:0;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);background:rgba(15,16,19,.55);-webkit-mask-image:linear-gradient(to left,#000 40%,rgba(0,0,0,.5) 58%,rgba(0,0,0,.18) 76%,transparent);mask-image:linear-gradient(to left,#000 40%,rgba(0,0,0,.5) 58%,rgba(0,0,0,.18) 76%,transparent)}
+.sb-frost{position:absolute;inset:0;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);background:rgba(11,11,12,.55);-webkit-mask-image:linear-gradient(to left,#000 40%,rgba(0,0,0,.5) 58%,rgba(0,0,0,.18) 76%,transparent);mask-image:linear-gradient(to left,#000 40%,rgba(0,0,0,.5) 58%,rgba(0,0,0,.18) 76%,transparent)}
 .sb-tape{position:absolute;left:0;right:0;top:0;will-change:transform}
 .sb-tape i{position:absolute;right:0;width:6px;height:1px;background:var(--paper);opacity:.24;transform-origin:right center}
 .sb-tape i.md{width:11px;opacity:.42}
@@ -225,3 +228,7 @@ html:not(.no-rail)::-webkit-scrollbar,html:not(.no-rail) body::-webkit-scrollbar
 .iconwall a:hover span{color:var(--paper)}
 @media (max-width:860px){.split{grid-template-columns:1fr}.split .intro{padding-bottom:0}.wallwrap{padding-top:8px}}
 @media (max-width:420px){.iconwall{gap:20px 4px}.iconwall a{width:78px}.iconwall img{width:58px;height:58px}.iconwall span{font-size:11.5px}}
+/* homepage teaser (2026-10-18): stacked and left-aligned, so the icons never run under the
+   floating section index at the top right (they did at 1920px wide) */
+.teaser .iconwall{justify-content:flex-start;max-width:760px;margin:16px 0 8px -12px}
+.teaser .ctas{justify-content:flex-start}

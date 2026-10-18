@@ -22,15 +22,33 @@ const today = new Date().toISOString().slice(0, 10);
 const esc = s => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const idOf = url => (String(url || '').match(/id(\d+)/) || [])[1];
 const mkdir = p => fs.mkdirSync(p, { recursive: true });
-const write = (rel, html) => { const f = path.join(dir, rel); mkdir(path.dirname(f)); fs.writeFileSync(f, html); };
+/* Versioned asset URLs (2026-10-18). Every page links its CSS/JS as file?v=<content hash>,
+   so a deploy that changes a file also changes its URL. The service worker answers static
+   files from its cache first (stale-while-revalidate), and pages network-first; without
+   versioned URLs the first load after a deploy paired the NEW page with the OLD stylesheet
+   (the homepage icon wall rendered as raw full-size icons). Applied to every generated page,
+   the homepage and the hand-maintained policy pages. */
+const ASSETS = ['assets/studio.css', 'assets/page.css', 'assets/term.css', 'assets/studio.js', 'assets/term.js', 'assets/apps.js'];
+const assetHash = {};
+for (const a of ASSETS) assetHash[a] = require('crypto').createHash('sha1').update(fs.readFileSync(path.join(dir, a))).digest('hex').slice(0, 10);
+function stamp(html) {
+  for (const a of ASSETS) {
+    const re = new RegExp('(["\'(])(/?)' + a.replace(/\./g, '\\.') + '(\\?v=[0-9a-f]+)?(?=["\')])', 'g');
+    html = html.replace(re, `$1$2${a}?v=${assetHash[a]}`);
+  }
+  return html;
+}
+const write = (rel, html) => { const f = path.join(dir, rel); mkdir(path.dirname(f)); fs.writeFileSync(f, /\.html$/.test(rel) ? stamp(html) : html); };
 
 /* -------------------------------------------------------------- shared shell */
 /* Every generated page wears the studio homepage's system (redesign 2026-10-17): studio.css +
    page.css, the same nav, hairline frame, section bars and footer, the ruler scrollbar
    (studio.js) and the terminal (term.js + term.css). Asset paths are absolute because
    404.html is served at any depth. */
-const MARK = '<svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" rx="24" fill="url(#mg)"/><circle cx="50" cy="29" r="9" fill="#fab84d"/><rect x="41.5" y="44" width="17" height="34" rx="8.5" fill="#0b0b12"/></svg>';
-const MARK_DEFS = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="mg" x1="6%" y1="32%" x2="94%" y2="68%"><stop offset="0" stop-color="#33e6d1"/><stop offset=".55" stop-color="#6ef2e0"/><stop offset="1" stop-color="#248c85"/></linearGradient></defs></svg>';
+/* The company logo (traced from the user's PNG on 2026-10-18 into straight-edged vector paths with its own
+   gradients). It always sits on a white ground: its bar fades to black. */
+const LOGO = '<svg viewBox="0 0 358.6 314.4" aria-hidden="true"><path fill="url(#isl0)" d="M0.0 0.0 L220.8 1.0 L182.9 49.4 L71.8 49.4 L111.6 134.4 L81.8 170.5 Z"/><path fill="url(#isl1)" d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/><path fill="url(#isl2)" d="M275.9 142.4 L358.6 314.4 L134.3 314.4 L173.7 264.4 L284.9 264.4 L244.5 178.0 Z"/></svg>';
+const LOGO_DEFS = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="isl0" gradientUnits="userSpaceOnUse" x1="64.0" y1="128.0" x2="199.8" y2="10.3"><stop offset="0" stop-color="#d50303"/><stop offset="1" stop-color="#bb0000"/></linearGradient><linearGradient id="isl1" gradientUnits="userSpaceOnUse" x1="308.6" y1="8.3" x2="49.2" y2="302.7"><stop offset="0" stop-color="#7e0000"/><stop offset="1" stop-color="#070000"/></linearGradient><linearGradient id="isl2" gradientUnits="userSpaceOnUse" x1="293.2" y1="184.8" x2="155.0" y2="304.1"><stop offset="0" stop-color="#e40505"/><stop offset="1" stop-color="#fe0808"/></linearGradient></defs></svg>';
 const pad2 = n => String(n).padStart(2, '0');
 function head({ title, desc, canonical, og }) {
   return `<!doctype html><html lang="en"><head>
@@ -38,7 +56,7 @@ function head({ title, desc, canonical, og }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${canonical}">
-<meta name="theme-color" content="#0f1013">
+<meta name="theme-color" content="#0b0b0c">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Integrated Software Technologies">
 <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${canonical}"><meta property="og:image" content="${og}">
@@ -50,8 +68,8 @@ function head({ title, desc, canonical, og }) {
 <link rel="preload" href="/assets/studio/fonts/archivo.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/studio.css"><link rel="stylesheet" href="/assets/page.css"><link rel="stylesheet" href="/assets/term.css">
 </head><body>
-${MARK_DEFS}
-<header class="nav"><a class="logo" href="/" aria-label="Integrated Software, home">${MARK}</a>
+${LOGO_DEFS}
+<header class="nav"><a class="logo" href="/" aria-label="Integrated Software, home">${LOGO}</a>
   <nav class="links" aria-label="Site"><a href="/">Home</a><a href="/apps/">Apps</a><a href="/#tools">Open source</a><a href="/#studio">Studio</a><a href="/press/">Press</a></nav>
   <span class="sp"></span><a class="cta" href="/#contact">Get in touch</a></header>
 <main id="main" class="sub"><div class="frame">
@@ -61,7 +79,7 @@ const ODO = '<span class="odo"><span>' + Array.from({ length: 10 }, (_, d) => `<
 function foot() {
   return `
 <footer><div class="foot">
-  <div class="brand">${MARK}<p>Native iOS apps that run entirely on your device, made by a one-person studio.</p><span class="mono" style="font-size:11px;color:var(--faint)">matt@integratedsw.tech</span></div>
+  <div class="brand"><span class="plate">${LOGO}</span><p>Native iOS apps that run entirely on your device, made by a one-person studio.</p><span class="mono" style="font-size:11px;color:var(--faint)">matt@integratedsw.tech</span></div>
   <div><h4>Apps</h4><span style="display:grid;gap:10px"><a href="/apps/">All apps</a>${APPS.map(a => `<a href="/apps/${a.slug}/">${esc(a.name)}</a>`).join('')}</span></div>
   <div><h4>Open source</h4><a href="https://github.com/mathieeo/rateCheck" target="_blank" rel="noopener">rateCheck</a><a href="https://github.com/mathieeo/SoftCOM" target="_blank" rel="noopener">SoftCOM</a><a href="https://github.com/mathieeo/SerialFileCopy" target="_blank" rel="noopener">SerialFileCopy</a></div>
   <div><h4>Studio</h4><a href="/#studio">Services</a><a href="/#contact">Contact</a><a href="/press/">Press kit</a><a href="/privacy/">Privacy</a></div>
@@ -316,7 +334,7 @@ function pressPage() {
     { n: 'App mark (192px)', img: '/assets/icon-192.png', dl: '/assets/icon-192.png' },
     { n: 'Share card', img: '/assets/og.png', dl: '/assets/og.png' }
   ];
-  const swatches = [['Ink', '#0f1013'], ['Paper', '#f2f1ee'], ['Accent', '#4fe0cf'], ['Mark cyan', '#33e6d1'], ['Mark amber', '#fab84d']];
+  const swatches = [['Black', '#0b0b0c'], ['White', '#f2f1ee'], ['Red', '#ff2b2b'], ['Logo red', '#e40505'], ['Logo deep', '#7e0000']];
   return head({ title: 'Press kit — Integrated Software Technologies', desc: 'Brand assets, logos, colors, and boilerplate for Integrated Software Technologies.', canonical, og: `${ROOT}/assets/og.png` }) + `
 <section class="block" data-name="Press">
   <div class="bar"><span><a href="/">← Home</a></span><span>Press kit</span></div>
@@ -355,7 +373,7 @@ function ogFor(a) {
 <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a.accent}"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
 <radialGradient id="glow" cx="0.9" cy="0.05" r="0.8"><stop offset="0" stop-color="${a.accent}" stop-opacity="0.32"/><stop offset="1" stop-color="${a.accent}" stop-opacity="0"/></radialGradient>
 </defs>
-<rect width="1200" height="630" fill="#06070d"/><rect width="1200" height="630" fill="url(#glow)"/>
+<rect width="1200" height="630" fill="#0b0b0c"/><rect width="1200" height="630" fill="url(#glow)"/>
 ${iconTag}
 <text x="270" y="150" font-family="Helvetica Neue, Arial, sans-serif" font-size="30" font-weight="600" fill="#98a0b8" letter-spacing="2">${(a.cat || '').toUpperCase()}</text>
 <text x="270" y="215" font-family="Helvetica Neue, Arial, sans-serif" font-size="66" font-weight="700" fill="#eaeefb">${esc(a.name)}</text>
@@ -503,7 +521,13 @@ function homeCards() { return iconWall(''); }
   if (!re.test(html)) {
     console.log('  WARNING: index.html has no APPS markers, homepage grid NOT server-rendered');
   } else {
-    fs.writeFileSync(idx, html.replace(re, '<!--APPS:START-->' + homeCards() + '<!--APPS:END-->'));
+    fs.writeFileSync(idx, stamp(html.replace(re, '<!--APPS:START-->' + homeCards() + '<!--APPS:END-->')));
+    // the hand-maintained policy pages are never generated, but their asset URLs are versioned too
+    for (const rel of ['deck-privacy.html', 'spinnit-privacy.html', 'apps/kinetic-neuroscience/privacy/index.html']) {
+      const f = path.join(dir, rel); if (!fs.existsSync(f)) continue;
+      const before = fs.readFileSync(f, 'utf8'), after = stamp(before);
+      if (after !== before) fs.writeFileSync(f, after);
+    }
     console.log(`  homepage: ${APPS.length} app cards server-rendered into index.html`);
   }
 }

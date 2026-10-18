@@ -29,7 +29,8 @@
 // v6 (2026-10-17): the studio redesign replaced the whole homepage and its assets.
 // v7 (same day): every page restyled, and the fetches below now bypass the HTTP cache
 // (GitHub Pages sends max-age=600, which kept serving pre-deploy pages for 10 minutes).
-const CACHE = 'ist-v7';
+// v8 (2026-10-18): new company logo, favicon and icons (same file names), red palette.
+const CACHE = 'ist-v8';
 
 // Precache the shell so the very first visit is instant and offline works.
 // Anything not listed here is still cached on first use — it just isn't

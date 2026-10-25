@@ -70,7 +70,7 @@ function head({ title, desc, canonical, og }) {
 </head><body>
 ${LOGO_DEFS}
 <header class="nav"><a class="logo" href="/" aria-label="Integrated Software, home">${LOGO}</a>
-  <nav class="links" aria-label="Site"><a href="/">Home</a><a href="/apps/">Apps</a><a href="/#tools">Open source</a><a href="/#studio">Studio</a><a href="/press/">Press</a></nav>
+  <nav class="links" aria-label="Site"><a href="/">Home</a><a href="/apps/">Apps</a><a href="/#tools">Open source</a><a href="/press/">Press</a></nav>
   <span class="sp"></span><a class="cta" href="/#contact">Get in touch</a></header>
 <main id="main" class="sub"><div class="frame">
 `;
@@ -82,7 +82,7 @@ function foot() {
   <div class="brand"><span class="plate">${LOGO}</span><p>Native iOS apps that run entirely on your device, made by a one-person studio.</p><span class="mono" style="font-size:11px;color:var(--faint)">matt@integratedsw.tech</span></div>
   <div><h4>Apps</h4><span style="display:grid;gap:10px"><a href="/apps/">All apps</a>${APPS.map(a => `<a href="/apps/${a.slug}/">${esc(a.name)}</a>`).join('')}</span></div>
   <div><h4>Open source</h4><a href="https://github.com/mathieeo/rateCheck" target="_blank" rel="noopener">rateCheck</a><a href="https://github.com/mathieeo/SoftCOM" target="_blank" rel="noopener">SoftCOM</a><a href="https://github.com/mathieeo/SerialFileCopy" target="_blank" rel="noopener">SerialFileCopy</a></div>
-  <div><h4>Studio</h4><a href="/#studio">Services</a><a href="/#contact">Contact</a><a href="/press/">Press kit</a><a href="/privacy/">Privacy</a></div>
+  <div><h4>Studio</h4><a href="/#contact">Contact</a><a href="/press/">Press kit</a><a href="/privacy/">Privacy</a></div>
 </div>
 <div class="legal"><span>© 2026 Integrated Software Technologies Inc.</span><span>Designed, coded and shipped solo</span></div></footer>
 </div></main>

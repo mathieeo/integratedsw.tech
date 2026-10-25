@@ -204,11 +204,11 @@ function scramble(el, text) {
     el.textContent = text.split('').map((ch, i) => i < k || ch === ' ' ? ch : LETTERS[Math.random() * 26 | 0]).join('');
     if (f >= total) { clearInterval(el._t); el.textContent = text; } }, 28);
 }
-/* in the hero the index is a table of contents at the bottom; after it, the sections you passed stack up top with the current one large */
+/* one word at the top right: the section you are in (nothing in the hero; the nav says Home) */
 function renderIndex(cur) {
   if (!index) return;
-  if (cur === 0) { index.innerHTML = sections.slice(1).map((s, i) => `<span class="${i === 0 ? 'next' : ''}">${s.dataset.name}</span>`).join(''); return; }
-  index.innerHTML = sections.slice(0, cur + 1).map((s, i) => `<span class="${i === cur ? 'now' : ''}">${s.dataset.name}</span>`).join('');
+  if (cur === 0) { index.innerHTML = ''; return; }
+  index.innerHTML = '<span class="now"></span>';
   scramble(index.querySelector('.now'), sections[cur].dataset.name.toUpperCase());
 }
 function onScroll() {
@@ -221,6 +221,34 @@ let rz; const relayout = () => { clearTimeout(rz); rz = setTimeout(() => { if (h
 addEventListener('resize', relayout);
 if (window.ResizeObserver) new ResizeObserver(relayout).observe(document.body);
 onScroll();
+
+/* ---------- reveal on scroll: section content rises in as it enters, children staggered ---------- */
+(() => {
+  if (!('IntersectionObserver' in window)) return;
+  const groups = ['.block .bar', '.block .intro > *', '.block .tri > div', '.block .iconwall a', '.block .close > *', '.block .wallwrap > *', '.block .apps > *', '.block .shots > *', '.block .gallery > *', '.block .pr > *'];
+  const seen = new Set();
+  groups.forEach(sel => document.querySelectorAll(sel).forEach(el => {
+    if (seen.has(el) || el.closest('.inq')) return; seen.add(el);
+    const kids = [...el.parentElement.children].filter(k => seen.has(k) || k.matches(sel));
+    const i = kids.indexOf(el);
+    el.classList.add('rv'); el.style.setProperty('--d', Math.min(i, 14) * (el.matches('.iconwall a') ? .045 : .09).toFixed(3) + 's');
+  }));
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: .08 });
+  seen.forEach(el => { const r = el.getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) el.classList.add('in'); else io.observe(el); });
+})();
+
+/* ---------- pointer motion (fine pointers only): hero copy drifts, buttons lean toward the cursor ---------- */
+if (!reduce && matchMedia('(pointer: fine)').matches) {
+  const heroEl = document.querySelector('.hero'), copy = document.querySelector('.hcopy');
+  if (heroEl && copy) {
+    heroEl.addEventListener('pointermove', e => { const r = heroEl.getBoundingClientRect(); copy.style.setProperty('--px', ((e.clientX - r.left) / r.width - .5) * 14 + 'px'); copy.style.setProperty('--py', ((e.clientY - r.top) / r.height - .5) * 10 + 'px'); });
+    heroEl.addEventListener('pointerleave', () => { copy.style.setProperty('--px', '0px'); copy.style.setProperty('--py', '0px'); });
+  }
+  document.querySelectorAll('.btn').forEach(b => {
+    b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); b.style.setProperty('--mx', ((e.clientX - r.left) / r.width - .5) * 8 + 'px'); b.style.setProperty('--my', ((e.clientY - r.top) / r.height - .5) * 6 + 'px'); });
+    b.addEventListener('pointerleave', () => { b.style.setProperty('--mx', '0px'); b.style.setProperty('--my', '0px'); });
+  });
+}
 addEventListener('load', () => { if (rail) rail.build(); onScroll(); });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (rail) rail.build(); onScroll(); });
 })();

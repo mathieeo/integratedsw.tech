@@ -67,6 +67,9 @@ main.sub{padding-top:var(--nav)}
 .assets3 > div + div{border-left:1px solid var(--rule)}
 .assets3 .pv{width:100%;aspect-ratio:16/10;display:grid;place-items:center;background:var(--deep);border:1px solid var(--rule)}
 .assets3 .pv img{max-width:62%;max-height:72%;width:auto;height:auto}
+.assets3 .pv.light{background:#fff}
+.assets3 .pv video{display:block;height:100%;width:auto;max-width:100%}
+.assets3 > div:nth-child(n+4){border-top:1px solid var(--rule)}
 .assets3 h3{font:600 17px/1.2 var(--wide);font-stretch:110%}
 .swatches{display:flex;flex-wrap:wrap;border-top:1px solid var(--rule)}
 .swatches span{display:flex;align-items:center;gap:12px;padding:18px clamp(16px,2.4vw,32px);border-right:1px solid var(--rule);font:500 11.5px/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}

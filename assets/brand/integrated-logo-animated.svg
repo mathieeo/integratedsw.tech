@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-90 -90 538.6 494.4" width="539" height="494" role="img" aria-label="Integrated Software Technologies">
+<title>Integrated Software Technologies</title>
+<desc>Animated logo. The bar wipes in along its diagonal, the two brackets land from opposite corners, the bar kicks, and a highlight sweeps across; the highlight repeats every 6.5 seconds. Stops under prefers-reduced-motion. The static mark is logo.svg (tight viewBox 0 0 358.6 314.4); this file keeps a 90-unit margin so the brackets fly in from outside the mark. Use on a white ground: the bar fades to black.</desc>
+<defs>
+<linearGradient id="g0" gradientUnits="userSpaceOnUse" x1="64.0" y1="128.0" x2="199.8" y2="10.3"><stop offset="0" stop-color="#d50303"/><stop offset="1" stop-color="#bb0000"/></linearGradient>
+<linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="308.6" y1="8.3" x2="49.2" y2="302.7"><stop offset="0" stop-color="#7e0000"/><stop offset="1" stop-color="#070000"/></linearGradient>
+<linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="293.2" y1="184.8" x2="155.0" y2="304.1"><stop offset="0" stop-color="#e40505"/><stop offset="1" stop-color="#fe0808"/></linearGradient>
+<linearGradient id="gs" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<clipPath id="cb"><path d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/></clipPath>
+<clipPath id="ca"><path d="M0.0 0.0 L220.8 1.0 L182.9 49.4 L71.8 49.4 L111.6 134.4 L81.8 170.5 Z"/><path d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/><path d="M275.9 142.4 L358.6 314.4 L134.3 314.4 L173.7 264.4 L284.9 264.4 L244.5 178.0 Z"/></clipPath>
+</defs>
+<style>
+.a{animation:inA .75s cubic-bezier(.2,1.35,.3,1) .38s both}
+.c{animation:inC .75s cubic-bezier(.2,1.35,.3,1) .5s both}
+.b{animation:wipe .6s cubic-bezier(.3,.8,.2,1) .12s both}
+.k{transform-box:fill-box;transform-origin:50% 50%;animation:kick .5s cubic-bezier(.2,.8,.2,1) 1s both}
+.s{animation:shine 6.5s cubic-bezier(.4,0,.2,1) 1.15s infinite both}
+@keyframes wipe{from{transform:translate(253.5px,-311px)}to{transform:translate(0,0)}}
+@keyframes inA{0%{transform:translate(-84px,-58px);opacity:0}40%{opacity:1}100%{transform:translate(0,0);opacity:1}}
+@keyframes inC{0%{transform:translate(84px,58px);opacity:0}40%{opacity:1}100%{transform:translate(0,0);opacity:1}}
+@keyframes kick{0%,100%{transform:scale(1)}45%{transform:scale(1.045)}}
+@keyframes shine{0%{transform:translateX(0) skewX(-18deg)}12%,100%{transform:translateX(640px) skewX(-18deg)}}
+@media (prefers-reduced-motion:reduce){.a,.b,.c,.k,.s{animation:none}}
+</style>
+<path class="a" fill="url(#g0)" d="M0.0 0.0 L220.8 1.0 L182.9 49.4 L71.8 49.4 L111.6 134.4 L81.8 170.5 Z"/>
+<g class="k" clip-path="url(#cb)"><path class="b" fill="url(#g1)" d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/></g>
+<path class="c" fill="url(#g2)" d="M275.9 142.4 L358.6 314.4 L134.3 314.4 L173.7 264.4 L284.9 264.4 L244.5 178.0 Z"/>
+<g clip-path="url(#ca)"><rect class="s" x="-130" y="-60" width="120" height="440" fill="url(#gs)"/></g>
+</svg>

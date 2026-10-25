@@ -68,6 +68,22 @@ if (form) {
 /* ---------- PWA ---------- */
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
 
+/* ---------- hero intro (2026-10-25): the wordmark climbs in letter by letter; the scroll cue appears once the intro settles ----------
+   The letters are split at runtime so the HTML keeps the plain word for crawlers; the h1 gets an aria-label and the
+   spans leave the accessibility tree. Kerning across spans is lost, which costs a pixel or two of width. */
+(() => {
+  const word = document.querySelector('.hero .word');
+  if (word && !reduce) {
+    const tn = [...word.childNodes].find(n => n.nodeType === 3 && n.textContent.trim());
+    if (tn) {
+      const txt = document.createElement('span'); txt.className = 'txt'; txt.setAttribute('aria-hidden', 'true');
+      [...tn.textContent.trim()].forEach((ch, i) => { const c = document.createElement('span'); c.className = 'ch'; c.style.setProperty('--i', String(i)); c.textContent = ch; txt.appendChild(c); });
+      word.setAttribute('aria-label', tn.textContent.trim()); word.replaceChild(txt, tn);
+    }
+  }
+  setTimeout(() => document.body.classList.add('hero-in'), reduce ? 0 : 1900);
+})();
+
 /* ---------- the hero tunnel: real screens drifting toward you ---------- */
 const hero = (() => {
 const orbit = document.getElementById('orbit'), rings = document.getElementById('rings');
@@ -176,7 +192,8 @@ function railFrame(now) {
 /* click or drag anywhere on the ruler to scrub; the hover line previews where you would land */
 let dragging = false;
 function railP(cy) { return clamp01((cy - T) / L); }
-function goP(pp, smooth) { window.scrollTo({ top: pp * Math.max(0, docH - vh), behavior: smooth && !reduce ? 'smooth' : 'auto' }); }
+/* 'instant', not 'auto': html has scroll-behavior:smooth now, and 'auto' would defer to it and lag the drag */
+function goP(pp, smooth) { window.scrollTo({ top: pp * Math.max(0, docH - vh), behavior: smooth && !reduce ? 'smooth' : 'instant' }); }
 sbar.addEventListener('pointerdown', e => { dragging = true; sbar.classList.add('drag'); try { sbar.setPointerCapture(e.pointerId); } catch (_) {} goP(railP(e.clientY), e.pointerType === 'mouse'); e.preventDefault(); });
 sbar.addEventListener('pointermove', e => {
   const pp = railP(e.clientY); hov.style.transform = `translate3d(0,${(T + pp * L).toFixed(1)}px,0)`; hovv.textContent = String(Math.round(pp * 100)).padStart(3, '0') + '%';
@@ -212,6 +229,7 @@ function renderIndex(cur) {
   scramble(index.querySelector('.now'), sections[cur].dataset.name.toUpperCase());
 }
 function onScroll() {
+  document.body.classList.toggle('scrolled', scrollY > 40);
   let cur = 0; const mid = innerHeight * .4; sections.forEach((s, i) => { if (s.getBoundingClientRect().top < mid) cur = i; });
   if (cur !== current) { current = cur; renderIndex(cur); navLinks.forEach((a, i) => a.classList.toggle('on', i === Math.min(cur, navLinks.length - 1) && cur < navLinks.length)); }
 }

@@ -53,6 +53,9 @@ const write = (rel, html) => { const f = path.join(dir, rel); mkdir(path.dirname
    outside the site) is assets/brand/integrated-logo-animated.svg. */
 const LOGO = '<svg class="isl" viewBox="0 0 358.6 314.4" aria-hidden="true"><path class="a" fill="url(#isl0)" d="M0.0 0.0 L220.8 1.0 L182.9 49.4 L71.8 49.4 L111.6 134.4 L81.8 170.5 Z"/><g class="k" clip-path="url(#islB)"><path class="b" fill="url(#isl1)" d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/></g><path class="c" fill="url(#isl2)" d="M275.9 142.4 L358.6 314.4 L134.3 314.4 L173.7 264.4 L284.9 264.4 L244.5 178.0 Z"/><g clip-path="url(#islAll)"><rect class="s" x="-130" y="-60" width="120" height="440" fill="url(#islSh)"/></g></svg>';
 const LOGO_DEFS = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="isl0" gradientUnits="userSpaceOnUse" x1="64.0" y1="128.0" x2="199.8" y2="10.3"><stop offset="0" stop-color="#d50303"/><stop offset="1" stop-color="#bb0000"/></linearGradient><linearGradient id="isl1" gradientUnits="userSpaceOnUse" x1="308.6" y1="8.3" x2="49.2" y2="302.7"><stop offset="0" stop-color="#7e0000"/><stop offset="1" stop-color="#070000"/></linearGradient><linearGradient id="isl2" gradientUnits="userSpaceOnUse" x1="293.2" y1="184.8" x2="155.0" y2="304.1"><stop offset="0" stop-color="#e40505"/><stop offset="1" stop-color="#fe0808"/></linearGradient><linearGradient id="islSh" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="islB"><path d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/></clipPath><clipPath id="islAll"><path d="M0.0 0.0 L220.8 1.0 L182.9 49.4 L71.8 49.4 L111.6 134.4 L81.8 170.5 Z"/><path d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/><path d="M275.9 142.4 L358.6 314.4 L134.3 314.4 L173.7 264.4 L284.9 264.4 L244.5 178.0 Z"/></clipPath></defs></svg>';
+/* The business's channels (2026-10-26), in every footer's Studio column; index.html carries the same three links by
+   hand (footer, the Contact row and the Organization JSON-LD sameAs), as do the three hand-maintained policy pages. */
+const SOCIAL = '<a href="https://www.youtube.com/@IntegratedSwTech" target="_blank" rel="noopener">YouTube</a><a href="https://www.instagram.com/integratedswtech/" target="_blank" rel="noopener">Instagram</a><a href="https://www.tiktok.com/@integratedswtech" target="_blank" rel="noopener">TikTok</a>';
 const pad2 = n => String(n).padStart(2, '0');
 function head({ title, desc, canonical, og }) {
   return `<!doctype html><html lang="en"><head>
@@ -86,7 +89,7 @@ function foot() {
   <div class="brand"><span class="plate">${LOGO}</span><p>Native iOS apps that run entirely on your device, made by a one-person studio.</p><span class="mono" style="font-size:11px;color:var(--faint)">matt@integratedsw.tech</span></div>
   <div><h4>Apps</h4><span style="display:grid;gap:10px"><a href="/apps/">All apps</a>${APPS.map(a => `<a href="/apps/${a.slug}/">${esc(a.name)}</a>`).join('')}</span></div>
   <div><h4>Open source</h4><a href="https://github.com/mathieeo/rateCheck" target="_blank" rel="noopener">rateCheck</a><a href="https://github.com/mathieeo/SoftCOM" target="_blank" rel="noopener">SoftCOM</a><a href="https://github.com/mathieeo/SerialFileCopy" target="_blank" rel="noopener">SerialFileCopy</a></div>
-  <div><h4>Studio</h4><a href="/#contact">Contact</a><a href="/press/">Press kit</a><a href="/privacy/">Privacy</a></div>
+  <div><h4>Studio</h4><a href="/#contact">Contact</a><a href="/press/">Press kit</a><a href="/privacy/">Privacy</a>${SOCIAL}</div>
 </div>
 <div class="legal"><span>© 2026 Integrated Software Technologies Inc.</span><span>Designed, coded and shipped solo</span></div></footer>
 </div></main>
@@ -350,6 +353,7 @@ function pressPage() {
   <div class="prose">
     <p><b>Integrated Software Technologies Inc.</b> is a one-person iOS studio run by Matthew Mesropian in Glendale, CA. It designs and ships native, on-device apps (developer tools, network utilities, LiDAR measuring, and audio) with no accounts and no tracking.</p>
     <p>Contact: <a href="mailto:matt@integratedsw.tech">matt@integratedsw.tech</a> · (818) 671-9866</p>
+    <p>Channels: <a href="https://www.youtube.com/@IntegratedSwTech" target="_blank" rel="noopener">YouTube</a> · <a href="https://www.instagram.com/integratedswtech/" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.tiktok.com/@integratedswtech" target="_blank" rel="noopener">TikTok</a></p>
   </div>
   <div class="assets3">${assets.map(x => `<div><div class="pv${x.light ? ' light' : ''}">${x.video ? `<video src="${x.video}" autoplay muted loop playsinline aria-label="${x.n}"></video>` : `<img src="${x.img}" alt="${x.n}">`}</div><h3>${x.n}</h3><a class="btn ghost sm" href="${x.dl}" download>Download</a></div>`).join('')}</div>
   <div class="swatches">${swatches.map(([n, c]) => `<span><i style="background:${c}"></i>${n} · ${c}</span>`).join('')}</div>

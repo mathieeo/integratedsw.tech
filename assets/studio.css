@@ -197,6 +197,11 @@ em.s{font-family:var(--serif);font-style:italic;font-weight:400;font-stretch:100
 .close p{margin:0;max-width:30em;color:var(--mute);font-size:clamp(16px,1.35vw,19px)}
 .close .contactline{font:500 12px/1.8 var(--mono);letter-spacing:.14em;color:var(--mute)}
 .contactline span{color:var(--faint)}
+/* the business's channels under the contact line (2026-10-26) */
+.close .social{display:flex;gap:14px;margin:-6px 0 0;font:500 12px/1.8 var(--mono);letter-spacing:.14em;text-transform:uppercase}
+.social a{color:var(--mute);border-bottom:1px solid rgba(242,241,238,.25);padding-bottom:1px}
+.social a:hover{color:var(--paper);border-color:var(--paper)}
+.social span{color:var(--faint)}
 
 /* footer */
 .foot{display:grid;grid-template-columns:1.5fr 1.5fr 1fr 1fr}  /* the apps column is wide enough for two columns of names (BinaryHexCalc is the test) */

@@ -1,7 +1,7 @@
 {
   "name": "Integrated Software Technologies",
   "short_name": "IST",
-  "description": "Fast, private, on-device iOS apps by Matthew Mesropian.",
+  "description": "Fast, private, on-device iOS apps by Integrated Software Technologies.",
   "start_url": "/?pwa=1",
   "scope": "/",
   "display": "standalone",

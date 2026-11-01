@@ -581,7 +581,7 @@
     pre(['  /', '  /privacy/', '  /press/'].concat(rows).join('\n'));
   };
 
-  CMD.about = () => print('Integrated Software Technologies Inc. — a one-person iOS studio. Native, on-device, no tracking. Built by Matthew Mesropian in Glendale, CA.');
+  CMD.about = () => print('Integrated Software Technologies Inc. — a one-person iOS studio. Native, on-device, no tracking. Built in Glendale, CA.');
   CMD.contact = () => print('matt@integratedsw.tech');
   CMD.whoami = () => print('guest — but you clearly know your way around a keyboard.');
   CMD.uname = (args) => print(args.includes('-a')
@@ -807,7 +807,7 @@
     const logo = ["\\¯¯¯¯¯¯¯¯/     //", " \\  ¯¯¯¯¯     //", "  \\  \\       //", "   \\  \\     //", "    \\/     //    /\\", "          //    \\  \\", "         //      \\  \\", "        //    _____  \\", "       //    /________\\"].join('\n').replace(/\/\//g, '<span style="color:#9b0d0d">//</span>');
     const info = [
       ['host', 'integratedsw.tech'], ['studio', 'Integrated Software Technologies'],
-      ['founder', 'Matthew Mesropian'], ['location', 'Glendale, CA'],
+      ['location', 'Glendale, CA'],
       ['apps', live + ' shipped, ' + apps.length + ' total'],
       ['stack', 'Swift · SwiftUI · C++ · Python'],
       ['shell', 'term.js — try `man ls`'],

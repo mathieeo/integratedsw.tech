@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-90 -90 538.6 494.4" width="539" height="494" role="img" aria-label="Integrated Software Technologies">
 <title>Integrated Software Technologies</title>
-<desc>Animated logo. The bar wipes in along its diagonal, the two brackets land from opposite corners, the bar kicks, and a highlight sweeps across; the highlight repeats every 6.5 seconds. Stops under prefers-reduced-motion. The static mark is logo.svg (tight viewBox 0 0 358.6 314.4); this file keeps a 90-unit margin so the brackets fly in from outside the mark. Use on a white ground: the bar fades to black.</desc>
+<desc>Animated logo. The bar wipes in along its diagonal, the two brackets land from opposite corners, the bar kicks, and a highlight sweeps across; the highlight repeats every 6.5 seconds. Stops under prefers-reduced-motion. The static mark is logo.svg (tight viewBox 0 0 358.6 314.4); this file keeps a 90-unit margin so the brackets fly in from outside the mark. Deep Ocean colours (2026-11-01): made for a dark ground, best on the brand navy #0a1a2f; for white grounds use logo-on-white.svg (navy brackets).</desc>
 <defs>
-<linearGradient id="g0" gradientUnits="userSpaceOnUse" x1="64.0" y1="128.0" x2="199.8" y2="10.3"><stop offset="0" stop-color="#d50303"/><stop offset="1" stop-color="#bb0000"/></linearGradient>
-<linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="308.6" y1="8.3" x2="49.2" y2="302.7"><stop offset="0" stop-color="#7e0000"/><stop offset="1" stop-color="#070000"/></linearGradient>
-<linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="293.2" y1="184.8" x2="155.0" y2="304.1"><stop offset="0" stop-color="#e40505"/><stop offset="1" stop-color="#fe0808"/></linearGradient>
+<linearGradient id="g0" gradientUnits="userSpaceOnUse" x1="40" y1="10" x2="140" y2="160"><stop offset="0" stop-color="#bfd7e6"/><stop offset="1" stop-color="#9bc0d8"/></linearGradient>
+<linearGradient id="g1" gradientUnits="userSpaceOnUse" x1="308.6" y1="8.3" x2="49.2" y2="302.7"><stop offset="0" stop-color="#4f86b0"/><stop offset="1" stop-color="#2c5c86"/></linearGradient>
+<linearGradient id="g2" gradientUnits="userSpaceOnUse" x1="330" y1="310" x2="230" y2="160"><stop offset="0" stop-color="#bfd7e6"/><stop offset="1" stop-color="#9bc0d8"/></linearGradient>
 <linearGradient id="gs" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
 <clipPath id="cb"><path d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/></clipPath>
 <clipPath id="ca"><path d="M0.0 0.0 L220.8 1.0 L182.9 49.4 L71.8 49.4 L111.6 134.4 L81.8 170.5 Z"/><path d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/><path d="M275.9 142.4 L358.6 314.4 L134.3 314.4 L173.7 264.4 L284.9 264.4 L244.5 178.0 Z"/></clipPath>

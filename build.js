@@ -46,13 +46,15 @@ const write = (rel, html) => { const f = path.join(dir, rel); mkdir(path.dirname
    (studio.js) and the terminal (term.js + term.css). Asset paths are absolute because
    404.html is served at any depth. */
 /* The company logo (traced from the user's PNG on 2026-10-18 into straight-edged vector paths with its own
-   gradients). It always sits on a white ground: its bar fades to black. */
+   gradients). Since 2026-11-01 it wears the Deep Ocean colours the user picked (pale brackets #bfd7e6→#9bc0d8, an
+   ocean-blue bar #4f86b0→#2c5c86; masters in Personal/Company Logo/Current Logo) and sits on its navy tile (--tile #0a1a2f),
+   no longer on white. The version for white grounds (navy brackets) is assets/logo-on-white.svg. */
 /* Since 2026-10-25 the mark is animatable: bracket .a, the bar .b inside clip .k (so it can wipe in), bracket .c and a
    highlight band .s clipped to all three; studio.css animates it in the hero and the nav. The clip paths and the
    highlight gradient live in LOGO_DEFS beside the fill gradients. The standalone master (same keyframes, for use
    outside the site) is assets/brand/integrated-logo-animated.svg. */
 const LOGO = '<svg class="isl" viewBox="0 0 358.6 314.4" aria-hidden="true"><path class="a" fill="url(#isl0)" d="M0.0 0.0 L220.8 1.0 L182.9 49.4 L71.8 49.4 L111.6 134.4 L81.8 170.5 Z"/><g class="k" clip-path="url(#islB)"><path class="b" fill="url(#isl1)" d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/></g><path class="c" fill="url(#isl2)" d="M275.9 142.4 L358.6 314.4 L134.3 314.4 L173.7 264.4 L284.9 264.4 L244.5 178.0 Z"/><g clip-path="url(#islAll)"><rect class="s" x="-130" y="-60" width="120" height="440" fill="url(#islSh)"/></g></svg>';
-const LOGO_DEFS = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="isl0" gradientUnits="userSpaceOnUse" x1="64.0" y1="128.0" x2="199.8" y2="10.3"><stop offset="0" stop-color="#d50303"/><stop offset="1" stop-color="#bb0000"/></linearGradient><linearGradient id="isl1" gradientUnits="userSpaceOnUse" x1="308.6" y1="8.3" x2="49.2" y2="302.7"><stop offset="0" stop-color="#7e0000"/><stop offset="1" stop-color="#070000"/></linearGradient><linearGradient id="isl2" gradientUnits="userSpaceOnUse" x1="293.2" y1="184.8" x2="155.0" y2="304.1"><stop offset="0" stop-color="#e40505"/><stop offset="1" stop-color="#fe0808"/></linearGradient><linearGradient id="islSh" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="islB"><path d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/></clipPath><clipPath id="islAll"><path d="M0.0 0.0 L220.8 1.0 L182.9 49.4 L71.8 49.4 L111.6 134.4 L81.8 170.5 Z"/><path d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/><path d="M275.9 142.4 L358.6 314.4 L134.3 314.4 L173.7 264.4 L284.9 264.4 L244.5 178.0 Z"/></clipPath></defs></svg>';
+const LOGO_DEFS = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="isl0" gradientUnits="userSpaceOnUse" x1="40" y1="10" x2="140" y2="160"><stop offset="0" stop-color="#bfd7e6"/><stop offset="1" stop-color="#9bc0d8"/></linearGradient><linearGradient id="isl1" gradientUnits="userSpaceOnUse" x1="308.6" y1="8.3" x2="49.2" y2="302.7"><stop offset="0" stop-color="#4f86b0"/><stop offset="1" stop-color="#2c5c86"/></linearGradient><linearGradient id="isl2" gradientUnits="userSpaceOnUse" x1="330" y1="310" x2="230" y2="160"><stop offset="0" stop-color="#bfd7e6"/><stop offset="1" stop-color="#9bc0d8"/></linearGradient><linearGradient id="islSh" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="islB"><path d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/></clipPath><clipPath id="islAll"><path d="M0.0 0.0 L220.8 1.0 L182.9 49.4 L71.8 49.4 L111.6 134.4 L81.8 170.5 Z"/><path d="M279.7 0.4 L334.0 0.4 L78.2 311.4 L26.2 311.4 Z"/><path d="M275.9 142.4 L358.6 314.4 L134.3 314.4 L173.7 264.4 L284.9 264.4 L244.5 178.0 Z"/></clipPath></defs></svg>';
 /* The business's channels (2026-10-26), in every footer's Studio column; index.html carries the same three links by
    hand (footer, the Contact row and the Organization JSON-LD sameAs), as do the three hand-maintained policy pages. */
 const SOCIAL = '<a href="https://www.youtube.com/@IntegratedSwTech" target="_blank" rel="noopener">YouTube</a><a href="https://www.instagram.com/integratedswtech/" target="_blank" rel="noopener">Instagram</a><a href="https://www.tiktok.com/@integratedswtech" target="_blank" rel="noopener">TikTok</a>';
@@ -63,7 +65,7 @@ function head({ title, desc, canonical, og }) {
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${canonical}">
-<meta name="theme-color" content="#0b0b0c">
+<meta name="theme-color" content="#07101c">
 <meta property="og:type" content="website"><meta property="og:site_name" content="Integrated Software Technologies">
 <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}">
 <meta property="og:url" content="${canonical}"><meta property="og:image" content="${og}">
@@ -336,16 +338,17 @@ third-party trackers, everything on your device. Each app's policy:</p></div>
 /* -------------------------------------------------------------- press page */
 function pressPage() {
   const canonical = `${ROOT}/press/`;
-  /* `light` puts the preview on white (the logo's bar fades to black); `video` previews an MP4 instead of an image */
+  /* `light` puts the preview on white, `tile` on the brand navy; `video` previews an MP4 instead of an image */
   const assets = [
-    { n: 'Logo (SVG)', img: '/assets/logo.svg', dl: '/assets/logo.svg', light: true },
-    { n: 'Logo animation (SVG)', img: '/assets/brand/integrated-logo-animated.svg', dl: '/assets/brand/integrated-logo-animated.svg', light: true },
-    { n: 'Logo animation (MP4, 1080p)', video: '/assets/brand/integrated-logo-intro-white.mp4', dl: '/assets/brand/integrated-logo-intro-white.mp4', light: true },
+    { n: 'Logo (SVG)', img: '/assets/logo.svg', dl: '/assets/logo.svg', tile: true },
+    { n: 'Logo for white backgrounds (SVG)', img: '/assets/logo-on-white.svg', dl: '/assets/logo-on-white.svg', light: true },
+    { n: 'Logo animation (SVG)', img: '/assets/brand/integrated-logo-animated.svg', dl: '/assets/brand/integrated-logo-animated.svg', tile: true },
+    { n: 'Logo animation (MP4, 1080p)', video: '/assets/brand/integrated-logo-intro-navy.mp4', dl: '/assets/brand/integrated-logo-intro-navy.mp4' },
     { n: 'App mark (512px)', img: '/assets/icon-512.png', dl: '/assets/icon-512.png' },
     { n: 'App mark (192px)', img: '/assets/icon-192.png', dl: '/assets/icon-192.png' },
     { n: 'Share card', img: '/assets/og.png', dl: '/assets/og.png' }
   ];
-  const swatches = [['Black', '#0b0b0c'], ['White', '#f2f1ee'], ['Red', '#ff2b2b'], ['Logo red', '#e40505'], ['Logo deep', '#7e0000']];
+  const swatches = [['Ink', '#07101c'], ['Navy', '#0a1a2f'], ['Paper', '#e8f0f6'], ['Ocean', '#5ea7dc'], ['Logo bar', '#4f86b0'], ['Logo mist', '#bfd7e6']];
   return head({ title: 'Press kit — Integrated Software Technologies', desc: 'Brand assets, logos, colors, and boilerplate for Integrated Software Technologies.', canonical, og: `${ROOT}/assets/og.png` }) + `
 <section class="block" data-name="Press">
   <div class="bar"><span><a href="/">← Home</a></span><span>Press kit</span></div>
@@ -355,7 +358,7 @@ function pressPage() {
     <p>Contact: <a href="mailto:matt@integratedsw.tech">matt@integratedsw.tech</a> · (818) 671-9866</p>
     <p>Channels: <a href="https://www.youtube.com/@IntegratedSwTech" target="_blank" rel="noopener">YouTube</a> · <a href="https://www.instagram.com/integratedswtech/" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.tiktok.com/@integratedswtech" target="_blank" rel="noopener">TikTok</a></p>
   </div>
-  <div class="assets3">${assets.map(x => `<div><div class="pv${x.light ? ' light' : ''}">${x.video ? `<video src="${x.video}" autoplay muted loop playsinline aria-label="${x.n}"></video>` : `<img src="${x.img}" alt="${x.n}">`}</div><h3>${x.n}</h3><a class="btn ghost sm" href="${x.dl}" download>Download</a></div>`).join('')}</div>
+  <div class="assets3">${assets.map(x => `<div><div class="pv${x.light ? ' light' : x.tile ? ' tile' : ''}">${x.video ? `<video src="${x.video}" autoplay muted loop playsinline aria-label="${x.n}"></video>` : `<img src="${x.img}" alt="${x.n}">`}</div><h3>${x.n}</h3><a class="btn ghost sm" href="${x.dl}" download>Download</a></div>`).join('')}</div>
   <div class="swatches">${swatches.map(([n, c]) => `<span><i style="background:${c}"></i>${n} · ${c}</span>`).join('')}</div>
 </section>` + foot();
 }
@@ -385,7 +388,7 @@ function ogFor(a) {
 <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a.accent}"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
 <radialGradient id="glow" cx="0.9" cy="0.05" r="0.8"><stop offset="0" stop-color="${a.accent}" stop-opacity="0.32"/><stop offset="1" stop-color="${a.accent}" stop-opacity="0"/></radialGradient>
 </defs>
-<rect width="1200" height="630" fill="#0b0b0c"/><rect width="1200" height="630" fill="url(#glow)"/>
+<rect width="1200" height="630" fill="#07101c"/><rect width="1200" height="630" fill="url(#glow)"/>
 ${iconTag}
 <text x="270" y="150" font-family="Helvetica Neue, Arial, sans-serif" font-size="30" font-weight="600" fill="#98a0b8" letter-spacing="2">${(a.cat || '').toUpperCase()}</text>
 <text x="270" y="215" font-family="Helvetica Neue, Arial, sans-serif" font-size="66" font-weight="700" fill="#eaeefb">${esc(a.name)}</text>

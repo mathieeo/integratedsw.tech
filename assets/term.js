@@ -975,7 +975,7 @@
       ctx.fillStyle = 'rgba(6,7,13,.16)'; ctx.fillRect(0, 0, cv.width, cv.height);
       ctx.font = '13px monospace';
       drops.forEach((y, i) => {
-        ctx.fillStyle = Math.random() < 0.06 ? '#ffd6d6' : '#ff2b2b';
+        ctx.fillStyle = Math.random() < 0.06 ? '#d6ebf8' : '#5ea7dc';
         ctx.fillText(glyphs[(Math.random() * glyphs.length) | 0], i * 11, y * 14);
         drops[i] = (y * 14 > cv.height && Math.random() > 0.975) ? 0 : y + 1;
       });
@@ -1015,7 +1015,7 @@
       ctx.fillStyle = '#fab84d';
       ctx.fillRect(food[0] * CELL + 3, food[1] * CELL + 3, CELL - 6, CELL - 6);
       snake.forEach((s, i) => {
-        ctx.fillStyle = i ? '#a30d0d' : '#ff2b2b';
+        ctx.fillStyle = i ? '#2c5c86' : '#5ea7dc';
         ctx.fillRect(s[0] * CELL + 1, s[1] * CELL + 1, CELL - 2, CELL - 2);
       });
     }

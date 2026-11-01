@@ -1,7 +1,7 @@
 // Renders the animated logo to video and GIF. Headless Chrome loads the master SVG inline, pauses its CSS
 // animations and steps them with the Web Animations API (currentTime), capturing one PNG with alpha per frame;
-// ffmpeg then assembles the deliverables. Two frame sets: "bare" (the mark alone, for light grounds) and
-// "plate" (the mark on its white rounded plate, for any ground).
+// ffmpeg then assembles the deliverables. Two frame sets: "bare" (the mark alone, for dark grounds: the Deep Ocean
+// mark has pale brackets) and "plate" (the mark on its navy rounded tile, for any ground).
 // usage: node tools/render-logo-animation.js assets/brand/integrated-logo-animated.svg "<outDir>"
 // Needs Google Chrome and Homebrew ffmpeg (prores_ks, libvpx-vp9, libx264). Frames and the render pages go to a
 // temp folder, not the repo. Change the timing in the SVG and in assets/studio.css together, then re-run.
@@ -21,7 +21,7 @@ function page(variant) {
   return `<!doctype html><meta charset="utf-8"><style>
 html,body{margin:0;width:${SIZE}px;height:${SIZE}px;overflow:hidden;background:transparent}
 .stage{width:${SIZE}px;height:${SIZE}px;display:grid;place-items:center}
-.plate{width:720px;height:720px;border-radius:150px;background:#fff;display:grid;place-items:center;overflow:hidden;animation:plateIn .7s cubic-bezier(.2,1.3,.3,1) both}
+.plate{width:720px;height:720px;border-radius:150px;background:#0a1a2f;display:grid;place-items:center;overflow:hidden;animation:plateIn .7s cubic-bezier(.2,1.3,.3,1) both}
 .plate svg{width:74%;height:auto;overflow:visible;display:block}
 .bare svg{width:640px;height:auto;overflow:visible;display:block}
 @keyframes plateIn{from{transform:scale(.55) rotate(-6deg);opacity:0}}
@@ -74,12 +74,12 @@ const over = (v, color, file) => ff(['-f', 'lavfi', '-i', `color=c=${color}:s=${
 
 (async () => {
   await capture('bare'); await capture('plate');
-  over('bare', 'white', 'integrated-logo-intro-white.mp4');
-  over('plate', '0x0b0b0c', 'integrated-logo-intro-dark.mp4');
+  over('bare', '0x0a1a2f', 'integrated-logo-intro-navy.mp4');
+  over('plate', '0x07101c', 'integrated-logo-intro-dark.mp4');
   ff([...seq('bare'), '-c:v', 'prores_ks', '-profile:v', '4444', '-pix_fmt', 'yuva444p10le', '-vendor', 'apl0', out('integrated-logo-intro-alpha.mov')]);
   ff([...seq('plate'), '-c:v', 'prores_ks', '-profile:v', '4444', '-pix_fmt', 'yuva444p10le', '-vendor', 'apl0', out('integrated-logo-plate-intro-alpha.mov')]);
   ff([...seq('bare'), '-c:v', 'libvpx-vp9', '-pix_fmt', 'yuva420p', '-b:v', '0', '-crf', '28', '-auto-alt-ref', '0', '-row-mt', '1', out('integrated-logo-intro-alpha.webm')]);
-  ff(['-i', out('integrated-logo-intro-white.mp4'), '-vf', 'fps=25,scale=640:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle', '-loop', '0', out('integrated-logo-intro.gif')]);
+  ff(['-i', out('integrated-logo-intro-navy.mp4'), '-vf', 'fps=25,scale=640:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle', '-loop', '0', out('integrated-logo-intro.gif')]);
   // still frames for a quick visual check of the choreography
   for (const f of [0, 20, 40, 60, 75, 90, 110, 191]) fs.copyFileSync(path.join(here, 'frames', 'plate', `f${String(f).padStart(4, '0')}.png`), path.join(here, `check-plate-${f}.png`));
   console.log('done:', fs.readdirSync(OUT).map(f => `${f} ${(fs.statSync(out(f)).size / 1e6).toFixed(2)} MB`).join('\n'));

@@ -107,12 +107,12 @@ function size() {
 }
 function drawRings(t) {
   rctx.clearRect(0, 0, W, H); const cx = W / 2, cy = H / 2;
-  const RINGS = [[1.25, 'rgba(255,43,43,.6)', 4.2, .07], [1.9, 'rgba(242,241,238,.16)', 5.4, -.05], [2.7, 'rgba(242,241,238,.24)', 3.6, .09], [3.8, 'rgba(192,0,0,.45)', 4.8, -.12]];
+  const RINGS = [[1.25, 'rgba(94,167,220,.6)', 4.2, .07], [1.9, 'rgba(232,240,246,.16)', 5.4, -.05], [2.7, 'rgba(232,240,246,.24)', 3.6, .09], [3.8, 'rgba(44,92,134,.45)', 4.8, -.12]];
   for (const [z, col, len, sp] of RINGS) {
     const r = R / z, a0 = t * sp + z * 1.7;
     rctx.beginPath(); rctx.ellipse(cx, cy, r, r * .86, 0, a0, a0 + len); rctx.strokeStyle = col; rctx.lineWidth = 1.4; rctx.stroke();
   }
-  rctx.strokeStyle = 'rgba(242,241,238,.13)'; rctx.lineWidth = 1;
+  rctx.strokeStyle = 'rgba(232,240,246,.13)'; rctx.lineWidth = 1;
   for (let k = 0; k < 72; k++) { const a = k / 72 * Math.PI * 2 + t * .02, r = R / 1.55, l = k % 6 ? 5 : 10;
     rctx.beginPath(); rctx.moveTo(W / 2 + Math.cos(a) * r, H / 2 + Math.sin(a) * r * .86); rctx.lineTo(W / 2 + Math.cos(a) * (r + l), H / 2 + Math.sin(a) * (r + l) * .86); rctx.stroke(); }
 }

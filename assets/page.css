@@ -9,7 +9,7 @@ main.sub{padding-top:var(--nav)}
 /* app page hero: copy on the left, the app's screens rising out of its colour on the right */
 .ah{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr)}
 .ah .copy{padding:clamp(40px,6vw,88px) clamp(16px,3vw,40px);display:grid;gap:20px;align-content:center;justify-items:start}
-.aicon{width:84px;height:84px;border-radius:20px;box-shadow:0 0 0 1px rgba(242,241,238,.14),0 24px 60px color-mix(in srgb,var(--c) 32%,transparent)}
+.aicon{width:84px;height:84px;border-radius:20px;box-shadow:0 0 0 1px rgba(232,240,246,.14),0 24px 60px color-mix(in srgb,var(--c) 32%,transparent)}
 .ah h1{font:800 clamp(40px,6vw,88px)/.95 var(--wide);font-stretch:125%;letter-spacing:-.01em}
 .ah .tag{margin:0;font:600 clamp(18px,1.7vw,23px)/1.35 var(--wide);font-stretch:108%;max-width:26em}
 .facts{margin:0;display:flex;flex-wrap:wrap;gap:6px 14px;font:500 11.5px/1.5 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
@@ -29,7 +29,7 @@ main.sub{padding-top:var(--nav)}
 .strip{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-top:1px solid var(--rule)}
 .strip::-webkit-scrollbar{display:none}
 .strip figure{flex:none;width:clamp(210px,23vw,300px);margin:0;padding:clamp(16px,2vw,26px);border-right:1px solid var(--rule);scroll-snap-align:start;display:grid;gap:12px}
-.strip img{display:block;width:100%;height:auto;border-radius:14px;box-shadow:-1.5px 0 0 rgba(255,96,96,.3),1.5px 0 0 rgba(96,170,255,.34),0 0 0 1px rgba(242,241,238,.12)}
+.strip img{display:block;width:100%;height:auto;border-radius:14px;box-shadow:-1.5px 0 0 rgba(255,96,96,.3),1.5px 0 0 rgba(96,170,255,.34),0 0 0 1px rgba(232,240,246,.12)}
 .strip figcaption{font:500 11px/1 var(--mono);letter-spacing:.16em;color:var(--faint)}
 
 /* next app */
@@ -46,7 +46,7 @@ main.sub{padding-top:var(--nav)}
 .prose ul{padding-left:1.2em}
 .prose li{margin:6px 0}
 .prose strong,.prose b{color:var(--paper);font-weight:600}
-.prose a{color:var(--paper);border-bottom:1px solid rgba(242,241,238,.3)}
+.prose a{color:var(--paper);border-bottom:1px solid rgba(232,240,246,.3)}
 .prose a:hover{border-color:var(--paper)}
 .prose .dated{font:500 11.5px/1.6 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-top:36px}
 
@@ -68,7 +68,10 @@ main.sub{padding-top:var(--nav)}
 .assets3 .pv{width:100%;aspect-ratio:16/10;display:grid;place-items:center;background:var(--deep);border:1px solid var(--rule)}
 .assets3 .pv img{max-width:62%;max-height:72%;width:auto;height:auto}
 .assets3 .pv.light{background:#fff}
-.assets3 .pv video{display:block;height:100%;width:auto;max-width:100%}
+.assets3 .pv.tile{background:var(--tile)}
+/* the video sits absolutely inside the 16:10 box: as a grid item its height:100% resolved to the 1080px intrinsic size and spilled across the next column */
+.assets3 .pv{position:relative;overflow:hidden}
+.assets3 .pv video{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:contain}
 .assets3 > div:nth-child(n+4){border-top:1px solid var(--rule)}
 .assets3 h3{font:600 17px/1.2 var(--wide);font-stretch:110%}
 .swatches{display:flex;flex-wrap:wrap;border-top:1px solid var(--rule)}
@@ -89,7 +92,7 @@ main.sub{padding-top:var(--nav)}
 .lu .hd span:last-child{text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lu .num{background:var(--c);color:#0b0b0e;padding:4px 7px;font-weight:700;letter-spacing:.08em}
 .lu .pic{position:relative;aspect-ratio:16/10;overflow:hidden;border-block:1px solid var(--rule);background:radial-gradient(70% 90% at 50% 110%,color-mix(in srgb,var(--c) 30%,transparent),transparent 72%),var(--deep)}
-.lu .pic img{position:absolute;left:50%;top:13%;width:44%;transform:translateX(-50%);border-radius:12px 12px 0 0;box-shadow:-1.5px 0 0 rgba(255,96,96,.3),1.5px 0 0 rgba(96,170,255,.34),0 0 0 1px rgba(242,241,238,.12);transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+.lu .pic img{position:absolute;left:50%;top:13%;width:44%;transform:translateX(-50%);border-radius:12px 12px 0 0;box-shadow:-1.5px 0 0 rgba(255,96,96,.3),1.5px 0 0 rgba(96,170,255,.34),0 0 0 1px rgba(232,240,246,.12);transition:transform .45s cubic-bezier(.2,.7,.2,1)}
 .lu:hover .pic img{transform:translateX(-50%) translateY(-6%)}
 .lu .tx{padding:0 18px 22px;display:grid;gap:10px;flex:1;align-content:start}
 .lu .ic{width:56px;height:56px;border-radius:14px;margin-top:-30px;position:relative;z-index:2;box-shadow:0 0 0 3px var(--ink),0 12px 28px rgba(0,0,0,.5)}

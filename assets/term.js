@@ -582,7 +582,7 @@
   };
 
   CMD.about = () => print('Integrated Software Technologies Inc. — a one-person iOS studio. Native, on-device, no tracking. Built by Matthew Mesropian in Glendale, CA.');
-  CMD.contact = () => print('matt@integratedsw.tech · (818) 671-9866');
+  CMD.contact = () => print('matt@integratedsw.tech');
   CMD.whoami = () => print('guest — but you clearly know your way around a keyboard.');
   CMD.uname = (args) => print(args.includes('-a')
     ? 'integratedsw.tech 5.0-browser JS engine · static site · 0 trackers · x86_64 GNU/Coffee'
@@ -747,7 +747,7 @@
   CMD.hire = () => {
     print('Available for iOS, embedded and instrumentation work.', 'ok');
     print('Native Swift apps · DSP and sensor pipelines · C++/Qt desktop · Python tooling.');
-    print('matt@integratedsw.tech · (818) 671-9866');
+    print('matt@integratedsw.tech');
   };
   CMD.work = CMD.hire;
 

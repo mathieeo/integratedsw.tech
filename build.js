@@ -355,7 +355,7 @@ function pressPage() {
   <div class="intro"><h1 class="h1sub">Press <em class="s">kit.</em></h1><p>Logos, colors, and boilerplate, free to use when writing about the studio or its apps.</p></div>
   <div class="prose">
     <p><b>Integrated Software Technologies Inc.</b> is a one-person iOS studio run by Matthew Mesropian in Glendale, CA. It designs and ships native, on-device apps (developer tools, network utilities, LiDAR measuring, and audio) with no accounts and no tracking.</p>
-    <p>Contact: <a href="mailto:matt@integratedsw.tech">matt@integratedsw.tech</a> · (818) 671-9866</p>
+    <p>Contact: <a href="mailto:matt@integratedsw.tech">matt@integratedsw.tech</a></p>
     <p>Channels: <a href="https://www.youtube.com/@IntegratedSwTech" target="_blank" rel="noopener">YouTube</a> · <a href="https://www.instagram.com/integratedswtech/" target="_blank" rel="noopener">Instagram</a> · <a href="https://www.tiktok.com/@integratedswtech" target="_blank" rel="noopener">TikTok</a></p>
   </div>
   <div class="assets3">${assets.map(x => `<div><div class="pv${x.light ? ' light' : x.tile ? ' tile' : ''}">${x.video ? `<video src="${x.video}" autoplay muted loop playsinline aria-label="${x.n}"></video>` : `<img src="${x.img}" alt="${x.n}">`}</div><h3>${x.n}</h3><a class="btn ghost sm" href="${x.dl}" download>Download</a></div>`).join('')}</div>

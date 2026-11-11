@@ -149,7 +149,7 @@ function appPage(a) {
   if (info && typeof info.price === 'number') {
     ld.offers = { '@type': 'Offer', price: String(info.price), priceCurrency: info.currency || 'USD' };
   }
-  return head({ title: `${a.name} — ${a.cat} for iOS`, desc: a.desc, canonical, og }) + `
+  return head({ title: `${a.name}: ${a.cat} for iOS`, desc: a.desc, canonical, og }) + `
 <section class="block" data-name="${esc(a.name)}" style="--c:${a.accent}">
   <div class="bar"><span><a href="/apps/">← All apps</a></span><span>${esc(a.cat)} · ${pad2(i + 1)} / ${pad2(APPS.length)}</span></div>
   <div class="ah">
@@ -223,7 +223,7 @@ function appsIndex() {
     if (info && typeof info.price === 'number') item.offers = { '@type': 'Offer', price: String(info.price), priceCurrency: info.currency || 'USD' };
     return { '@type': 'ListItem', position: k + 1, item };
   }) };
-  return head({ title: `All apps — Integrated Software Technologies`,
+  return head({ title: `All apps · Integrated Software Technologies`,
                 desc: `${word} native iOS apps that run entirely on your device: vibration analysis, network audits, SSH, LiDAR measuring, audio and everyday tools.`,
                 canonical, og: `${ROOT}/assets/og.png` }) + `
 <section class="block" data-name="Apps">
@@ -249,10 +249,10 @@ function appsIndex() {
 </section>
 <section class="block" data-name="Contact">
   <div class="close">
-    <span class="k">No project too small</span>
-    <h2>Need something <em class="s">built?</em></h2>
-    <p>Beyond my own apps, I take on client work across IT, networking, web and software.</p>
-    <div class="ctas"><a class="btn" href="/#contact">Hire the studio</a><a class="btn ghost" href="/">Back home</a></div>
+    <span class="k">Get in touch</span>
+    <h2>Questions about an <em class="s">app?</em></h2>
+    <p>Ask anything, report a bug or suggest a feature. If you have a project in mind, tell me about that too.</p>
+    <div class="ctas"><a class="btn" href="/#contact">Write to me</a><a class="btn ghost" href="/">Back home</a></div>
   </div>
 </section>
 <script type="application/ld+json">${JSON.stringify(ld)}</script>` + foot();
@@ -292,7 +292,7 @@ app that the purchase succeeded.</p>` : '';
        and you can remove ads to stop that entirely.`
     : `${esc(a.name)} collects nothing. It has no accounts, no analytics, and no
        third-party trackers. Everything happens on your device.`;
-  return head({ title: `${a.name} — Privacy Policy`,
+  return head({ title: `${a.name} Privacy Policy`,
                 desc: `Privacy policy for ${a.name} by Integrated Software Technologies.`,
                 canonical, og: `${ROOT}/assets/og/${a.slug}.png` }) + `
 <section class="block" data-name="Privacy" style="--c:${a.accent}">
@@ -324,7 +324,7 @@ ${ads}
 
 function privacyIndex() {
   const canonical = `${ROOT}/privacy/`;
-  return head({ title: 'Privacy — Integrated Software Technologies',
+  return head({ title: 'Privacy · Integrated Software Technologies',
                 desc: 'Privacy policies for every Integrated Software Technologies app: no accounts, no analytics, on-device.',
                 canonical, og: `${ROOT}/assets/og.png` }) + `
 <section class="block" data-name="Privacy">
@@ -350,7 +350,7 @@ function pressPage() {
     { n: 'Share card', img: '/assets/og.png', dl: '/assets/og.png' }
   ];
   const swatches = [['Ink', '#07101c'], ['Navy', '#0a1a2f'], ['Paper', '#e8f0f6'], ['Ocean', '#5ea7dc'], ['Logo bar', '#4f86b0'], ['Logo mist', '#bfd7e6']];
-  return head({ title: 'Press kit — Integrated Software Technologies', desc: 'Brand assets, logos, colors, and boilerplate for Integrated Software Technologies.', canonical, og: `${ROOT}/assets/og.png` }) + `
+  return head({ title: 'Press kit · Integrated Software Technologies', desc: 'Brand assets, logos, colors, and boilerplate for Integrated Software Technologies.', canonical, og: `${ROOT}/assets/og.png` }) + `
 <section class="block" data-name="Press">
   <div class="bar"><span><a href="/">← Home</a></span><span>Press kit</span></div>
   <div class="intro"><h1 class="h1sub">Press <em class="s">kit.</em></h1><p>Logos, colors, and boilerplate, free to use when writing about the studio or its apps.</p></div>
@@ -366,7 +366,7 @@ function pressPage() {
 
 /* ---------------------------------------------------------------- 404 page */
 function notFound() {
-  return head({ title: 'Not found — Integrated Software Technologies', desc: 'That page does not exist.', canonical: `${ROOT}/404`, og: `${ROOT}/assets/og.png` }) + `
+  return head({ title: 'Not found · Integrated Software Technologies', desc: 'That page does not exist.', canonical: `${ROOT}/404`, og: `${ROOT}/assets/og.png` }) + `
 <section class="block" data-name="Not found">
   <div class="bar"><span>404</span><span>Page not found</span></div>
   <div class="lost"><span class="code" aria-hidden="true">404</span><h1 class="h1sub">That page <em class="s">wandered</em> off-device.</h1>
@@ -391,7 +391,7 @@ function ogFor(a) {
 </defs>
 <rect width="1200" height="630" fill="#07101c"/><rect width="1200" height="630" fill="url(#glow)"/>
 ${iconTag}
-<text x="270" y="150" font-family="Helvetica Neue, Arial, sans-serif" font-size="30" font-weight="600" fill="#98a0b8" letter-spacing="2">${(a.cat || '').toUpperCase()}</text>
+<text x="270" y="150" font-family="Helvetica Neue, Arial, sans-serif" font-size="30" font-weight="600" fill="#98a0b8" letter-spacing="2">${esc((a.cat || '').toUpperCase())}</text>
 <text x="270" y="215" font-family="Helvetica Neue, Arial, sans-serif" font-size="66" font-weight="700" fill="#eaeefb">${esc(a.name)}</text>
 <text x="96" y="360" font-family="Helvetica Neue, Arial, sans-serif" font-size="32" font-weight="500" fill="#cdd3e6">${esc(desc)}</text>
 <rect x="96" y="470" width="${Math.min(560, 40 + a.name.length * 4)}" height="4" rx="2" fill="url(#g)"/>

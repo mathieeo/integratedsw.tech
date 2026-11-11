@@ -17,6 +17,8 @@ main.sub{padding-top:var(--nav)}
 .facts i{font-style:normal;color:var(--faint)}
 .ah .ctas{justify-content:flex-start;margin-top:4px}
 .btn svg.apple{fill:currentColor;stroke:none}
+/* on a phone "Download on the App Store" used to break onto two lines: tighter tracking and padding keep it on one */
+@media (max-width:480px){.ah .ctas .btn{padding-inline:14px;letter-spacing:.08em}}
 .ah .stage{aspect-ratio:auto;min-height:440px;border-left:1px solid var(--rule)}
 .ah .stage .s1{width:44%;transform:translate(-22%,24%)}
 .ah .stage .s2{width:38%;transform:translate(-108%,36%) rotate(-5deg)}

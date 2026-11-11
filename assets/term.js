@@ -232,7 +232,7 @@
       ''
     ].join('\n'),
     '/.bashrc': () => [
-      '# ~/.bashrc — loaded for interactive shells',
+      '# ~/.bashrc: loaded for interactive shells',
       '',
       'alias ll="ls -la"',
       'alias la="ls -a"',
@@ -266,7 +266,7 @@
     base64: 'base64 [-d] <text>\n    Encode, or decode with -d. Works on a pipe.',
     ping: 'ping [host]\n    Four packets of pure fiction. It is a static site.',
     stack: 'stack\n    What this site and these apps are actually built with.',
-    hire: 'hire\n    Contact details, and what the studio takes on.',
+    hire: 'hire\n    What the studio works in, and where to write.',
     which: 'which <command>\n    Whether a command exists in this shell.',
     ps: 'ps\n    What is running. Mostly nothing, which is the point.',
     df: 'df\n    Disk usage. Nothing is stored, so nothing fills up.',
@@ -483,7 +483,7 @@
   async function stdinOr(args, stdin) {
     if (stdin != null) return stdin;
     const f = args.find(a => !a.startsWith('-'));
-    if (!f) throw new Error('no input — give a file or pipe something in');
+    if (!f) throw new Error('no input: give a file or pipe something in');
     return (await fileText(f)).text;
   }
 
@@ -570,7 +570,7 @@
 
   CMD.open = (args) => {
     const a = findApp(args[0]);
-    if (!a) return print('open: no such app: ' + esc(args[0] || '(none)') + ' — try <b>apps</b>', 'err');
+    if (!a) return print('open: no such app: ' + esc(args[0] || '(none)') + '. Try <b>apps</b>', 'err');
     const i = apps.indexOf(a);
     print('opening ' + esc(a.name) + '…', 'ok');
     setTimeout(() => { closeTerm(); (window.openApp || function () {})(i); }, 320);
@@ -581,9 +581,9 @@
     pre(['  /', '  /privacy/', '  /press/'].concat(rows).join('\n'));
   };
 
-  CMD.about = () => print('Integrated Software Technologies Inc. — a one-person iOS studio. Native, on-device, no tracking. Built in Glendale, CA.');
+  CMD.about = () => print('Integrated Software Technologies Inc., a one-person iOS studio. Native, on-device, no tracking. Built in Glendale, CA.');
   CMD.contact = () => print('matt@integratedsw.tech');
-  CMD.whoami = () => print('guest — but you clearly know your way around a keyboard.');
+  CMD.whoami = () => print('guest, but you clearly know your way around a keyboard.');
   CMD.uname = (args) => print(args.includes('-a')
     ? 'integratedsw.tech 5.0-browser JS engine · static site · 0 trackers · x86_64 GNU/Coffee'
     : 'integratedsw.tech');
@@ -601,8 +601,8 @@
   };
 
   CMD.sudo = (args, raw) => {
-    if (/\brm\b.*-.*r/.test(raw)) return print('rm: permission denied — and honestly, you will thank me later. 😌', 'err');
-    print('Nice try. You already have root — this is your browser. 😎', 'ok');
+    if (/\brm\b.*-.*r/.test(raw)) return print('rm: permission denied, and honestly, you will thank me later. 😌', 'err');
+    print('Nice try. You already have root: this is your browser. 😎', 'ok');
   };
 
   /* --------------------------------------------------- the read-only wall */
@@ -617,7 +617,7 @@
     'That would require me to trust you. We just met.',
     'I admire the confidence. The answer is still no.',
     'You want write access to a static site. Bold. Denied.',
-    'Sorry &mdash; this whole place is <b>chmod 444</b> and vibes.',
+    'Sorry, this whole place is <b>chmod 444</b> and vibes.',
     'Writing here would be a choice. I am choosing not to. 😌',
     'Denied. But genuinely, respect for trying it.',
     'The only thing this site writes is good copy.'
@@ -641,7 +641,7 @@
     serialfilecopy: {
       version: '1.2.1',
       summary: 'Push a file to an embedded target over a serial console, then verify it by md5.',
-      extra: 'Usage: <b>serialfilecopy &lt;device&gt; &lt;baud&gt; &lt;user&gt; - &lt;file&gt;</b> &mdash; the <b>-</b> prompts for the password instead of leaving it in argv.'
+      extra: 'Usage: <b>serialfilecopy &lt;device&gt; &lt;baud&gt; &lt;user&gt; - &lt;file&gt;</b>: the <b>-</b> prompts for the password instead of leaving it in argv.'
     }
   };
 
@@ -665,7 +665,7 @@
     print(`Successfully installed ${esc(name)}-${p.version}`, 'ok');
     print('&nbsp;');
     print(esc(p.summary), 'muted');
-    print(`Genuinely on PyPI &mdash; <b>pip install ${esc(name)}</b> works in a real shell. ${p.extra}`);
+    print(`Genuinely on PyPI: <b>pip install ${esc(name)}</b> works in a real shell. ${p.extra}`);
   };
 
   CMD.npm = (args) => {
@@ -723,7 +723,7 @@
 
   CMD.ping = (args) => {
     const host = (args[0] || 'integratedsw.tech').slice(0, 60);
-    print(`PING ${esc(host)} &mdash; 56 data bytes`);
+    print(`PING ${esc(host)}: 56 data bytes`);
     let n = 0;
     const t = setInterval(() => {
       print(`64 bytes from ${esc(host)}: icmp_seq=${n} ttl=64 time=${(Math.random() * 6 + 1).toFixed(1)} ms`);
@@ -737,7 +737,7 @@
 
   CMD.stack = () => pre([
     '  Site       hand-written HTML · CSS · vanilla JS',
-    '  Build      node build.js — Node built-ins only, zero deps',
+    '  Build      node build.js · Node built-ins only, zero deps',
     '  Deploy     git push → GitHub Pages',
     '  Apps       Swift · SwiftUI · on-device, no backend',
     '  Tools      C++/Qt · Python (softcom, serialfilecopy)',
@@ -745,9 +745,9 @@
   ].join('\n'));
 
   CMD.hire = () => {
-    print('Available for iOS, embedded and instrumentation work.', 'ok');
-    print('Native Swift apps · DSP and sensor pipelines · C++/Qt desktop · Python tooling.');
-    print('matt@integratedsw.tech');
+    print('The studio works in native Swift apps · DSP and sensor pipelines · C++/Qt desktop · Python tooling.', 'ok');
+    print('The work is on the App Store and GitHub: type <b>apps</b> to see it.');
+    print('A question or a project? matt@integratedsw.tech');
   };
   CMD.work = CMD.hire;
 
@@ -810,7 +810,7 @@
       ['location', 'Glendale, CA'],
       ['apps', live + ' shipped, ' + apps.length + ' total'],
       ['stack', 'Swift · SwiftUI · C++ · Python'],
-      ['shell', 'term.js — try `man ls`'],
+      ['shell', 'term.js (try `man ls`)'],
       ['privacy', 'on-device · 0 trackers'], ['uptime', 'since 2024']
     ].map(([k, v]) => `<b class="tapp">${k}</b>  ${esc(v)}`).join('\n');
     print('<div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">'
@@ -1047,7 +1047,7 @@
     const unquoted = line.replace(/"[^"]*"/g, '').replace(/'[^']*'/g, '');
     if (/>/.test(unquoted)) {
       nope();
-      print('Everything here is fetched from the real site, so there is nothing to write to. Reading, though, is wide open — try <b>cat</b>, <b>curl</b> or <b>view-source</b>.', 'muted');
+      print('Everything here is fetched from the real site, so there is nothing to write to. Reading, though, is wide open: try <b>cat</b>, <b>curl</b> or <b>view-source</b>.', 'muted');
       return;
     }
 
@@ -1063,7 +1063,7 @@
       const cmd = parts[0];
       const args = parts.slice(1);
       const raw = args.join(' ');
-      if (!(cmd in CMD)) { print('command not found: ' + esc(cmd) + ' — try <b>help</b>', 'err'); return; }
+      if (!(cmd in CMD)) { print('command not found: ' + esc(cmd) + '. Try <b>help</b>', 'err'); return; }
       // Non-final stages capture instead of printing where the command supports it.
       const out = await CMD[cmd](args, raw, stdin, !isLast);
       stdin = (typeof out === 'string') ? out : null;
@@ -1123,7 +1123,7 @@
     term.innerHTML =
       '<div class="termwin" role="dialog" aria-modal="true" aria-label="Terminal">' +
         '<div class="termbar"><span class="tdot r"></span><span class="tdot y"></span><span class="tdot g"></span>' +
-          '<span class="termtitle">guest@integratedsw.tech — bash</span>' +
+          '<span class="termtitle">guest@integratedsw.tech: bash</span>' +
           '<button class="termx" aria-label="Close terminal">✕</button></div>' +
         '<div class="termbody"></div>' +
         '<div class="termline"><span class="termps"></span><input autocomplete="off" autocapitalize="off" ' +
@@ -1162,7 +1162,7 @@
     });
 
     // motd
-    print('<span class="tapp">integratedsw.tech</span> — type <b>help</b>, or <b>ls</b> to look around.', 'muted');
+    print('<span class="tapp">integratedsw.tech</span>: type <b>help</b>, or <b>ls</b> to look around.', 'muted');
     print('This shell reads the real site. <span class="tapp">cat index.html</span> fetches the page you are on.', 'muted');
   }
 

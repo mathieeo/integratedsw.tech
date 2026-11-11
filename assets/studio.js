@@ -1,6 +1,6 @@
 /* integratedsw.tech: the studio homepage (redesign 2026-10-17).
    The app grid is server-rendered by build.js from assets/apps.js; this file adds the
-   hero tunnel, the ruler scrollbar, the section index, the ticker, the inquiry form,
+   hero tunnel, the ruler scrollbar, the section index, the ticker, the contact form,
    the rich-results list and the service worker. The terminal is assets/term.js. */
 (() => {
 'use strict';
@@ -24,7 +24,7 @@ function copy(text, btn, fallbackLabel) {
 const tt = document.getElementById('tooltri'); if (tt) tt.addEventListener('click', e => { const b = e.target.closest('[data-copy]'); if (b) copy(b.dataset.copy, b, 'Select it'); });
 const cm = document.getElementById('copyMail'); if (cm) cm.addEventListener('click', () => copy('matt@integratedsw.tech', cm, 'matt@integratedsw.tech'));
 
-/* ---------- project inquiry: ported unchanged from the old enhance.js ----------
+/* ---------- contact form (2026-11-11: a plain message form, no longer a project intake) ----------
    Web3Forms posts straight to the inbox; the key is a public submit token by design.
    Anything that fails falls back to a pre-filled email, so a visitor is never stuck. */
 const FORM_KEY = '5e673ac9-cbd9-40bd-8329-bd19c37f43c7';
@@ -40,20 +40,21 @@ if (form) {
     const f = new FormData(form), g = k => (f.get(k) || '').toString().trim();
     if (g('botcheck')) return;
     const emailOK = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(g('email'));
-    mark('name', !g('name')); mark('email', !emailOK);
-    if (!g('name') || !emailOK) {
-      say(!g('name') ? 'Please add your name so I know who I am replying to.' : 'That email does not look right, and I would not be able to reply.', 'err');
-      const bad = field(!g('name') ? 'name' : 'email'); if (bad && bad.focus) bad.focus();
+    mark('name', !g('name')); mark('email', !emailOK); mark('message', !g('message'));
+    const miss = !g('name') ? 'name' : !emailOK ? 'email' : !g('message') ? 'message' : '';
+    if (miss) {
+      say({ name: 'Please add your name so I know who I am replying to.', email: 'That email does not look right, and I would not be able to reply.', message: 'Please write a line or two so I know what you are asking.' }[miss], 'err');
+      const bad = field(miss); if (bad && bad.focus) bad.focus();
       return;
     }
-    const subject = `Project inquiry: ${g('service')}`;
-    const body = `Name: ${g('name')}\nEmail: ${g('email')}\n\nService: ${g('service')}\nBudget: ${g('budget')}\nTimeline: ${g('timeline')}\n\nDetails:\n${g('message') || '(none provided)'}\n`;
+    const subject = `Website message: ${g('topic')}`;
+    const body = `Name: ${g('name')}\nEmail: ${g('email')}\nAbout: ${g('topic')}\n\n${g('message')}\n`;
     const mailto = () => { location.href = `mailto:matt@integratedsw.tech?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`; };
     if (!FORM_KEY) { mailto(); return; }
     form.classList.add('sending'); say('Sending…');
     try {
       const r = await fetch('https://api.web3forms.com/submit', { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ access_key: FORM_KEY, subject, from_name: g('name'), email: g('email'), name: g('name'), service: g('service'), budget: g('budget'), timeline: g('timeline'), message: g('message') || '(none provided)' }) });
+        body: JSON.stringify({ access_key: FORM_KEY, subject, from_name: g('name'), email: g('email'), name: g('name'), topic: g('topic'), message: g('message') }) });
       const data = await r.json().catch(() => ({}));
       if (!r.ok || data.success === false) throw new Error(data.message || 'send failed');
       form.reset(); say('Thanks, that reached me. I usually reply within a day.', 'ok');

@@ -84,7 +84,7 @@ em.s{font-family:var(--serif);font-style:italic;font-weight:400;font-stretch:100
 .ctas{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:6px}
 .fine{margin:4px 0 0;font:500 11px/1.7 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
 .fine b{font-weight:500;color:var(--mute)}
-/* the "open for work" pill above the wordmark: the one rounded shape on a square page, with a soft green ping */
+/* the status pill above the wordmark ("N apps live on the App Store"): the one rounded shape on a square page, with a soft green ping */
 .avail{display:inline-flex;align-items:center;gap:10px;margin:0;padding:8px 14px 8px 10px;border:1px solid var(--rule);border-radius:999px;font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute);background:rgba(232,240,246,.04)}
 .avail i{position:relative;width:8px;height:8px;border-radius:50%;background:#3ddc84;flex:none}
 .avail i::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid #3ddc84;animation:ping 2.2s cubic-bezier(.2,.7,.2,1) infinite}
@@ -194,7 +194,7 @@ em.s{font-family:var(--serif);font-style:italic;font-weight:400;font-stretch:100
 /* closing */
 .close{padding:clamp(72px,11vw,150px) clamp(16px,3vw,40px);display:grid;justify-items:center;text-align:center;gap:22px}
 .close .k{font:500 11.5px/1 var(--mono);letter-spacing:.18em;color:var(--faint);text-transform:uppercase}
-.close h2{font:620 clamp(40px,6.4vw,84px)/1 var(--wide);font-stretch:118%;letter-spacing:-.015em}
+.close h2{font:620 clamp(40px,6.4vw,84px)/1 var(--wide);font-stretch:118%;letter-spacing:-.015em;max-width:11em}  /* two balanced lines, so a long heading never runs under the floating section index */
 .close p{margin:0;max-width:30em;color:var(--mute);font-size:clamp(16px,1.35vw,19px)}
 .close .contactline{font:500 12px/1.8 var(--mono);letter-spacing:.14em;color:var(--mute)}
 .contactline span{color:var(--faint)}
@@ -259,7 +259,7 @@ html:not(.no-rail)::-webkit-scrollbar,html:not(.no-rail) body::-webkit-scrollbar
 @keyframes emWipe{to{background-size:100% 100%}}
 @media (prefers-reduced-motion:reduce){.ticker .row{animation:none}.stage .shot{transition:none}.rv{opacity:1;transform:none;transition:none}.hero::before{animation:none}.hcopy,.btn{transition:none;transform:none}.isl .a,.isl .b,.isl .c,.isl .k,.isl .s,.hero .plate,.word .ch,.hero .avail,.hero .tagline,.hero .lede,.hero .ctas,.hero .fine,.avail i::after,.cue i::after,.iconwall a{animation:none}.cue{display:none}.rv em.s,.hero .tagline em.s{background-size:100% 100%;transition:none;animation:none}}
 
-/* project inquiry (ported from the old homepage: same fields, same inbox) */
+/* contact form (a plain message form since 2026-11-11: name, email, topic, message; same inbox) */
 .inq{width:100%;max-width:46rem;margin-top:30px;text-align:left;display:grid;gap:14px;border:1px solid var(--rule);background:var(--deep);padding:clamp(18px,3vw,30px);position:relative}
 .inq .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .inq label{display:grid;gap:8px;font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}

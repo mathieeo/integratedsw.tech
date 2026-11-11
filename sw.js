@@ -45,12 +45,12 @@ const SHELL = [
   '/assets/studio/fonts/geist-mono.woff2',
   '/assets/studio/fonts/instrument-serif-italic.woff2',
   '/assets/apps.js',
-  '/assets/ratings.js',
   '/assets/term.js',
   '/assets/studio.js',
-  // the app pages still use the original theme
-  '/assets/style.css',
-  '/assets/fonts.css',
+  // every page but the homepage also wears page.css
+  '/assets/page.css',
+  // (2026-11-11: ratings.js, style.css and fonts.css left this list. No page loads them any more, and
+  //  precaching them made every first visit download about 280 KB for nothing.)
   '/manifest.webmanifest'
 ];
 

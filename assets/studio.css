@@ -352,6 +352,7 @@ html.menu-open{overflow:hidden}
 .spot{grid-area:spot;position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;gap:clamp(20px,2.4vw,30px);min-height:clamp(620px,46vw,820px);padding:clamp(28px,3.4vw,48px) clamp(16px,3vw,40px) 0;border-left:1px solid var(--rule);transition:--sc .7s,opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1);
   background:radial-gradient(64% 46% at 50% 100%,color-mix(in srgb,var(--sc) 30%,transparent),transparent 74%),var(--deep)}
 .spot::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(232,240,246,.04) 1px,transparent 1px) 0 0/40px 40px,linear-gradient(rgba(232,240,246,.04) 1px,transparent 1px) 0 0/40px 40px}
+.spot:empty{display:none}   /* no script, no panel: the section reads as it did before the spotlight */
 .spot-info{display:grid;gap:12px;justify-items:start;min-width:0}
 .spot-info > *{margin:0;transition:opacity .32s,transform .45s cubic-bezier(.2,.7,.2,1)}
 .spot.swap .spot-info > *{opacity:0;transform:translateY(8px);transition-duration:.15s}

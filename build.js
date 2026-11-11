@@ -163,13 +163,13 @@ function appPage(a) {
     ${stage}
   </div>
 </section>
-<section class="block" data-name="About">
+<section class="block" data-name="About" style="--c:${a.accent}">
   <div class="bar"><span>01 / <b>About</b></span><span>${esc(a.cat)}</span></div>
-  <div class="intro"><h2>What <em class="s">${esc(a.name)}</em> does.</h2><p>${esc(a.long || a.desc)}</p></div>
+  ${aboutBlock(a)}
 </section>
 ${shots.length ? `<section class="block" data-name="Screens">
-  <div class="bar"><span>02 / <b>Screens</b></span><span>${shots.length} from the App Store</span></div>
-  <div class="strip">${shots.map((f, k) => `<figure><img src="/assets/shots/${a.key}/${f}" alt="${esc(a.name)} screenshot ${k + 1}" loading="lazy"><figcaption>${pad2(k + 1)}</figcaption></figure>`).join('')}</div>
+  <div class="bar"><span>02 / <b>Screens</b></span><span class="barr">${shots.length} from the App Store<span class="stripnav"><button type="button" data-strip="-1" aria-label="Previous screenshots">←</button><button type="button" data-strip="1" aria-label="Next screenshots">→</button></span></span></div>
+  <div class="strip" tabindex="0" role="region" aria-label="${esc(a.name)} screenshots">${shots.map((f, k) => `<figure><img src="/assets/shots/${a.key}/${f}" alt="${esc(a.name)} screenshot ${k + 1}" loading="lazy"><figcaption>${pad2(k + 1)}</figcaption></figure>`).join('')}</div>
 </section>` : ''}
 <section class="block" data-name="Next app">
   <a class="nextapp" href="/apps/${next.slug}/" style="--c:${next.accent}"><span class="k">Next app</span><span class="nn">${next.icon ? `<img src="/assets/icons/${next.icon}.png" alt="">` : ''}${esc(next.name)} →</span></a>
@@ -178,10 +178,30 @@ ${shots.length ? `<section class="block" data-name="Screens">
 }
 
 const NUM_WORDS = ['Zero','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen','Twenty'];
+/* data-price is read by the homepage spotlight (studio.js): the price from the App Store lookup, absent when the lookup knows nothing */
 function iconWall(root) {
-  return APPS.map(a => `<a href="${root}apps/${a.slug}/" style="--c:${a.accent}">`
-    + (a.icon ? `<img src="${root}assets/icons/${a.icon}.png" alt="" loading="lazy">` : '')
-    + `<span>${esc(a.name)}</span></a>`).join('');
+  return APPS.map(a => {
+    const info = storeInfo[String(idOf(a.store))];
+    const price = info && info.formattedPrice ? (info.price === 0 ? 'Free' : info.formattedPrice) : '';
+    return `<a href="${root}apps/${a.slug}/" style="--c:${a.accent}"${price ? ` data-price="${esc(price)}"` : ''}>`
+      + (a.icon ? `<img src="${root}assets/icons/${a.icon}.png" alt="" loading="lazy">` : '')
+      + `<span>${esc(a.name)}</span></a>`;
+  }).join('');
+}
+
+/* About on an app page (2026-11-11): the first sentence of `long` leads, the app's three `points` (apps.js) follow
+   as highlights, and the rest of `long` is set in short paragraphs. It used to be one paragraph, a wall of text
+   on a phone. */
+function aboutBlock(a) {
+  const sentences = String(a.long || a.desc || '').split(/(?<=[.!?”"])\s+(?=[A-Z“"])/).map(x => x.trim()).filter(Boolean);
+  const lead = sentences.shift() || '';
+  const paras = []; let buf = '';
+  for (const x of sentences) { buf = buf ? buf + ' ' + x : x; if (buf.length >= 240) { paras.push(buf); buf = ''; } }
+  if (buf) { if (paras.length && buf.length < 110) paras[paras.length - 1] += ' ' + buf; else paras.push(buf); }
+  const pts = Array.isArray(a.points) ? a.points.slice(0, 3) : [];
+  return `<div class="intro about"><h2>What <em class="s">${esc(a.name)}</em> does.</h2><p class="lead">${esc(lead)}</p></div>`
+    + (pts.length ? `<div class="tri pts">${pts.map(([t, d], k) => `<div><span class="k">${'ABC'[k]}</span><h3>${esc(t)}</h3><p>${esc(d)}</p></div>`).join('')}</div>` : '')
+    + (paras.length ? `<div class="more">${paras.map(p => `<p>${esc(p)}</p>`).join('')}</div>` : '');
 }
 
 /* ------------------------------------------------------------ the apps page */

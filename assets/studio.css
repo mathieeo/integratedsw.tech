@@ -12,7 +12,7 @@
   --deep:#040a12;
   --paper:#e8f0f6;
   --mute:rgba(232,240,246,.62);
-  --faint:rgba(232,240,246,.38);
+  --faint:rgba(232,240,246,.5);   /* small labels; was .38, about 3.2:1 on the ink ground. .5 is 4.8:1 (2026-11-11) */
   --rule:rgba(232,240,246,.13);
   --tile:#0a1a2f;   /* the brand navy: logo plates, favicon, app icon */
   --accent:#5ea7dc;
@@ -291,7 +291,106 @@ html:not(.no-rail)::-webkit-scrollbar,html:not(.no-rail) body::-webkit-scrollbar
 .iconwall a:hover span{color:var(--paper)}
 @media (max-width:860px){.split{grid-template-columns:1fr}.split .intro{padding-bottom:0}.wallwrap{padding-top:8px}}
 @media (max-width:420px){.iconwall{gap:20px 4px}.iconwall a{width:78px}.iconwall img{width:58px;height:58px}.iconwall span{font-size:11.5px}}
-/* homepage teaser (2026-10-18): stacked and left-aligned, so the icons never run under the
-   floating section index at the top right (they did at 1920px wide) */
-.teaser .iconwall{justify-content:flex-start;max-width:880px;margin:16px 0 8px -12px}  /* 8 + 7 with 15 apps */
-.teaser .ctas{justify-content:flex-start}
+/* homepage teaser (2026-10-18): stacked and left-aligned. Since 2026-11-11 the wall sits in .wallbox beside the app spotlight (below). */
+
+/* ---------- press feedback (2026-11-11): what you tap dips under the finger ---------- */
+.btn:active{transform:translate(var(--mx,0),var(--my,0)) scale(.965);transition-duration:.08s}
+.nav .cta:active{background:#cfdbe6}
+.cmd button:active,.stripnav button:active,.spot-ctl button:active{transform:scale(.9)}
+.iconwall a:active img{transform:scale(.93);transition-duration:.08s}
+/* a soft light follows the pointer across a card (studio.js adds .glow and sets --gx/--gy, fine pointers only) */
+.glow{position:relative}
+.glow::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s;background:radial-gradient(280px circle at var(--gx,50%) var(--gy,50%),color-mix(in srgb,var(--c,var(--accent)) 13%,transparent),transparent 70%)}
+.glow:hover::after{opacity:1}
+.spot.glow::after{background:radial-gradient(340px circle at var(--gx,50%) var(--gy,50%),color-mix(in srgb,var(--sc) 11%,transparent),transparent 70%)}
+
+/* ---------- the app icon glides between pages (2026-11-11) ----------
+   studio.js names the icon you clicked "appicon" just before the page changes, and the app page's header icon
+   (.aicon, page.css) carries the same name, so the browser flies one into the other. Browsers without
+   cross-document view transitions keep the plain cross-fade. */
+::view-transition-group(appicon){animation-duration:.5s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+
+/* ---------- phone menu (2026-11-11) ----------
+   Under 820px the nav links are hidden, which left a phone with no way to reach Apps or Open source. studio.js adds
+   this button to the nav and builds the panel from the same links, so every page gets it without new markup. */
+.nav .menu{display:none;width:var(--nav);flex:none;border:0;border-left:1px solid var(--rule);background:transparent;color:var(--paper);cursor:pointer;padding:0;place-content:center;justify-items:center;row-gap:6px}
+.nav .menu i{display:block;width:18px;height:1.5px;background:currentColor;transition:transform .35s cubic-bezier(.2,.7,.2,1)}
+.menu-open .nav .menu i:first-child{transform:translateY(3.75px) rotate(45deg)}
+.menu-open .nav .menu i:last-child{transform:translateY(-3.75px) rotate(-45deg)}
+.mnav{position:fixed;inset:calc(var(--nav) + env(safe-area-inset-top,0px)) 0 0 0;z-index:49;display:flex;flex-direction:column;padding:6px var(--g) calc(26px + env(safe-area-inset-bottom,0px));background:rgba(7,16,28,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);overflow-y:auto;overscroll-behavior:contain;visibility:hidden;opacity:0;transition:opacity .28s,visibility 0s .28s}
+.menu-open .mnav{visibility:visible;opacity:1;transition:opacity .28s}
+.mnav a.big{display:flex;align-items:baseline;gap:16px;padding:20px 0;border-bottom:1px solid var(--rule);font:800 clamp(30px,9.4vw,46px)/1 var(--wide);font-stretch:120%;letter-spacing:-.01em;opacity:0;transform:translateY(20px);transition:opacity .5s cubic-bezier(.2,.7,.2,1),transform .5s cubic-bezier(.2,.7,.2,1)}
+.mnav a.big small{font:500 11px/1 var(--mono);letter-spacing:.16em;color:var(--faint);font-stretch:100%}
+.mnav a.big:active{color:var(--accent)}
+.menu-open .mnav a.big{opacity:1;transform:none;transition-delay:calc(var(--i,0)*.06s + .06s)}
+.mnav .mfoot{margin-top:auto;padding-top:30px;display:grid;gap:16px;justify-items:start;opacity:0;transition:opacity .5s .3s}
+.menu-open .mnav .mfoot{opacity:1}
+.mnav .mfoot .mono{font-size:11px;color:var(--faint)}
+html.menu-open{overflow:hidden}
+.menu-open .termdock{display:none}
+@media (max-width:820px){.nav .menu{display:grid}}
+@media (prefers-reduced-motion:reduce){.mnav,.mnav a.big,.mnav .mfoot,.nav .menu i{transition:none}.mnav a.big{transform:none}}
+
+/* ---------- phone pass (2026-11-11) ----------
+   On a phone the mark sits above the wordmark, so INTEGRATED can run the width of the screen instead of sharing
+   the line with the logo. The ruler is display-only for touch: as a 30px strip that swallowed touches it could
+   throw the page somewhere else when a thumb landed on the right edge. */
+@media (max-width:560px){.word{flex-direction:column;gap:.44em;font-size:clamp(30px,9.6vw,54px)}.word .plate{width:1.62em;height:1.62em;border-radius:.34em}}
+@media (pointer:coarse){.sbar{pointer-events:none}}
+
+/* ---------- app spotlight (2026-11-11) ----------
+   The homepage apps section: copy and the icon wall on the left, one app at a time on a phone on the right.
+   studio.js fills #spot from the catalog and turns the wall into its selector. --sc is the colour of the app on
+   show; registering it as a colour lets the glow fade from one app's colour to the next. */
+@property --sc{syntax:'<color>';inherits:true;initial-value:#5ea7dc}
+.spotwrap{display:grid;grid-template-columns:minmax(0,1.04fr) minmax(0,1fr);grid-template-rows:auto 1fr;grid-template-areas:"intro spot" "wall spot"}
+.spotwrap > .intro{grid-area:intro;padding-bottom:0}
+.wallbox{grid-area:wall;padding:10px clamp(16px,3vw,40px) clamp(48px,7vw,96px)}
+.wallbox .iconwall{justify-content:flex-start;margin:16px 0 8px -12px}
+.wallbox .ctas{justify-content:flex-start;margin-top:26px}
+.spot{grid-area:spot;position:relative;isolation:isolate;overflow:hidden;display:flex;flex-direction:column;gap:clamp(20px,2.4vw,30px);min-height:620px;padding:clamp(28px,3.4vw,48px) clamp(16px,3vw,40px) 0;border-left:1px solid var(--rule);transition:--sc .7s,opacity .75s cubic-bezier(.2,.7,.2,1),transform .75s cubic-bezier(.2,.7,.2,1);
+  background:radial-gradient(64% 46% at 50% 100%,color-mix(in srgb,var(--sc) 30%,transparent),transparent 74%),var(--deep)}
+.spot::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(232,240,246,.04) 1px,transparent 1px) 0 0/40px 40px,linear-gradient(rgba(232,240,246,.04) 1px,transparent 1px) 0 0/40px 40px}
+.spot-info{display:grid;gap:12px;justify-items:start;min-width:0}
+.spot-info > *{margin:0;transition:opacity .32s,transform .45s cubic-bezier(.2,.7,.2,1)}
+.spot.swap .spot-info > *{opacity:0;transform:translateY(8px);transition-duration:.15s}
+.spot-k{padding-right:124px;font:500 11px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}  /* clears the three controls at the top right */
+.spot-k b{font-weight:500;color:var(--sc)}
+.spot-name{display:flex;align-items:center;gap:14px;font:800 clamp(28px,3vw,44px)/1 var(--wide);font-stretch:122%;letter-spacing:-.01em}
+.spot-name img{width:46px;height:46px;border-radius:22%;flex:none;box-shadow:0 0 0 1px rgba(232,240,246,.14),0 10px 24px -8px var(--sc)}
+.spot-desc{color:var(--mute);font-size:clamp(15px,1.2vw,17px);line-height:1.5;max-width:27em;min-height:3em}
+.spot-tags{display:flex;flex-wrap:wrap;gap:6px}
+.spot-tags span{font:500 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;padding:5px 7px;border:1px solid var(--rule);color:var(--mute)}
+.spot-tags span.hot{color:var(--sc);border-color:color-mix(in srgb,var(--sc) 45%,transparent)}
+.spot-go{margin-top:4px;font:500 11.5px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--paper);border-bottom:1px solid rgba(232,240,246,.3);padding-bottom:4px}
+.spot-go:hover{color:var(--sc);border-color:var(--sc)}
+.spot-ctl{position:absolute;top:clamp(22px,2.8vw,40px);right:clamp(16px,3vw,40px);display:flex;gap:6px;z-index:2}
+.spot-ctl button{width:32px;height:30px;display:grid;place-items:center;border:1px solid var(--rule);background:rgba(7,16,28,.5);color:var(--paper);font:500 13px/1 var(--mono);cursor:pointer;padding:0;transition:border-color .2s,transform .12s}
+.spot-ctl button:hover{border-color:var(--paper)}
+.spot-ctl svg{width:10px;height:10px;fill:currentColor}
+.spot-ctl .pp .tri,.spot-ctl .pp.off .ii{display:none}
+.spot-ctl .pp.off .tri{display:block}
+/* the phone hangs in a stage that takes whatever height is left; it runs past the bottom edge and is cut there,
+   like the screens on an app page */
+.spot-stage{flex:1 1 0;min-height:320px;position:relative;display:block;perspective:1000px;touch-action:pan-y}
+.spot-phone{position:absolute;left:50%;top:8px;translate:-50% 0;width:clamp(210px,19vw,280px);aspect-ratio:480/1042;border-radius:15.5%/7.14%;overflow:hidden;background:#0b0d12;transform:rotateY(var(--ry,0deg)) rotateX(var(--rx,0deg));transition:transform .5s cubic-bezier(.2,.7,.2,1);
+  box-shadow:0 0 0 1px rgba(232,240,246,.2),0 0 0 7px #0c1524,0 0 0 8px rgba(232,240,246,.13),0 40px 80px rgba(0,0,0,.6),0 30px 80px -20px color-mix(in srgb,var(--sc) 60%,transparent)}
+.spot-phone::after{content:"";position:absolute;top:1.3%;left:50%;translate:-50% 0;width:31%;height:4.1%;border-radius:99px;background:#000;z-index:2}
+.spot-phone img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:translateY(6%);transition:opacity .5s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+.spot-phone img.on{opacity:1;transform:none}
+.spot-phone img.off{opacity:0;transform:translateY(-4%)}
+/* the hairline at the foot is the clock: when it fills, the next app comes up */
+.spot-bar{position:absolute;left:0;right:0;bottom:0;height:2px;background:rgba(232,240,246,.1);z-index:2}
+.spot-bar i{display:block;height:100%;background:var(--sc);transform-origin:left;transform:scaleX(0)}
+.spot.run .spot-bar i{animation:spotFill 3.8s linear forwards}
+.spot.hold .spot-bar i{animation-play-state:paused}
+@keyframes spotFill{to{transform:scaleX(1)}}
+/* the icon of the app on show wears a ring in its own colour */
+.iconwall a.now img{box-shadow:0 0 0 2px var(--ink),0 0 0 3.5px var(--c),0 14px 30px rgba(0,0,0,.45),0 14px 32px -8px color-mix(in srgb,var(--c) 75%,transparent)}
+.iconwall a.now span{color:var(--paper)}
+/* two columns: the controls stand in a column at the foot of the panel, clear of the phone and of the floating
+   section index that passes over the top right corner; one column (below): they sit at the top right */
+@media (min-width:981px){.spot-ctl{top:auto;right:auto;left:clamp(16px,3vw,40px);bottom:22px;flex-direction:column}.spot-k{padding-right:0}}
+@media (max-width:980px){.spotwrap{grid-template-columns:1fr;grid-template-rows:auto;grid-template-areas:"intro" "spot" "wall"}.spot{min-height:0;margin-top:clamp(28px,5vw,44px);border-left:0;border-block:1px solid var(--rule)}.spot-stage{flex:none;height:clamp(300px,74vw,400px);min-height:0}.spot-phone{width:clamp(190px,52vw,250px)}.wallbox{padding-top:clamp(28px,5vw,40px)}}
+@media (prefers-reduced-motion:reduce){.spot,.spot-info > *,.spot-phone,.spot-phone img{transition:none}.spot-phone img,.spot-phone img.off{transform:none}.spot-ctl .pp{display:none}}

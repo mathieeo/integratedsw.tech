@@ -1,7 +1,7 @@
 /* integratedsw.tech: the studio homepage (redesign 2026-10-17).
    The app grid is server-rendered by build.js from assets/apps.js; this file adds the
-   hero tunnel, the ruler scrollbar, the section index, the ticker, the contact form,
-   the rich-results list and the service worker. The terminal is assets/term.js. */
+   hero tunnel, the app spotlight, the phone menu, the icon glide between pages, the ruler
+   scrollbar, the section index, the ticker, the contact form and the service worker. The terminal is assets/term.js. */
 (() => {
 'use strict';
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -142,6 +142,167 @@ if (!reduce) requestAnimationFrame(loop);
 return { size, placeCards, drawRings };
 })();
 
+/* ---------- press feedback: iOS only applies :active styles on pages that listen for touches ---------- */
+document.addEventListener('touchstart', () => {}, { passive: true });
+
+/* ---------- phone menu (2026-11-11) ----------
+   Under 820px the nav links are hidden (studio.css). This adds a menu button to the nav and builds a full-screen
+   panel from those same links, so the homepage, every generated page and the hand-written policy pages get it
+   without new markup. No script, no menu: the nav stays as it was. */
+(() => {
+  const nav = document.querySelector('header.nav'); if (!nav) return;
+  const links = [...nav.querySelectorAll('.links a')], cta = nav.querySelector('.cta'); if (!links.length) return;
+  const root = document.documentElement;
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'menu'; btn.innerHTML = '<i></i><i></i>';
+  btn.setAttribute('aria-label', 'Menu'); btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', 'mnav');
+  nav.appendChild(btn);
+  const panel = document.createElement('div'); panel.className = 'mnav'; panel.id = 'mnav';
+  panel.innerHTML = links.map((a, i) => `<a class="big" href="${esc(a.getAttribute('href'))}" style="--i:${i}"><small>${String(i + 1).padStart(2, '0')}</small>${esc(a.textContent)}</a>`).join('')
+    + `<div class="mfoot">${cta ? `<a class="btn" href="${esc(cta.getAttribute('href'))}">${esc(cta.textContent)}</a>` : ''}<span class="mono">matt@integratedsw.tech</span></div>`;
+  nav.after(panel); panel.inert = true;
+  const set = open => {
+    root.classList.toggle('menu-open', open); panel.inert = !open;
+    btn.setAttribute('aria-expanded', String(open)); btn.setAttribute('aria-label', open ? 'Close menu' : 'Menu');
+  };
+  btn.addEventListener('click', () => set(!root.classList.contains('menu-open')));
+  panel.addEventListener('click', e => { if (e.target.closest('a')) set(false); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && root.classList.contains('menu-open')) { set(false); btn.focus(); } });
+  const wide = matchMedia('(min-width:821px)'), shut = e => { if (e.matches) set(false); };
+  if (wide.addEventListener) wide.addEventListener('change', shut); else if (wide.addListener) wide.addListener(shut);
+  addEventListener('pageshow', e => { if (e.persisted) set(false); });   /* back from the page cache: never reopen on a menu */
+})();
+
+/* ---------- the app icon glides into its page (2026-11-11) ----------
+   Cross-document view transitions are on for every page (studio.css). Just before a link to an app page is
+   followed, the icon that was clicked is named "appicon"; the app page's header icon carries the same name
+   (page.css), so the browser flies one into the other. Coming back from the page cache the name is still on the
+   icon, so it flies home again. One name per page: the previous one is cleared first, and on an app page the
+   header icon gives its name up when another icon (the next-app strip) takes it. */
+document.addEventListener('click', e => {
+  const a = e.target.closest && e.target.closest('a[href]'); if (!a) return;
+  if (!/(?:^|\/)apps\/[a-z0-9-]+\/$/.test(a.getAttribute('href') || '')) return;
+  let ic = a.querySelector('img[src*="assets/icons/"]');
+  if (!ic) { const box = a.closest('.spot'); ic = box && box.querySelector('.spot-name img'); }
+  const own = document.querySelector('.aicon');
+  document.querySelectorAll('[data-vt]').forEach(el => { el.style.viewTransitionName = ''; el.removeAttribute('data-vt'); });
+  if (own) own.style.viewTransitionName = '';
+  if (ic && ic !== own) { ic.style.viewTransitionName = 'appicon'; ic.setAttribute('data-vt', ''); if (own) own.style.viewTransitionName = 'none'; }
+}, true);
+
+/* ---------- app spotlight (2026-11-11) ----------
+   The homepage apps section shows one app at a time on a phone and walks through the catalog. The hairline at
+   the foot of the panel is the clock: when its fill animation ends, the next app comes up. It waits while the
+   pointer is on the wall or the panel, while the panel is off screen and while the tab is hidden; the pause
+   button stops it until it is pressed again. Pointing at an icon (or focusing it) shows that app. With reduced
+   motion nothing moves on its own; the icons and the arrows still work. The price tag comes from data-price on
+   each icon, which build.js writes from the App Store lookup. Screens are assets/studio/spot/<key>.jpg (made by
+   Tools/site/make_spot.py from real captures); an app without one falls back to its tunnel shot. */
+(() => {
+  const spot = document.getElementById('spot'), wall = document.getElementById('appgrid');
+  if (!spot || !wall) return;
+  const items = [...wall.querySelectorAll('a')].map(a => {
+    const slug = ((a.getAttribute('href') || '').match(/apps\/([^/]+)\//) || [])[1];
+    const app = SRC.find(x => x.slug === slug && x.key);
+    return app ? { a, app, price: a.dataset.price || '' } : null;
+  }).filter(Boolean);
+  if (!items.length) return;
+  const pad = n => String(n).padStart(2, '0');
+  spot.innerHTML = '<div class="spot-info"><p class="spot-k"><b></b> / ' + pad(items.length) + ' <span></span></p>'
+    + '<h3 class="spot-name"><img alt="" width="46" height="46"><span></span></h3><p class="spot-desc"></p><p class="spot-tags"></p><a class="spot-go" href="#"></a></div>'
+    + '<div class="spot-ctl"><button type="button" data-d="-1" aria-label="Previous app">←</button><button type="button" data-d="1" aria-label="Next app">→</button>'
+    + '<button type="button" class="pp" aria-label="Pause the spotlight" aria-pressed="false"><svg viewBox="0 0 10 10" aria-hidden="true"><path class="ii" d="M1.5 1h2.4v8H1.5zM6.1 1h2.4v8H6.1z"/><path class="tri" d="M2 1l7 4-7 4z"/></svg></button></div>'
+    + '<a class="spot-stage" href="#" tabindex="-1" aria-hidden="true"><span class="spot-phone"><img alt=""><img alt=""></span></a>'
+    + '<div class="spot-bar" aria-hidden="true"><i></i></div>';
+  const q = s => spot.querySelector(s);
+  const elN = q('.spot-k b'), elCat = q('.spot-k span'), elIc = q('.spot-name img'), elName = q('.spot-name span'), elDesc = q('.spot-desc'),
+    elTags = q('.spot-tags'), elGo = q('.spot-go'), elStage = q('.spot-stage'), bar = q('.spot-bar i'), pp = q('.pp');
+  const imgs = [...spot.querySelectorAll('.spot-phone img')];
+  const shot = app => 'assets/studio/spot/' + app.key + '.jpg';
+  let cur = -1, layer = 0, token = 0, hover = false, vis = false, paused = false, started = false;
+  function text(it, i) {
+    elN.textContent = pad(i + 1); elCat.textContent = '· ' + it.app.cat;
+    elIc.src = 'assets/icons/' + it.app.icon + '.png'; elName.textContent = it.app.name; elDesc.textContent = it.app.desc;
+    elTags.innerHTML = (it.price ? '<span class="hot">' + esc(it.price) + '</span>' : '') + '<span>iPhone</span>';
+    elGo.textContent = 'Explore ' + it.app.name + ' ↗'; elGo.href = elStage.href = 'apps/' + it.app.slug + '/';
+  }
+  const sync = () => spot.classList.toggle('hold', paused || hover || !vis || document.hidden);
+  function clock() { spot.classList.remove('run'); void bar.offsetWidth; if (!reduce) spot.classList.add('run'); sync(); }
+  function show(i) {
+    i = (i + items.length) % items.length; if (i === cur) return;
+    const it = items[i], my = ++token, first = cur < 0; cur = i;
+    items.forEach((x, k) => x.a.classList.toggle('now', k === i));
+    spot.style.setProperty('--sc', it.app.accent);
+    if (first || reduce) text(it, i);
+    else { spot.classList.add('swap'); setTimeout(() => { if (my !== token) return; text(it, i); spot.classList.remove('swap'); }, 160); }
+    const next = imgs[layer ^ 1], prev = imgs[layer];
+    next.className = ''; next.onerror = () => { next.onerror = null; next.src = 'assets/studio/shots/' + it.app.key + '-1.jpg'; };
+    next.src = shot(it.app);
+    const swap = () => {
+      if (my !== token) return;
+      next.className = 'on'; prev.className = first ? '' : 'off'; layer ^= 1; clock();
+      new Image().src = shot(items[(i + 1) % items.length].app);   /* have the next screen ready */
+    };
+    (next.decode ? next.decode() : Promise.resolve()).then(swap, swap);
+  }
+  bar.addEventListener('animationend', () => show(cur + 1));
+  [wall, spot].forEach(el => {
+    el.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') { hover = true; sync(); } });
+    el.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') { hover = false; sync(); } });
+    el.addEventListener('focusin', e => { if (e.target.matches && e.target.matches(':focus-visible')) { hover = true; sync(); } });
+    el.addEventListener('focusout', () => { hover = false; sync(); });
+  });
+  items.forEach((it, k) => {
+    it.a.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') show(k); });
+    it.a.addEventListener('focus', () => show(k));
+  });
+  spot.querySelectorAll('[data-d]').forEach(b => b.addEventListener('click', () => show(cur + Number(b.dataset.d))));
+  pp.addEventListener('click', () => {
+    paused = !paused; pp.classList.toggle('off', paused); pp.setAttribute('aria-pressed', String(paused));
+    pp.setAttribute('aria-label', paused ? 'Play the spotlight' : 'Pause the spotlight'); sync();
+  });
+  /* on a phone: a swipe across the screen moves to the next or previous app, a tap opens the app's page */
+  let tx = null, swiped = false;
+  elStage.addEventListener('touchstart', e => { tx = e.touches[0].clientX; swiped = false; }, { passive: true });
+  elStage.addEventListener('touchend', e => {
+    if (tx == null) return; const dx = e.changedTouches[0].clientX - tx; tx = null;
+    if (Math.abs(dx) > 36) { swiped = true; show(cur + (dx < 0 ? 1 : -1)); }
+  }, { passive: true });
+  elStage.addEventListener('click', e => { if (swiped) { e.preventDefault(); swiped = false; } });
+  addEventListener('visibilitychange', sync);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver((es, io) => { if (es[0].isIntersecting && !started) { started = true; show(0); io.disconnect(); } }, { rootMargin: '500px 0px' }).observe(spot);
+    new IntersectionObserver(es => { vis = es[0].isIntersecting; sync(); }, { threshold: .2 }).observe(spot);
+  } else { vis = true; started = true; show(0); }
+})();
+
+/* ---------- screenshot strip on an app page: arrows in the section bar, and drag with a mouse ---------- */
+document.querySelectorAll('.strip').forEach(strip => {
+  const sec = strip.closest('section'), btns = sec ? [...sec.querySelectorAll('[data-strip]')] : [];
+  const step = () => { const f = strip.querySelector('figure'); return f ? f.getBoundingClientRect().width : 260; };
+  const upd = () => {
+    const max = strip.scrollWidth - strip.clientWidth - 2;
+    btns.forEach(b => { b.disabled = Number(b.dataset.strip) < 0 ? strip.scrollLeft <= 2 : strip.scrollLeft >= max; });
+    if (sec) sec.classList.toggle('noscroll', max <= 2);
+  };
+  btns.forEach(b => b.addEventListener('click', () => strip.scrollBy({ left: Number(b.dataset.strip) * step() * 2, behavior: reduce ? 'auto' : 'smooth' })));
+  strip.addEventListener('scroll', upd, { passive: true }); addEventListener('resize', upd); addEventListener('load', upd); upd();
+  let down = false, moved = false, sx = 0, sl = 0;
+  strip.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' || e.button !== 0) return; down = true; moved = false; sx = e.clientX; sl = strip.scrollLeft; });
+  addEventListener('pointermove', e => {
+    if (!down) return; const dx = e.clientX - sx;
+    if (!moved && Math.abs(dx) > 5) { moved = true; strip.classList.add('drag', 'nosnap'); }
+    if (moved) strip.scrollLeft = sl - dx;
+  });
+  addEventListener('pointerup', () => {
+    if (!down) return; down = false; if (!moved) return;
+    strip.classList.remove('drag'); const w = step();
+    strip.scrollTo({ left: Math.round(strip.scrollLeft / w) * w, behavior: reduce ? 'auto' : 'smooth' });
+    setTimeout(() => strip.classList.remove('nosnap'), 420);
+  });
+  strip.addEventListener('dragstart', e => e.preventDefault());
+});
+
 /* ---------- the ruler scrollbar ----------
    A tape of 201 half-percent ticks scrolls 1:1 with the page; the accent line sits at T + p*L and always points
    at its own percentage on the tape (tape tick p lands at T + p*tapeH - scrollY = T + p*L when
@@ -244,7 +405,7 @@ onScroll();
 /* ---------- reveal on scroll: section content rises in as it enters, children staggered ---------- */
 (() => {
   if (!('IntersectionObserver' in window)) return;
-  const groups = ['.block .bar', '.block .intro > *', '.block .tri > div', '.block .iconwall a', '.block .close > *', '.block .wallwrap > *', '.block .apps > *', '.block .shots > *', '.block .gallery > *', '.block .pr > *'];
+  const groups = ['.block .bar', '.block .intro > *', '.block .tri > div', '.block .iconwall a', '.block .close > *', '.block .wallwrap > *', '.block .spot', '.block .wallbox > .ctas', '.block .more > *', '.block .apps > *', '.block .shots > *', '.block .gallery > *', '.block .pr > *'];
   const seen = new Set();
   groups.forEach(sel => document.querySelectorAll(sel).forEach(el => {
     if (seen.has(el) || el.closest('.inq')) return; seen.add(el);
@@ -266,6 +427,17 @@ if (!reduce && matchMedia('(pointer: fine)').matches) {
   document.querySelectorAll('.btn').forEach(b => {
     b.addEventListener('pointermove', e => { const r = b.getBoundingClientRect(); b.style.setProperty('--mx', ((e.clientX - r.left) / r.width - .5) * 8 + 'px'); b.style.setProperty('--my', ((e.clientY - r.top) / r.height - .5) * 6 + 'px'); });
     b.addEventListener('pointerleave', () => { b.style.setProperty('--mx', '0px'); b.style.setProperty('--my', '0px'); });
+  });
+  /* cards: a soft light follows the pointer (.glow, --gx/--gy), and what stands on the card leans toward it (--rx/--ry:
+     the screen on a lineup card, the spotlight phone) */
+  document.querySelectorAll('.tri > div, .lu, .spot').forEach(el => {
+    el.classList.add('glow');
+    el.addEventListener('pointermove', e => {
+      const r = el.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      el.style.setProperty('--gx', (x * 100).toFixed(1) + '%'); el.style.setProperty('--gy', (y * 100).toFixed(1) + '%');
+      el.style.setProperty('--ry', ((x - .5) * 10).toFixed(2) + 'deg'); el.style.setProperty('--rx', ((.5 - y) * 7).toFixed(2) + 'deg');
+    });
+    el.addEventListener('pointerleave', () => { el.style.setProperty('--ry', '0deg'); el.style.setProperty('--rx', '0deg'); });
   });
 }
 addEventListener('load', () => { if (rail) rail.build(); onScroll(); });

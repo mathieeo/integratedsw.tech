@@ -11,6 +11,7 @@ main.sub{padding-top:var(--nav)}
 .ah .copy{padding:clamp(40px,6vw,88px) clamp(16px,3vw,40px);display:grid;gap:20px;align-content:center;justify-items:start}
 .aicon{width:84px;height:84px;border-radius:20px;box-shadow:0 0 0 1px rgba(232,240,246,.14),0 24px 60px color-mix(in srgb,var(--c) 32%,transparent)}
 .ah h1{font:800 clamp(40px,6vw,88px)/.95 var(--wide);font-stretch:125%;letter-spacing:-.01em}
+.ah h1.lg{font-size:clamp(36px,5.3vw,77px)}.ah h1.xl{font-size:clamp(28px,4.1vw,59px)}  /* one long word: see build.js */
 .ah .tag{margin:0;font:600 clamp(18px,1.7vw,23px)/1.35 var(--wide);font-stretch:108%;max-width:26em}
 .facts{margin:0;display:flex;flex-wrap:wrap;gap:6px 14px;font:500 11.5px/1.5 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
 .facts span:first-child{color:var(--c)}

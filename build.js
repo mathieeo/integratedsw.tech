@@ -130,6 +130,9 @@ function appPage(a) {
   const store = a.store
     ? `<a class="btn" href="${a.store}" target="_blank" rel="noopener">${svgApple.replace('<svg ', '<svg class="apple" ')}Download on the App Store</a>`
     : `<span class="btn ghost" aria-disabled="true">${a.status === 'soon' ? 'In development' : 'In review'}</span>`;
+  /* a name with one long word (BinaryHexCalc, WaveVision) gets a smaller title, or it runs out of its column and, on a phone, off the screen */
+  const longest = Math.max(...String(a.name).split(/\s+/).map(w => w.length));
+  const h1cls = longest >= 12 ? ' class="xl"' : longest >= 10 ? ' class="lg"' : '';
   const studioShot = n => fs.existsSync(path.join(dir, 'assets', 'studio', 'shots', `${a.key}-${n}.jpg`));
   const stage = a.key && studioShot(1)
     ? `<div class="stage">`
@@ -155,7 +158,7 @@ function appPage(a) {
   <div class="ah">
     <div class="copy">
       ${a.icon ? `<img class="aicon" src="/assets/icons/${a.icon}.png" alt="${esc(a.name)} icon" width="84" height="84">` : ''}
-      <h1>${esc(a.name)}</h1>
+      <h1${h1cls}>${esc(a.name)}</h1>
       <p class="tag">${esc(a.desc)}</p>
       ${facts.length ? `<p class="facts">${facts.map(f => `<span>${esc(f)}</span>`).join('<i>·</i>')}</p>` : ''}
       <div class="ctas">${store}<a class="btn ghost" href="/apps/${a.slug}/privacy/">Privacy policy</a></div>

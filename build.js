@@ -307,11 +307,11 @@ and measure ads and to limit ad fraud.</p>
       data collection entirely.</li>
 </ul>
 <h2>Purchases</h2>
-<p>Purchases are processed by Apple. We receive no payment details — Apple only tells the
+<p>Purchases are processed by Apple. We receive no payment details: Apple only tells the
 app that the purchase succeeded.</p>` : '';
   const shortLine = a.ads
     ? `${esc(a.name)} has no accounts and we run no servers. Your data stays on your device.
-       The only data collected comes from the Google AdMob ads that keep the app free —
+       The only data collected comes from the Google AdMob ads that keep the app free,
        and you can remove ads to stop that entirely.`
     : `${esc(a.name)} collects nothing. It has no accounts, no analytics, and no
        third-party trackers. Everything happens on your device.`;

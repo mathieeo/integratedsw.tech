@@ -1,7 +1,8 @@
 /* integratedsw.tech: the studio homepage (redesign 2026-10-17).
    The app grid is server-rendered by build.js from assets/apps.js; this file adds the
-   hero tunnel, the app spotlight, the phone menu, the icon glide between pages, the ruler
-   scrollbar, the section index, the ticker, the contact form and the service worker. The terminal is assets/term.js. */
+   hero tunnel, the app spotlight, the releases strip, the iPhone Duo band, the phone menu, the icon glide
+   between pages, the ruler scrollbar, the section index, the reveals (headline rise, counting numbers, typed
+   command lines), the ticker, the contact form and the service worker. The terminal is assets/term.js. */
 (() => {
 'use strict';
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -276,10 +277,10 @@ document.addEventListener('click', e => {
   } else { vis = true; started = true; show(0); }
 })();
 
-/* ---------- screenshot strip on an app page: arrows in the section bar, and drag with a mouse ---------- */
-document.querySelectorAll('.strip').forEach(strip => {
-  const sec = strip.closest('section'), btns = sec ? [...sec.querySelectorAll('[data-strip]')] : [];
-  const step = () => { const f = strip.querySelector('figure'); return f ? f.getBoundingClientRect().width : 260; };
+/* ---------- sideways strips (the screenshots on an app page, the latest releases on the homepage): arrows in the bar, and drag with a mouse ---------- */
+document.querySelectorAll('.strip, .relstrip').forEach(strip => {
+  const sec = strip.closest('.rel') || strip.closest('section'), btns = sec ? [...sec.querySelectorAll('[data-strip]')] : [];
+  const step = () => { const f = strip.firstElementChild; return f ? f.getBoundingClientRect().width : 260; };
   const upd = () => {
     const max = strip.scrollWidth - strip.clientWidth - 2;
     btns.forEach(b => { b.disabled = Number(b.dataset.strip) < 0 ? strip.scrollLeft <= 2 : strip.scrollLeft >= max; });
@@ -287,8 +288,10 @@ document.querySelectorAll('.strip').forEach(strip => {
   };
   btns.forEach(b => b.addEventListener('click', () => strip.scrollBy({ left: Number(b.dataset.strip) * step() * 2, behavior: reduce ? 'auto' : 'smooth' })));
   strip.addEventListener('scroll', upd, { passive: true }); addEventListener('resize', upd); addEventListener('load', upd); upd();
-  let down = false, moved = false, sx = 0, sl = 0;
+  let down = false, moved = false, dragged = false, sx = 0, sl = 0;
   strip.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse' || e.button !== 0) return; down = true; moved = false; sx = e.clientX; sl = strip.scrollLeft; });
+  /* the cards of the releases strip are links: letting go after a drag must not open one */
+  strip.addEventListener('click', e => { if (dragged) { e.preventDefault(); e.stopPropagation(); } }, true);
   addEventListener('pointermove', e => {
     if (!down) return; const dx = e.clientX - sx;
     if (!moved && Math.abs(dx) > 5) { moved = true; strip.classList.add('drag', 'nosnap'); }
@@ -296,6 +299,7 @@ document.querySelectorAll('.strip').forEach(strip => {
   });
   addEventListener('pointerup', () => {
     if (!down) return; down = false; if (!moved) return;
+    dragged = true; setTimeout(() => { dragged = false; }, 60);
     strip.classList.remove('drag'); const w = step();
     strip.scrollTo({ left: Math.round(strip.scrollLeft / w) * w, behavior: reduce ? 'auto' : 'smooth' });
     setTimeout(() => strip.classList.remove('nosnap'), 420);
@@ -405,7 +409,7 @@ onScroll();
 /* ---------- reveal on scroll: section content rises in as it enters, children staggered ---------- */
 (() => {
   if (!('IntersectionObserver' in window)) return;
-  const groups = ['.block .bar', '.block .intro > *', '.block .tri > div', '.block .iconwall a', '.block .close > *', '.block .wallwrap > *', '.block .spot', '.block .wallbox > .ctas', '.block .more > *', '.block .apps > *', '.block .shots > *', '.block .gallery > *', '.block .pr > *'];
+  const groups = ['.block .bar', '.block .intro > *', '.block .tri > div', '.block .iconwall a', '.block .close > *', '.block .wallwrap > *', '.block .spot', '.block .wallbox > .ctas', '.block .relstrip > *', '.block .duo-copy > *', '.block .duo-stage', '.block .more > *', '.block .apps > *', '.block .shots > *', '.block .gallery > *', '.block .pr > *'];
   const seen = new Set();
   groups.forEach(sel => document.querySelectorAll(sel).forEach(el => {
     if (seen.has(el) || el.closest('.inq')) return; seen.add(el);
@@ -413,8 +417,106 @@ onScroll();
     const i = kids.indexOf(el);
     el.classList.add('rv'); el.style.setProperty('--d', Math.min(i, 14) * (el.matches('.iconwall a') ? .045 : .09).toFixed(3) + 's');
   }));
-  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: .08 });
-  seen.forEach(el => { const r = el.getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) el.classList.add('in'); else io.observe(el); });
+  /* headline rise: a section heading comes up line by line from behind a mask. At the moment it is revealed the
+     heading is rebuilt as one block per line (the lines depend on the width and the loaded face, so they are read
+     off the laid-out words right then); each block holds exactly what that line held, so nothing moves. Once the
+     motion is over the plain heading goes back in, and a later resize has nothing to undo. */
+  const rise = new Set(reduce ? [] : [...seen].filter(el => el.matches('.intro h2, .close h2, .duo-copy h2')));
+  function riseIn(el) {
+    const plain = el.innerHTML, words = []; let gap = false;
+    (function mark(node, em) { [...node.childNodes].forEach(n => {
+      if (n.nodeType === 1) return mark(n, n);
+      if (n.nodeType !== 3) return;
+      const f = document.createDocumentFragment();
+      n.textContent.split(/(\s+)/).forEach(t => { if (!t) return;
+        if (/^\s+$/.test(t)) { gap = true; f.appendChild(document.createTextNode(' ')); return; }
+        const w = document.createElement('span'); w.textContent = t; f.appendChild(w); words.push({ w, em, gap }); gap = false; });
+      n.replaceWith(f); }); })(el, null);
+    const lines = []; let mid = null;
+    words.forEach(x => { const r = x.w.getBoundingClientRect(), m = r.top + r.height / 2; if (mid === null || Math.abs(m - mid) > r.height * .5) { lines.push([]); mid = m; } lines[lines.length - 1].push(x); });
+    if (!lines.length) { el.innerHTML = plain; el.classList.add('in'); return; }
+    el.setAttribute('aria-label', el.textContent.replace(/\s+/g, ' ').trim());
+    el.innerHTML = lines.map((ln, i) => {
+      let html = '', k = 0;
+      while (k < ln.length) {
+        const em = ln[k].em; let txt = '', first = true; const lead = k > 0 && ln[k].gap ? ' ' : '';
+        while (k < ln.length && ln[k].em === em) { txt += (first || !ln[k].gap ? '' : ' ') + esc(ln[k].w.textContent); first = false; k++; }
+        html += lead + (em ? '<em class="' + esc(em.className) + '">' + txt + '</em>' : txt);
+      }
+      return '<span class="ln" aria-hidden="true"><span class="lni" style="--l:' + i + '">' + html + '</span></span>';
+    }).join('');
+    el.classList.add('rise'); void el.offsetWidth; el.classList.add('in');
+    const wait = ((parseFloat(el.style.getPropertyValue('--d')) || 0) + (lines.length - 1) * .11 + .95) * 1000 + 160;
+    setTimeout(() => { el.innerHTML = plain; el.classList.remove('rise'); el.removeAttribute('aria-label'); }, wait);
+  }
+  const show = el => { if (rise.has(el)) riseIn(el); else el.classList.add('in'); };
+  /* typed command lines: the pip lines in the open-source cards type themselves when their card arrives. Side by
+     side the second waits for the first; stacked on a phone each starts with its own card. */
+  if (!reduce) {
+    const stacked = matchMedia('(max-width:860px)').matches; let t0 = .55;
+    document.querySelectorAll('.tri .cmd code').forEach(code => {
+      const m = code.textContent.match(/^\$ (.+)$/); if (!m || !code.closest('.rv')) return;
+      code.innerHTML = '$ <span class="ty" style="--n:' + m[1].length + ';--t0:' + (stacked ? .55 : t0).toFixed(2) + 's"><span class="tx">' + esc(m[1]) + '</span><i></i></span>';
+      t0 += m[1].length * .046 + .4;
+    });
+  }
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { show(e.target); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px', threshold: .08 });
+  seen.forEach(el => { const r = el.getBoundingClientRect(); if (r.top < innerHeight && r.bottom > 0) show(el); else io.observe(el); });
+})();
+
+/* ---------- numbers count up when they come into view ([data-count], whole numbers) ---------- */
+(() => {
+  const els = [...document.querySelectorAll('[data-count]')];
+  if (!els.length || reduce || !('IntersectionObserver' in window)) return;
+  const run = el => {
+    const n = parseInt(el.textContent, 10); if (!(n > 1)) return;
+    el.style.display = 'inline-block'; el.style.minWidth = el.getBoundingClientRect().width.toFixed(2) + 'px'; el.style.textAlign = 'right';
+    const dur = Math.min(1500, 520 + n * 55), t0 = performance.now();
+    const step = now => { const k = Math.min(1, (now - t0) / dur); el.textContent = Math.round(n * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(step); };
+    el.textContent = '0'; requestAnimationFrame(step);
+  };
+  const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; io.unobserve(e.target); setTimeout(() => run(e.target), e.target.closest('.hero') ? 1500 : 260); }), { threshold: .6 });
+  els.forEach(el => io.observe(el));
+})();
+
+/* ---------- iPhone Duo band (2026-11-11) ----------
+   The phone unfolds as the band scrolls into view: --p on #duo runs from 0 (closed, the outer screen) to 1 (open,
+   the inner screen across both halves) and follows the scroll both ways, eased a little so it glides. The chips
+   swap the app on show (its two screens load first, then cross-fade). */
+(() => {
+  const duo = document.getElementById('duo'); if (!duo) return;
+  const dev = duo.querySelector('.duo-dev'), stage = document.getElementById('duostage'), cap = document.getElementById('duocap');
+  const inner = [...duo.querySelectorAll('img.di')], outer = duo.querySelector('img.do'), chips = [...duo.querySelectorAll('[data-duo]')];
+  const load = src => { const i = new Image(); i.src = src; return (i.decode ? i.decode() : new Promise(r => { i.onload = i.onerror = r; })).catch(() => {}); };
+  let turn = 0;
+  chips.forEach(b => b.addEventListener('click', () => {
+    if (b.classList.contains('on')) return;
+    const t = ++turn, base = 'assets/studio/duo/' + b.dataset.duo;
+    chips.forEach(x => { x.classList.toggle('on', x === b); x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+    duo.style.setProperty('--dc', b.dataset.c);
+    Promise.all([load(base + '-in.jpg'), load(base + '-out.jpg')]).then(() => {
+      if (t !== turn) return;
+      dev.classList.add('sw'); cap.classList.add('sw');
+      setTimeout(() => {
+        if (t !== turn) return;
+        inner.forEach(i => { i.src = base + '-in.jpg'; }); outer.src = base + '-out.jpg';
+        cap.innerHTML = '<b>' + esc(b.dataset.name) + '.</b> ' + esc(b.dataset.cap);
+        stage.setAttribute('aria-label', 'An iPhone Duo unfolding to show ' + b.dataset.name + ' across its inner screen');
+        dev.classList.remove('sw'); cap.classList.remove('sw');
+      }, reduce ? 0 : 230);
+    });
+  }));
+  if (reduce) return;
+  let cur = -1, goal = 0, raf = 0;
+  const measure = () => { const r = dev.getBoundingClientRect(), c = r.top + r.height / 2, vh = innerHeight; goal = Math.min(1, Math.max(0, (vh * .98 - c) / (vh * .44))); };
+  const frame = () => {
+    cur = cur < 0 ? goal : cur + (goal - cur) * .14; if (Math.abs(goal - cur) < .0015) cur = goal;
+    const e = cur * cur * (3 - 2 * cur);
+    duo.style.setProperty('--p', e.toFixed(4));
+    raf = cur === goal ? 0 : requestAnimationFrame(frame);
+  };
+  const on = () => { measure(); if (!raf) raf = requestAnimationFrame(frame); };
+  addEventListener('scroll', on, { passive: true }); addEventListener('resize', on); addEventListener('load', on); on();
 })();
 
 /* ---------- pointer motion (fine pointers only): hero copy drifts, buttons lean toward the cursor ---------- */

@@ -395,3 +395,111 @@ html.menu-open{overflow:hidden}
 @media (min-width:981px){.spot-ctl{top:auto;right:auto;left:clamp(16px,3vw,40px);bottom:22px;flex-direction:column}.spot-k{padding-right:0}}
 @media (max-width:980px){.spotwrap{grid-template-columns:1fr;grid-template-rows:auto;grid-template-areas:"intro" "spot" "wall"}.spot{min-height:0;margin-top:clamp(28px,5vw,44px);border-left:0;border-block:1px solid var(--rule)}.spot-stage{flex:none;height:clamp(300px,74vw,400px);min-height:0}.spot-phone{width:clamp(190px,52vw,250px)}.wallbox{padding-top:clamp(28px,5vw,40px)}}
 @media (prefers-reduced-motion:reduce){.spot,.spot-info > *,.spot-phone,.spot-phone img{transition:none}.spot-phone img,.spot-phone img.off{transform:none}.spot-ctl .pp{display:none}}
+
+/* ---------- strip arrows (shared by the screenshot strip on app pages and the releases strip) ---------- */
+.barr{display:flex;align-items:center;gap:14px}
+.stripnav{display:inline-flex;gap:6px;margin-block:-7px}
+.stripnav button{width:32px;height:26px;display:grid;place-items:center;padding:0;border:1px solid var(--rule);background:transparent;color:var(--paper);font:500 13px/1 var(--mono);cursor:pointer;transition:border-color .2s,opacity .2s,transform .12s}
+.stripnav button:hover{border-color:var(--paper)}
+.stripnav button:disabled{opacity:.3;cursor:default;border-color:var(--rule)}
+.noscroll .stripnav{display:none}
+/* a bar on a phone has room for a few words: .lg is the long form, .sm the short one */
+.bar .sm{display:none}
+@media (max-width:640px){.stripnav{display:none}.bar .lg{display:none}.bar .sm{display:inline}}
+
+/* ---------- latest releases (2026-11-11) ----------
+   A strip under the spotlight, written by build.js from the App Store lookup: newest first, each card links to
+   its app. It scrolls sideways (arrows, drag, swipe), like the screenshot strip on an app page. */
+.rel{border-top:1px solid var(--rule)}
+.relstrip{display:flex;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;overscroll-behavior-x:contain}
+.relstrip::-webkit-scrollbar{display:none}
+.relstrip.nosnap{scroll-snap-type:none}
+.relc{position:relative;flex:none;width:clamp(226px,20.5vw,288px);display:grid;gap:13px;align-content:start;padding:clamp(18px,2vw,24px) clamp(16px,1.8vw,24px) clamp(22px,2.2vw,28px);border-right:1px solid var(--rule);scroll-snap-align:start;transition:background .35s}
+.relc::before{content:"";position:absolute;left:0;right:0;top:-1px;height:2px;background:var(--c);transform:scaleX(0);transform-origin:left;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.relc:hover,.relc:focus-visible{background:color-mix(in srgb,var(--c) 7%,transparent)}
+.relc:hover::before,.relc:focus-visible::before{transform:scaleX(1)}
+.relc:active{background:color-mix(in srgb,var(--c) 12%,transparent)}
+.relc .when{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font:500 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.relc .when b{font-weight:500;color:var(--c);letter-spacing:.1em}
+.relc .who{display:flex;align-items:center;gap:11px;min-width:0;font:700 17px/1.15 var(--wide);font-stretch:112%;letter-spacing:-.005em}
+.relc .who img{width:38px;height:38px;flex:none;border-radius:22%;box-shadow:0 0 0 1px rgba(232,240,246,.14),0 8px 18px -8px var(--c);transition:transform .45s cubic-bezier(.2,.7,.2,1)}
+.relc:hover .who img{transform:translateY(-3px)}
+.relc .who span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.relc .what{color:var(--mute);font-size:14px;line-height:1.45}
+@media (pointer:fine){.relstrip{cursor:grab}.relstrip.drag{cursor:grabbing;-webkit-user-select:none;user-select:none}.relstrip.drag a{pointer-events:none}}
+
+/* ---------- iPhone Duo band (2026-11-11) ----------
+   The phone is two halves on a hinge. --p (set by studio.js from the scroll position, 0 = closed, 1 = open) turns
+   the cover: closed it lies face down on the other half and shows the outer screen on its back; opening, it swings
+   out to the left and its inner face joins the other half into one wide screen. Without script, and with reduced
+   motion, --p stays 1: the phone is simply open. */
+.duo{--p:1;position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.14fr);align-items:center;border-top:1px solid var(--rule);
+  background:radial-gradient(52% 64% at 74% 56%,color-mix(in srgb,var(--dc) 17%,transparent),transparent 72%),var(--deep);transition:--dc .6s}
+.duo::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,rgba(232,240,246,.035) 1px,transparent 1px) 0 0/40px 40px,linear-gradient(rgba(232,240,246,.035) 1px,transparent 1px) 0 0/40px 40px;-webkit-mask-image:linear-gradient(90deg,transparent 30%,#000 70%);mask-image:linear-gradient(90deg,transparent 30%,#000 70%)}
+.duo-copy{display:grid;gap:16px;justify-items:start;min-width:0;padding:clamp(40px,6vw,92px) clamp(16px,3vw,40px)}
+.duo-copy .k{font:500 11px/1.4 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.duo-copy h2{font:620 clamp(32px,4.3vw,58px)/1.03 var(--wide);font-stretch:118%;letter-spacing:-.015em}
+.duo-copy > p{margin:0;color:var(--mute);max-width:32em}
+.duo-copy .duo-n{font:500 11.5px/1.4 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.duo-n b{font-weight:500;color:var(--paper)}
+.duo-pick{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.duo-pick button{display:inline-flex;align-items:center;gap:8px;padding:5px 11px 5px 5px;border:1px solid var(--rule);background:rgba(7,16,28,.45);color:var(--mute);font:500 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:border-color .25s,color .25s,background .25s,transform .12s}
+.duo-pick button img{width:22px;height:22px;border-radius:24%}
+.duo-pick button:hover{color:var(--paper);border-color:rgba(232,240,246,.45)}
+.duo-pick button:active{transform:scale(.95)}
+.duo-pick button.on{color:var(--paper);border-color:color-mix(in srgb,var(--dc) 75%,transparent);background:color-mix(in srgb,var(--dc) 13%,transparent)}
+.duo-copy .duo-cap{min-height:3em;max-width:30em;font-size:15px;line-height:1.5;color:var(--mute);transition:opacity .25s}
+.duo-cap b{font-weight:600;color:var(--paper)}
+.duo-cap.sw{opacity:0}
+.duo-stage{position:relative;display:grid;place-items:center;min-height:clamp(340px,37vw,540px);padding:clamp(34px,4.6vw,70px) clamp(16px,3vw,40px);perspective:1900px;perspective-origin:50% 40%}
+.duo-dev{--w:clamp(140px,21vw,326px);--bz:clamp(4px,.5vw,7px);--r:clamp(11px,1.5vw,22px);position:relative;width:min(100%,calc(var(--w)*2));aspect-ratio:2852/2006;transform-style:preserve-3d;
+  transform:translateX(calc((1 - var(--p))*-25%)) rotateX(calc((1 - var(--p))*9deg)) rotateZ(calc((1 - var(--p))*-2.5deg))}
+.duo-half{position:absolute;top:0;bottom:0;width:50%}
+.duo-base,.duo-cover .face{background:linear-gradient(160deg,#1b2a42,#0b1322 60%)}
+.duo-cover .outer{box-shadow:inset 0 0 0 1px rgba(232,240,246,.2)}
+.duo-cover .inner{box-shadow:inset 0 1px 0 rgba(232,240,246,.2),inset 0 -1px 0 rgba(232,240,246,.2),inset 1px 0 0 rgba(232,240,246,.2)}
+.duo-base{left:50%;border-radius:0 calc(var(--r) + var(--bz)) calc(var(--r) + var(--bz)) 0;box-shadow:inset 0 1px 0 rgba(232,240,246,.2),inset 0 -1px 0 rgba(232,240,246,.2),inset -1px 0 0 rgba(232,240,246,.2),0 40px 80px rgba(0,0,0,.55),0 30px 90px -24px color-mix(in srgb,var(--dc) 55%,transparent)}
+.duo-cover{left:0;transform-origin:100% 50%;transform-style:preserve-3d;transform:translateZ(.6px) rotateY(calc((1 - var(--p))*180deg))}
+.duo-cover .face{position:absolute;inset:0;display:block;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.duo-cover .inner{border-radius:calc(var(--r) + var(--bz)) 0 0 calc(var(--r) + var(--bz))}
+.duo-cover .outer{transform:rotateY(180deg);border-radius:calc(var(--r) + var(--bz))}
+.duo .scr{position:absolute;display:block;overflow:hidden;background:#000}
+.duo-base .scr{inset:var(--bz) var(--bz) var(--bz) 0;border-radius:0 var(--r) var(--r) 0}
+.duo-cover .inner .scr{inset:var(--bz) 0 var(--bz) var(--bz);border-radius:var(--r) 0 0 var(--r)}
+.duo-cover .outer .scr{inset:calc(var(--bz)*1.5);border-radius:var(--r)}
+.duo .scr img{position:absolute;top:0;height:100%;max-width:none;object-fit:cover;transition:opacity .22s}
+.duo-base .scr img{right:0;width:200%}
+.duo-cover .inner .scr img{left:0;width:200%}
+.duo-cover .outer .scr img{left:0;width:100%}
+.duo-dev.sw .scr img{opacity:0}
+/* the crease: a soft line down the fold that fades as the phone opens flat */
+.duo-dev::after{content:"";position:absolute;left:50%;top:var(--bz);bottom:var(--bz);width:3%;transform:translateX(-50%) translateZ(1.2px);pointer-events:none;background:linear-gradient(90deg,transparent,rgba(0,0,0,.34) 40%,rgba(255,255,255,.08) 55%,transparent);opacity:calc(1.1 - var(--p))}
+@property --dc{syntax:'<color>';inherits:true;initial-value:#5ea7dc}
+@media (max-width:980px){.duo{grid-template-columns:minmax(0,1fr)}.duo-copy{padding-bottom:8px}.duo-dev{--w:270px}.duo-stage{min-height:0;padding-block:34px 46px}}
+
+/* ---------- headline rise (2026-11-11): section headings come up line by line from behind a mask ----------
+   At the moment a heading is revealed studio.js rebuilds it as one block per line (.ln > .lni, numbered --l) and
+   puts the plain heading back once the motion has finished. A line block holds exactly what the line held, so the
+   heading keeps its layout through all three states. The mask reaches a little past the line for descenders. */
+.rv.rise{opacity:1;transform:none;transition:none}
+.rise .ln{display:block;white-space:nowrap;clip-path:inset(-.12em -.25em -.2em)}
+.rise .lni{display:block;transform:translateY(130%);transition:transform .95s cubic-bezier(.2,.75,.15,1);transition-delay:calc(var(--d,0s) + var(--l,0)*.11s)}
+.rise.in .lni{transform:none}
+.rv.rise.in em.s{transition-delay:.7s}
+
+/* ---------- numbers that count up (studio.js) keep their width while they run ---------- */
+[data-count]{font-variant-numeric:tabular-nums}
+
+/* ---------- typed command lines (2026-11-11): the pip lines in the open-source cards type themselves ----------
+   The text is all there from the start and is uncovered one character at a time (the face is monospace, so a step
+   is exactly one character); nothing moves while it types. */
+.cmd code .ty{position:relative;display:inline-block}
+.cmd code .tx{display:inline-block;clip-path:inset(0 100% 0 0)}
+.cmd code .ty i{position:absolute;left:0;top:.14em;bottom:.14em;width:.56em;background:var(--accent);opacity:0}
+.rv.in .cmd code .tx{animation:tyText calc(var(--n)*46ms) steps(var(--n),end) var(--t0,.5s) forwards}
+.rv.in .cmd code .ty i{animation:tyMove calc(var(--n)*46ms) steps(var(--n),end) var(--t0,.5s) forwards,tyOn calc(var(--n)*46ms + .25s) linear calc(var(--t0,.5s) - .25s),tyBlink .85s linear calc(var(--t0,.5s) + var(--n)*46ms) 3}
+@keyframes tyText{to{clip-path:inset(0 0 0 0)}}
+@keyframes tyMove{to{left:100%}}
+@keyframes tyOn{from,to{opacity:1}}
+@keyframes tyBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.duo-cap,.duo .scr img,.relc,.relc::before,.relc .who img{transition:none}.cmd code .tx{clip-path:none;animation:none}.cmd code .ty i{display:none}}

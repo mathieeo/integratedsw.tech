@@ -4,7 +4,7 @@
    Reads assets/apps.js and emits:
      apps/<slug>/index.html   per-app landing pages (+ live rating via iTunes)
      press/index.html         press kit
-     assets/og/<slug>.png     per-app share cards (via qlmanage + sips)
+     assets/og/<slug>.png     per-app share cards, and assets/og.png for the homepage (headless Chrome)
      sitemap.xml, robots.txt, 404.html
    Run:  node build.js
    Homepage (index.html) is hand-maintained EXCEPT the app grid between the APPS markers (homeCards below).
@@ -12,7 +12,7 @@
 'use strict';
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync, execFileSync } = require('child_process');
 
 const ROOT = 'https://integratedsw.tech';
 const dir = __dirname;
@@ -115,7 +115,7 @@ function appPage(a) {
   const i = APPS.indexOf(a), next = APPS[(i + 1) % APPS.length];
   const id = idOf(a.store);
   const canonical = `${ROOT}/apps/${a.slug}/`;
-  const og = `${ROOT}/assets/og/${a.slug}.png`;
+  const og = ogUrl(a.slug);
   // App Store facts are baked in at build time from the lookup above (no request to Apple
   // from the visitor's browser); every build refreshes them.
   const info = storeInfo[id], facts = [];
@@ -248,9 +248,9 @@ function appsIndex() {
   }) };
   return head({ title: `All apps · Integrated Software Technologies`,
                 desc: `${word} native iOS apps that run entirely on your device: vibration analysis, network audits, SSH, LiDAR measuring, audio and everyday tools.`,
-                canonical, og: `${ROOT}/assets/og.png` }) + `
+                canonical, og: ogUrl() }) + `
 <section class="block" data-name="Apps">
-  <div class="bar"><span>01 / <b>The apps</b></span><span>${n} apps · iPhone · on-device</span></div>
+  <div class="bar"><span>01 / <b>The apps</b></span><span><span data-count>${n}</span> apps · iPhone · on-device</span></div>
   <div class="split">
     <div class="intro">
       <h1 class="h1sub">${word} apps. One <em class="s">studio.</em></h1>
@@ -317,7 +317,7 @@ app that the purchase succeeded.</p>` : '';
        third-party trackers. Everything happens on your device.`;
   return head({ title: `${a.name} Privacy Policy`,
                 desc: `Privacy policy for ${a.name} by Integrated Software Technologies.`,
-                canonical, og: `${ROOT}/assets/og/${a.slug}.png` }) + `
+                canonical, og: ogUrl(a.slug) }) + `
 <section class="block" data-name="Privacy" style="--c:${a.accent}">
   <div class="bar"><span><a href="/apps/${a.slug}/">← ${esc(a.name)}</a></span><span>Privacy policy · ${POLICY_DATE}</span></div>
   <div class="intro"><h1 class="h1sub">${esc(a.name)} <em class="s">privacy policy.</em></h1>
@@ -349,7 +349,7 @@ function privacyIndex() {
   const canonical = `${ROOT}/privacy/`;
   return head({ title: 'Privacy · Integrated Software Technologies',
                 desc: 'Privacy policies for every Integrated Software Technologies app: no accounts, no analytics, on-device.',
-                canonical, og: `${ROOT}/assets/og.png` }) + `
+                canonical, og: ogUrl() }) + `
 <section class="block" data-name="Privacy">
   <div class="bar"><span><a href="/">← Home</a></span><span>${APPS.length} apps · one policy each</span></div>
   <div class="intro"><h1 class="h1sub">Privacy, <em class="s">by design.</em></h1>
@@ -373,7 +373,7 @@ function pressPage() {
     { n: 'Share card', img: '/assets/og.png', dl: '/assets/og.png' }
   ];
   const swatches = [['Ink', '#07101c'], ['Navy', '#0a1a2f'], ['Paper', '#e8f0f6'], ['Ocean', '#5ea7dc'], ['Logo bar', '#4f86b0'], ['Logo mist', '#bfd7e6']];
-  return head({ title: 'Press kit · Integrated Software Technologies', desc: 'Brand assets, logos, colors, and boilerplate for Integrated Software Technologies.', canonical, og: `${ROOT}/assets/og.png` }) + `
+  return head({ title: 'Press kit · Integrated Software Technologies', desc: 'Brand assets, logos, colors, and boilerplate for Integrated Software Technologies.', canonical, og: ogUrl() }) + `
 <section class="block" data-name="Press">
   <div class="bar"><span><a href="/">← Home</a></span><span>Press kit</span></div>
   <div class="intro"><h1 class="h1sub">Press <em class="s">kit.</em></h1><p>Logos, colors, and boilerplate, free to use when writing about the studio or its apps.</p></div>
@@ -389,7 +389,7 @@ function pressPage() {
 
 /* ---------------------------------------------------------------- 404 page */
 function notFound() {
-  return head({ title: 'Not found · Integrated Software Technologies', desc: 'That page does not exist.', canonical: `${ROOT}/404`, og: `${ROOT}/assets/og.png` }) + `
+  return head({ title: 'Not found · Integrated Software Technologies', desc: 'That page does not exist.', canonical: `${ROOT}/404`, og: ogUrl() }) + `
 <section class="block" data-name="Not found">
   <div class="bar"><span>404</span><span>Page not found</span></div>
   <div class="lost"><span class="code" aria-hidden="true">404</span><h1 class="h1sub">That page <em class="s">wandered</em> off-device.</h1>
@@ -397,39 +397,147 @@ function notFound() {
 </section>` + foot();
 }
 
-/* ---------------------------------------------------- per-app OG images ---- */
-function ogFor(a) {
-  const iconPath = a.icon && path.join(dir, 'assets', 'icons', a.icon + '.png');
-  let iconTag = '';
-  if (iconPath && fs.existsSync(iconPath)) {
-    const b64 = fs.readFileSync(iconPath).toString('base64');
-    iconTag = `<image x="96" y="86" width="150" height="150" href="data:image/png;base64,${b64}"/>`;
-  }
-  const full = (a.desc || '');
-  const desc = (full.length > 64 ? full.slice(0, 62).trimEnd() + '…' : full).replace(/&/g, '&amp;');
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1200" viewBox="0 0 1200 630" preserveAspectRatio="xMidYMid meet">
-<defs>
-<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a.accent}"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
-<radialGradient id="glow" cx="0.9" cy="0.05" r="0.8"><stop offset="0" stop-color="${a.accent}" stop-opacity="0.32"/><stop offset="1" stop-color="${a.accent}" stop-opacity="0"/></radialGradient>
-</defs>
-<rect width="1200" height="630" fill="#07101c"/><rect width="1200" height="630" fill="url(#glow)"/>
-${iconTag}
-<text x="270" y="150" font-family="Helvetica Neue, Arial, sans-serif" font-size="30" font-weight="600" fill="#98a0b8" letter-spacing="2">${esc((a.cat || '').toUpperCase())}</text>
-<text x="270" y="215" font-family="Helvetica Neue, Arial, sans-serif" font-size="66" font-weight="700" fill="#eaeefb">${esc(a.name)}</text>
-<text x="96" y="360" font-family="Helvetica Neue, Arial, sans-serif" font-size="32" font-weight="500" fill="#cdd3e6">${esc(desc)}</text>
-<rect x="96" y="470" width="${Math.min(560, 40 + a.name.length * 4)}" height="4" rx="2" fill="url(#g)"/>
-<text x="96" y="545" font-family="Helvetica Neue, Arial, sans-serif" font-size="28" font-weight="700" fill="url(#g)">integratedsw.tech</text>
-</svg>`;
-  const tmp = path.join('/tmp', 'ist_og_' + a.slug + '.svg');
-  fs.writeFileSync(tmp, svg);
+/* ------------------------------------------------------------ share cards -- */
+/* The picture a link shows when it is shared (og:image). Redrawn 2026-11-11: the brand faces, the whole tagline
+   and a real screen of the app (its homepage spotlight screen) on a phone; the homepage card fans three of them.
+   Each card is a small HTML page drawn by headless Chrome at 1200 x 630. A card is redrawn only when its page or a
+   file it shows changes (tools/share-card-stamps.json), so a normal build leaves the images alone; without Chrome
+   the existing images stay. A redrawn card gets a new ?v= on its URL, so link previews fetch it again. */
+const CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
+const fileUrl = p => 'file://' + p.split(path.sep).map(encodeURIComponent).join('/');
+const sha1 = b => require('crypto').createHash('sha1').update(b).digest('hex');
+const ogVer = {};   // slug ('' = the homepage card) -> short hash of the image file
+const ogUrl = slug => `${ROOT}/${slug ? `assets/og/${slug}.png` : 'assets/og.png'}` + (ogVer[slug || ''] ? `?v=${ogVer[slug || '']}` : '');
+
+function ogPage(body) {
+  const font = f => fileUrl(path.join(dir, 'assets', 'studio', 'fonts', f));
+  return `<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:'Archivo';font-weight:500 800;font-stretch:100% 125%;src:url(${font('archivo.woff2')}) format('woff2')}
+@font-face{font-family:'Geist Mono';font-weight:400 700;src:url(${font('geist-mono.woff2')}) format('woff2')}
+@font-face{font-family:'Inter';font-weight:400 600;src:url(${font('inter.woff2')}) format('woff2')}
+@font-face{font-family:'Instrument Serif';font-style:italic;font-weight:400;src:url(${font('instrument-serif-italic.woff2')}) format('woff2')}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1200px;height:630px;overflow:hidden;background:#07101c}
+body{color:#e8f0f6;-webkit-font-smoothing:antialiased}
+.card{position:relative;width:1200px;height:630px;overflow:hidden;background:radial-gradient(560px 460px at 940px 430px,color-mix(in srgb,var(--c) 34%,transparent),transparent 72%),radial-gradient(760px 520px at 0 0,rgba(94,167,220,.11),transparent 70%),#07101c}
+.card::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(232,240,246,.045) 1px,transparent 1px) 36px 36px/47px 47px,linear-gradient(rgba(232,240,246,.045) 1px,transparent 1px) 36px 36px/47px 47px;-webkit-mask-image:radial-gradient(820px 560px at 82% 62%,#000,transparent 86%);mask-image:radial-gradient(820px 560px at 82% 62%,#000,transparent 86%)}
+.frame{position:absolute;inset:36px;border:1px solid rgba(232,240,246,.14)}
+.copy{position:absolute;left:86px;top:82px;bottom:82px;width:640px;display:flex;flex-direction:column}
+.card.wide .copy{width:1028px}
+.top{display:flex;align-items:center;gap:24px}
+.icon{width:104px;height:104px;border-radius:22%;box-shadow:0 0 0 1px rgba(232,240,246,.16),0 22px 46px -14px var(--c)}
+.tile{width:104px;height:104px;border-radius:22%;background:#0a1a2f;display:grid;place-items:center;box-shadow:0 0 0 1px rgba(232,240,246,.14)}
+.tile svg{width:62px;height:auto}
+.k{display:grid;gap:13px;font:500 19px/1 'Geist Mono',monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--c)}
+.k .dim{color:rgba(232,240,246,.6)}
+.name{margin-top:30px;font:800 104px/1.04 'Archivo',sans-serif;font-stretch:122%;letter-spacing:-.012em;white-space:nowrap}
+.word{margin-top:36px;font:800 104px/1.04 'Archivo',sans-serif;font-stretch:125%;letter-spacing:-.01em;white-space:nowrap}
+.desc{margin-top:22px;font:400 31px/1.36 'Inter',sans-serif;color:rgba(232,240,246,.82);text-wrap:balance}
+.tag{margin-top:18px;font:600 37px/1.2 'Inter',sans-serif;letter-spacing:-.01em;white-space:nowrap}
+.tag em{font:italic 400 45px/1 'Instrument Serif',serif;color:rgba(232,240,246,.88);letter-spacing:0}
+.foot{margin-top:auto;display:flex;align-items:center;gap:16px;font:500 18px/1 'Geist Mono',monospace;letter-spacing:.2em;text-transform:uppercase;color:rgba(232,240,246,.64)}
+.foot svg{width:36px;height:auto}
+.foot .rule{width:84px;height:2px;background:var(--c)}
+.phone{position:absolute;right:118px;top:74px;width:296px;aspect-ratio:480/1042;border-radius:15.5%/7.14%;overflow:hidden;background:#0b0d12;transform:rotate(5deg);box-shadow:0 0 0 1px rgba(232,240,246,.22),0 0 0 9px #0c1524,0 0 0 10px rgba(232,240,246,.15),0 50px 90px rgba(0,0,0,.6),0 40px 110px -20px var(--c)}
+.phone img{display:block;width:100%;height:100%;object-fit:cover}
+.phone::after{content:"";position:absolute;top:1.3%;left:50%;transform:translateX(-50%);width:31%;height:4.1%;border-radius:99px;background:#000}
+.card.home .copy{width:520px}
+.fan .phone{width:222px;top:112px}
+.fan .p0{right:306px;top:176px;transform:rotate(-9deg)}
+.fan .p1{right:172px;z-index:2;transform:rotate(1deg)}
+.fan .p2{right:40px;top:176px;transform:rotate(11deg)}
+</style></head><body>${LOGO_DEFS}${body}
+<script>document.fonts.ready.then(function(){document.querySelectorAll('.fit').forEach(function(e){var max=e.parentElement.clientWidth,s=parseFloat(getComputedStyle(e).fontSize);while(e.scrollWidth>max&&s>40){s-=2;e.style.fontSize=s+'px'}});var c=document.querySelector('.copy'),d=document.querySelector('.desc');if(c&&d){var s=parseFloat(getComputedStyle(d).fontSize);while(c.scrollHeight>c.clientHeight&&s>22){s-=1;d.style.fontSize=s+'px'}}})</script></body></html>`;
+}
+
+function ogAppHtml(a) {
+  const info = storeInfo[String(idOf(a.store))];
+  const price = info && info.formattedPrice ? (info.price === 0 ? 'Free' : info.formattedPrice) : '';
+  const icon = a.icon && path.join(dir, 'assets', 'icons', a.icon + '.png');
+  const screen = [path.join(dir, 'assets', 'studio', 'spot', a.key + '.jpg'), path.join(dir, 'assets', 'studio', 'shots', a.key + '-1.jpg')].find(f => fs.existsSync(f));
+  return ogPage(`<div class="card${screen ? '' : ' wide'}" style="--c:${a.accent}"><div class="frame"></div>
+<div class="copy">
+  <div class="top">${icon && fs.existsSync(icon) ? `<img class="icon" src="${fileUrl(icon)}" alt="">` : ''}<div class="k"><span>${esc(a.cat)}</span><span class="dim">${[price, a.store ? 'On the App Store' : ''].filter(Boolean).map(esc).join(' · ')}</span></div></div>
+  <div class="name fit">${esc(a.name)}</div>
+  <p class="desc">${esc(a.desc)}</p>
+  <div class="foot">${LOGO}<span>integratedsw.tech</span></div>
+</div>
+${screen ? `<div class="phone"><img src="${fileUrl(screen)}" alt=""></div>` : ''}</div>`);
+}
+
+function ogHomeHtml() {
+  const screens = APPS.map(a => path.join(dir, 'assets', 'studio', 'spot', a.key + '.jpg')).filter(f => fs.existsSync(f)).slice(0, 3);
+  const live = APPS.filter(a => a.store).length;
+  return ogPage(`<div class="card ${screens.length ? 'home' : 'wide'}" style="--c:#5ea7dc"><div class="frame"></div>
+<div class="copy">
+  <div class="top"><span class="tile">${LOGO}</span><div class="k"><span>${live} iOS apps</span><span class="dim">On the App Store</span></div></div>
+  <div class="word fit">INTEGRATED</div>
+  <p class="tag">Native apps, <em>built to feel alive.</em></p>
+  <div class="foot"><i class="rule"></i><span>integratedsw.tech</span></div>
+</div>
+<div class="fan">${screens.map((f, i) => `<div class="phone p${i}"><img src="${fileUrl(f)}" alt=""></div>`).join('')}</div></div>`);
+}
+
+function renderShareCards() {
   const outDir = path.join(dir, 'assets', 'og'); mkdir(outDir);
-  const out = path.join(outDir, a.slug + '.png');
-  try {
-    execSync(`qlmanage -t -s 1200 -o /tmp "${tmp}" >/dev/null 2>&1`);
-    fs.copyFileSync(path.join('/tmp', path.basename(tmp) + '.png'), out);
-    execSync(`sips -c 630 1200 "${out}" >/dev/null 2>&1`);
-    return true;
-  } catch (e) { console.warn('  OG failed for', a.slug, e.message); return false; }
+  const stampFile = path.join(dir, 'tools', 'share-card-stamps.json');
+  let stamps = {}; try { stamps = JSON.parse(fs.readFileSync(stampFile, 'utf8')); } catch {}
+  const jobs = [{ slug: '', out: path.join(dir, 'assets', 'og.png'), html: ogHomeHtml() },
+                ...APPS.map(a => ({ slug: a.slug, out: path.join(outDir, a.slug + '.png'), html: ogAppHtml(a) }))];
+  // a card's stamp covers its page (with this folder's path taken out) and every file the page shows
+  const stampOf = html => sha1(html.split(fileUrl(dir)).join('SITE')
+    + (html.match(/file:\/\/[^"')]+/g) || []).map(u => { try { return sha1(fs.readFileSync(decodeURIComponent(u.slice(7)))); } catch { return '-'; } }).join(''));
+  const todo = jobs.filter(j => { j.stamp = stampOf(j.html); return stamps[j.slug || 'home'] !== j.stamp || !fs.existsSync(j.out); });
+  if (todo.length && !fs.existsSync(CHROME)) console.warn('  share cards NOT redrawn (Google Chrome not found); keeping the existing images');
+  else if (todo.length) {
+    const tmp = fs.mkdtempSync(path.join(require('os').tmpdir(), 'ist-og-')), drawn = [];
+    for (const j of todo) {
+      const name = j.slug || 'home', page = path.join(tmp, name + '.html'), shot = path.join(tmp, name + '.png');
+      fs.writeFileSync(page, j.html);
+      try {
+        execFileSync(CHROME, ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--no-first-run', '--no-default-browser-check', '--disable-extensions',
+          '--user-data-dir=' + path.join(tmp, 'profile'), '--force-device-scale-factor=1', '--window-size=1200,630', '--virtual-time-budget=4000',
+          '--screenshot=' + shot, fileUrl(page)], { stdio: 'ignore', timeout: 60000 });
+        const png = fs.readFileSync(shot), w = png.readUInt32BE(16), h = png.readUInt32BE(20);
+        if (w !== 1200 || h !== 630) throw new Error(`drawn at ${w}x${h}, expected 1200x630`);
+        fs.copyFileSync(shot, j.out); drawn.push(j);
+      } catch (e) { console.warn('  share card failed for', name + ':', e.message); }
+    }
+    compressPNGs(drawn.map(j => j.out));
+    drawn.forEach(j => { stamps[j.slug || 'home'] = j.stamp; });
+    mkdir(path.dirname(stampFile)); fs.writeFileSync(stampFile, JSON.stringify(stamps, null, 1) + '\n');
+    fs.rmSync(tmp, { recursive: true, force: true });
+    console.log(`  ${drawn.length} share card${drawn.length === 1 ? '' : 's'} redrawn`);
+  }
+  for (const j of jobs) if (fs.existsSync(j.out)) ogVer[j.slug] = sha1(fs.readFileSync(j.out)).slice(0, 8);
+}
+
+/* ------------------------------------------------- latest releases strip -- */
+/* The homepage strip of the newest App Store releases (2026-11-11), written between the RELEASES markers in
+   index.html at every build from the same store lookup as the prices: newest first, with the version, the date
+   and the first line of that version's release notes. The count in its bar is the number of releases in the
+   newest release's month, a fact that stays true however old the build gets. */
+function releasesBlock() {
+  const rows = APPS.map(a => ({ a, info: storeInfo[String(idOf(a.store))] }))
+    .filter(r => r.info && r.info.version && r.info.currentVersionReleaseDate)
+    .sort((x, y) => new Date(y.info.currentVersionReleaseDate) - new Date(x.info.currentVersionReleaseDate));
+  if (!rows.length) return null;
+  const when = r => new Date(r.info.currentVersionReleaseDate);
+  const newest = when(rows[0]);
+  const inMonth = rows.filter(r => when(r).getFullYear() === newest.getFullYear() && when(r).getMonth() === newest.getMonth()).length;
+  const ymd = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+  const cards = rows.map(r => {
+    const d = when(r);
+    let note = (String(r.info.releaseNotes || '').split(/\n/).map(s => s.trim()).filter(Boolean)[0] || '').replace(/^[•*-]\s*/, '').replace(/\s*[—–]\s*/g, ', ');
+    if (note.length > 96) note = note.slice(0, 94).replace(/\s+\S*$/, '') + '…';
+    return `<a class="relc" href="apps/${r.a.slug}/" style="--c:${r.a.accent}">`
+      + `<span class="when"><time datetime="${ymd(d)}">${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</time><b>v${esc(r.info.version)}</b></span>`
+      + `<span class="who">${r.a.icon ? `<img src="assets/icons/${r.a.icon}.png" alt="" loading="lazy">` : ''}<span>${esc(r.a.name)}</span></span>`
+      + `<span class="what">${esc(note || 'Version ' + r.info.version)}</span></a>`;
+  }).join('');
+  return `<div class="bar sub"><span><span class="lg">Latest </span><b>releases</b></span><span class="barr"><span><span data-count>${inMonth}</span> in <span class="lg">${esc(newest.toLocaleDateString('en-US', { month: 'long' }))}</span><span class="sm">${esc(newest.toLocaleDateString('en-US', { month: 'short' }))}</span> ${newest.getFullYear()}</span>`
+    + `<span class="stripnav"><button type="button" data-strip="-1" aria-label="Newer releases">←</button><button type="button" data-strip="1" aria-label="Older releases">→</button></span></span></div>`
+    + `<div class="relstrip" tabindex="0" role="region" aria-label="Latest App Store releases">${cards}</div>`;
 }
 
 /* --------------------------------------------------------------- sitemap -- */
@@ -445,9 +553,9 @@ ${urls.map(u => `  <url><loc>${u}</loc><lastmod>${today}</lastmod></url>`).join(
 }
 
 /* -------------------------------------------------------- OG compression -- */
-/* qlmanage emits ~370 KB truecolor PNGs of what is mostly flat gradient — and
-   link-preview crawlers fetch these on every share. Palette-quantize with
-   dithering via Pillow (~4-6x smaller, no visible banding on this art). Silent
+/* Headless Chrome writes truecolor PNGs of several hundred KB, and link-preview
+   crawlers fetch these on every share. Palette-quantize with dithering via Pillow
+   (about a third of the size; look at a card after changing its design). Silent
    no-op if the Homebrew Python/Pillow pair isn't there. */
 const PYTHON = '/opt/homebrew/opt/python@3.12/bin/python3.12';
 function compressPNGs(files) {
@@ -457,16 +565,17 @@ function compressPNGs(files) {
 import sys
 from PIL import Image
 for p in sys.argv[1:]:
-    im = Image.open(p).convert("RGBA")
-    q = im.quantize(colors=256, method=2, dither=Image.Dither.FLOYDSTEINBERG)
-    q.save(p, optimize=True)
+    im = Image.open(p).convert("RGB")
+    # two steps on purpose: quantize() only dithers when it is handed a palette, and without
+    # dithering the glows band and the app screen posterizes
+    pal = im.quantize(colors=256, method=Image.Quantize.MEDIANCUT)
+    im.quantize(palette=pal, dither=Image.Dither.FLOYDSTEINBERG).save(p, optimize=True)
 `;
   const tmp = path.join('/tmp', 'ist_pngq.py');
   fs.writeFileSync(tmp, script);
   try {
     execSync(`"${PYTHON}" "${tmp}" ${existing.map(f => `"${f}"`).join(' ')}`,
              { stdio: 'ignore' });
-    console.log(`  compressed ${existing.length} OG images`);
   } catch (e) { console.warn('  OG compression skipped:', e.message); }
 }
 
@@ -529,9 +638,10 @@ async function ratingsSnapshot() {
 (async () => {
 console.log('Generating…');
 await loadStoreInfo();
+renderShareCards();   // first: the pages carry each card's version in its URL
 let n = 0;
-APPS.forEach(a => { write(`apps/${a.slug}/index.html`, appPage(a)); ogFor(a); n++; });
-console.log(`  ${n} app pages + OG images`);
+APPS.forEach(a => { write(`apps/${a.slug}/index.html`, appPage(a)); n++; });
+console.log(`  ${n} app pages`);
 APPS.forEach(a => write(`apps/${a.slug}/privacy/index.html`, privacyPage(a)));
 write('privacy/index.html', privacyIndex());
 write('apps/index.html', appsIndex());
@@ -557,12 +667,18 @@ function homeCards() { return iconWall(''); }
 
 {
   const idx = path.join(dir, 'index.html');
-  const html = fs.readFileSync(idx, 'utf8');
+  let html = fs.readFileSync(idx, 'utf8');
   const re = /<!--APPS:START-->[\s\S]*?<!--APPS:END-->/;
   if (!re.test(html)) {
     console.log('  WARNING: index.html has no APPS markers, homepage grid NOT server-rendered');
   } else {
-    fs.writeFileSync(idx, stamp(html.replace(re, '<!--APPS:START-->' + homeCards() + '<!--APPS:END-->')));
+    html = html.replace(re, '<!--APPS:START-->' + homeCards() + '<!--APPS:END-->');
+    // the latest-releases strip: only rewritten when the store lookup (or its snapshot) has data
+    const rel = releasesBlock(), reRel = /<!--RELEASES:START-->[\s\S]*?<!--RELEASES:END-->/;
+    if (rel && reRel.test(html)) html = html.replace(reRel, '<!--RELEASES:START-->' + rel + '<!--RELEASES:END-->');
+    // the homepage's own share card: a redrawn card gets a new URL
+    html = html.replace(/(https:\/\/integratedsw\.tech\/assets\/og\.png)(\?v=[0-9a-f]+)?/g, ogUrl());
+    fs.writeFileSync(idx, stamp(html));
     // the hand-maintained policy pages are never generated, but their asset URLs are versioned too
     for (const rel of ['deck-privacy.html', 'spinnit-privacy.html', 'apps/kinetic-neuroscience/privacy/index.html']) {
       const f = path.join(dir, rel); if (!fs.existsSync(f)) continue;
@@ -573,8 +689,6 @@ function homeCards() { return iconWall(''); }
   }
 }
 
-compressPNGs([...APPS.map(a => path.join(dir, 'assets', 'og', a.slug + '.png')),
-              path.join(dir, 'assets', 'og.png')]);
 await ratingsSnapshot();
 console.log('Done.');
 })();

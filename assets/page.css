@@ -127,13 +127,7 @@ main.sub{padding-top:var(--nav)}
 .more p{margin:0 0 1.15em;color:var(--mute);font-size:16.5px;line-height:1.68;break-inside:avoid}
 .more p:last-child{margin-bottom:0}
 
-/* screenshot strip: arrows in the section bar, drag with a mouse (studio.js) */
-.barr{display:flex;align-items:center;gap:14px}
-.stripnav{display:inline-flex;gap:6px;margin-block:-7px}
-.stripnav button{width:32px;height:26px;display:grid;place-items:center;padding:0;border:1px solid var(--rule);background:transparent;color:var(--paper);font:500 13px/1 var(--mono);cursor:pointer;transition:border-color .2s,opacity .2s,transform .12s}
-.stripnav button:hover{border-color:var(--paper)}
-.stripnav button:disabled{opacity:.3;cursor:default;border-color:var(--rule)}
-.noscroll .stripnav{display:none}
+/* screenshot strip: drag with a mouse (studio.js); the arrows in the section bar are styled in studio.css */
 .strip.nosnap{scroll-snap-type:none}
 .strip figure img{transition:transform .45s cubic-bezier(.2,.7,.2,1)}
 .strip figure:hover img{transform:translateY(-6px)}
